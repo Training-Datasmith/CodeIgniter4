@@ -33,7 +33,7 @@ $errorId = uniqid('error', true);
             <h1><?= esc($title), esc($exception->getCode() ? ' #' . $exception->getCode() : '') ?></h1>
             <p>
                 <?= nl2br(esc($exception->getMessage())) ?>
-                <a href="https://www.duckduckgo.com/?q=<?= urlencode($title . ' ' . preg_replace('#\'.*\'|".*"#Us', '', $exception->getMessage())) ?>"
+                <a href="https://www.duckduckgo.com/?q=<?= urlencode($title . ' ' . preg_replace('#\'.*\'|".*"#Us', '', (string) $exception->getMessage())) ?>"
                    rel="noreferrer" target="_blank">search &rarr;</a>
             </p>
         </div>
@@ -63,7 +63,7 @@ $errorId = uniqid('error', true);
     <?= esc($prevException::class), esc($prevException->getCode() ? ' #' . $prevException->getCode() : '') ?>
 
     <?= nl2br(esc($prevException->getMessage())) ?>
-    <a href="https://www.duckduckgo.com/?q=<?= urlencode($prevException::class . ' ' . preg_replace('#\'.*\'|".*"#Us', '', $prevException->getMessage())) ?>"
+    <a href="https://www.duckduckgo.com/?q=<?= urlencode($prevException::class . ' ' . preg_replace('#\'.*\'|".*"#Us', '', (string) $prevException->getMessage())) ?>"
        rel="noreferrer" target="_blank">search &rarr;</a>
     <?= esc(clean_path($prevException->getFile()) . ':' . $prevException->getLine()) ?>
     </pre>
@@ -120,7 +120,7 @@ $errorId = uniqid('error', true);
                                         <?php
                                         $params = null;
                                         // Reflection by name is not available for closure function
-                                        if (! str_ends_with($row['function'], '}')) {
+                                        if (! str_ends_with((string) $row['function'], '}')) {
                                             $mirror = isset($row['class']) ? new ReflectionMethod($row['class'], $row['function']) : new ReflectionFunction($row['function']);
                                             $params = $mirror->getParameters();
                                         }
@@ -159,13 +159,20 @@ $errorId = uniqid('error', true);
 
             <!-- Server -->
             <div class="content" id="server">
-                <?php foreach (['_SERVER', '_SESSION'] as $var) : ?>
-                    <?php
-                    if (empty($GLOBALS[$var]) || ! is_array($GLOBALS[$var])) {
-                        continue;
-                    } ?>
+                <?php foreach (['_SERVER', '_SESSION'] as $var) {
+                                            ?>
+                    <?php 
+                                            if (empty($GLOBALS[$var])) {
+                                                continue;
+                                            }
+                                            if (! is_array($GLOBALS[$var])) {
+                                                continue;
+                                            }
+                                            ?>
 
-                    <h3>$<?= esc($var) ?></h3>
+                    <h3>$<?php 
+                                            <?= esc($var) ?>
+                                            ?></h3>
 
                     <table>
                         <thead>
@@ -175,23 +182,25 @@ $errorId = uniqid('error', true);
                             </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($GLOBALS[$var] as $key => $value) : ?>
-                            <tr>
-                                <td><?= esc($key) ?></td>
-                                <td>
-                                    <?php if (is_string($value)) : ?>
-                                        <?= esc($value) ?>
-                                    <?php else: ?>
-                                        <pre><?= esc(print_r($value, true)) ?></pre>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                        <?php 
+                                            foreach ($GLOBALS[$var] as $key => $value) : ?>
+                                                    <tr>
+                                                        <td><?= esc($key) ?></td>
+                                                        <td>
+                                                            <?php if (is_string($value)) : ?>
+                                                                <?= esc($value) ?>
+                                                            <?php else: ?>
+                                                                <pre><?= esc(print_r($value, true)) ?></pre>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach;
+                                            ?>
                         </tbody>
                     </table>
 
-                <?php endforeach ?>
-
+                <?php 
+                                        }
                 <!-- Constants -->
                 <?php $constants = get_defined_constants(true); ?>
                 <?php if (! empty($constants['user'])) : ?>
@@ -262,15 +271,24 @@ $errorId = uniqid('error', true);
 
 
                 <?php $empty = true; ?>
-                <?php foreach (['_GET', '_POST', '_COOKIE'] as $var) : ?>
-                    <?php
-                    if (empty($GLOBALS[$var]) || ! is_array($GLOBALS[$var])) {
-                        continue;
-                    } ?>
+                <?php foreach (['_GET', '_POST', '_COOKIE'] as $var) {
+                        ?>
+                    <?php 
+                        if (empty($GLOBALS[$var])) {
+                            continue;
+                        }
+                        if (! is_array($GLOBALS[$var])) {
+                            continue;
+                        }
+                        ?>
 
-                    <?php $empty = false; ?>
+                    <?php 
+                        $empty = false;
+                        ?>
 
-                    <h3>$<?= esc($var) ?></h3>
+                    <h3>$<?php 
+                        <?= esc($var) ?>
+                        ?></h3>
 
                     <table style="width: 100%">
                         <thead>
@@ -280,23 +298,25 @@ $errorId = uniqid('error', true);
                             </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($GLOBALS[$var] as $key => $value) : ?>
-                            <tr>
-                                <td><?= esc($key) ?></td>
-                                <td>
-                                    <?php if (is_string($value)) : ?>
-                                        <?= esc($value) ?>
-                                    <?php else: ?>
-                                        <pre><?= esc(print_r($value, true)) ?></pre>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                        <?php 
+                        foreach ($GLOBALS[$var] as $key => $value) : ?>
+                                <tr>
+                                    <td><?= esc($key) ?></td>
+                                    <td>
+                                        <?php if (is_string($value)) : ?>
+                                            <?= esc($value) ?>
+                                        <?php else: ?>
+                                            <pre><?= esc(print_r($value, true)) ?></pre>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach;
+                        ?>
                         </tbody>
                     </table>
 
-                <?php endforeach ?>
-
+                <?php 
+                    }
                 <?php if ($empty) : ?>
 
                     <div class="alert">
