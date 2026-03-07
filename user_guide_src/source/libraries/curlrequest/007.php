@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $client->get('http://example.com');
 $client->delete('http://example.com');
 $client->head('http://example.com');

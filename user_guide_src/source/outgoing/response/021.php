@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $response->noCache();
 /*
  * Sets the following header:

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check if checkbox is checked with class of 'foo'
 if ($results->seeCheckboxIsChecked('.foo')) {
     // ...

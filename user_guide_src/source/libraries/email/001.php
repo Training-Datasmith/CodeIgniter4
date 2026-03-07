@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $email = service('email');
 
 $email->setFrom('your@example.com', 'Your Name');

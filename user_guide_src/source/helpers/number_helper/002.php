@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo number_to_size(456); // Returns 456 Bytes
 echo number_to_size(4567); // Returns 4.5 KB
 echo number_to_size(45678); // Returns 44.6 KB

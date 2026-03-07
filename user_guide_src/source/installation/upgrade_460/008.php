@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\I18n\Time;
 
 // The Application Timezone is "UTC".

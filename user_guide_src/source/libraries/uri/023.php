@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // URI = http://example.com/users/15/profile
 
 // Prints '15'

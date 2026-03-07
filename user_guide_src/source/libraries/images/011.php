@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('image', 'imagick')
     ->withFile('/path/to/image/mypic.png')
     ->flatten()

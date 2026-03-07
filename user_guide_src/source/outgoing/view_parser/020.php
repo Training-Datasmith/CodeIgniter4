@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $template = 'Hello, {firstname} {lastname} ({degrees}{degree} {/degrees})';
 $data     = [
     'degrees'   => 'Mr',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $client = service('curlrequest', [
     'baseURI' => 'https://example.com/api/v1/',
 ]);

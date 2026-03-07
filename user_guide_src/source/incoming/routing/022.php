@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $routes->get('users/profile', 'Users::profile', ['as' => 'profile']);
 
 // Redirect to a named route

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Checks HTTP methods. Returns boolean.
 $request->is('get');
 $request->is('post');

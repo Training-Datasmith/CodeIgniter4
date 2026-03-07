@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo $builder->set('title', 'My Title')->getCompiledInsert(false);
 // Produces string: INSERT INTO mytable (`title`) VALUES ('My Title')
 

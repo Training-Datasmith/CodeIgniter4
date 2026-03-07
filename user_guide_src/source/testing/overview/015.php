@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Libraries\Foo;
 
 // Create an instance of the class to test

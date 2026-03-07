@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // With the same request as above
 $data = $request->getJsonVar('fizz');
 // $data->buzz = "baz"

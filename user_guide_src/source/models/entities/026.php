@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\UserStatus;
 
 $user = $userModel->find(1);

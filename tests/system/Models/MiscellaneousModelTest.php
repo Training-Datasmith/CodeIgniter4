@@ -46,7 +46,8 @@ final class MiscellaneousModelTest extends LiveModelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('chunk() requires a positive integer for the $size argument.');
 
-        $this->createModel(UserModel::class)->chunk(0, static function ($row): void {});
+        $this->createModel(UserModel::class)->chunk(0, static function ($row): void {
+        });
     }
 
     public function testChunkThrowsOnNegativeSize(): void
@@ -54,7 +55,8 @@ final class MiscellaneousModelTest extends LiveModelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('chunk() requires a positive integer for the $size argument.');
 
-        $this->createModel(UserModel::class)->chunk(-1, static function ($row): void {});
+        $this->createModel(UserModel::class)->chunk(-1, static function ($row): void {
+        });
     }
 
     public function testChunkEarlyExit(): void
@@ -78,7 +80,8 @@ final class MiscellaneousModelTest extends LiveModelTestCase
         };
 
         Events::on('DBQuery', $listener);
-        $this->createModel(UserModel::class)->chunk(4, static function ($row): void {});
+        $this->createModel(UserModel::class)->chunk(4, static function ($row): void {
+        });
         Events::removeListener('DBQuery', $listener);
 
         $this->assertSame(2, $queryCount);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->orderBy('title', 'RANDOM');
 // Produces: ORDER BY RAND()
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\I18n\Time;
 
 $lunch  = Time::createFromTime(11, 30);     // 11:30 am today

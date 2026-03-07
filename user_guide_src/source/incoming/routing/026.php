@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $routes->group('admin', ['filter' => 'myfilter1:config'], static function ($routes) {
     $routes->get('/', 'Admin\Admin::index');
 

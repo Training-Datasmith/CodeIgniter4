@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // any_in_array() is not in the Array Helper, so it defines a new function
 function any_in_array($needle, $haystack)
 {

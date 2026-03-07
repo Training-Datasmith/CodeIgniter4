@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\CLI\CLI;
 
 $fruit = CLI::promptByKey(['These are your choices:', 'Which would you like?'], [

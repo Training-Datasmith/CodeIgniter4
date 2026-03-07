@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\I18n\Time;
 
 $time1 = new Time('2024-01-01 12:00:00');

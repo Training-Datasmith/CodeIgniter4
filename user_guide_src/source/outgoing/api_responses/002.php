@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generic response method
 $this->respond($data, 200);
 

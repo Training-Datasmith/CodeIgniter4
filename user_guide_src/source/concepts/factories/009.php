@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $user = model('UserModel');
 
 // The code above is the same as the code below.

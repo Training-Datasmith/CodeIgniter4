@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 [
     'first'  => 'Maynard',
     'email'  => 'king.alford@example.org',

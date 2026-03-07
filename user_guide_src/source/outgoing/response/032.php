@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Redirect to a URI path relative to baseURL with status code 301.
 return redirect()->to('admin/home', 301);
 

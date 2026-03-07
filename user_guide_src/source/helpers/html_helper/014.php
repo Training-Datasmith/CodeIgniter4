@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $tracks = [
     track('subtitles_no.vtt', 'subtitles', 'no', 'Norwegian No'),
     track('subtitles_yes.vtt', 'subtitles', 'yes', 'Norwegian Yes'),

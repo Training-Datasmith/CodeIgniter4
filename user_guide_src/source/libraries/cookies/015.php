@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('response')->setCookie('admin_token', 'yes');
 service('response')->deleteCookie('login_token');
 

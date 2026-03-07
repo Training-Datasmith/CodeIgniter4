@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $response->setCookie('foo', 'bar');
 
 ob_start();

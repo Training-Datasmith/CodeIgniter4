@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Controllers\Product;
 
 $routes->get('product/(:num)/(:num)', [[Product::class, 'index'], '$2/$1']);

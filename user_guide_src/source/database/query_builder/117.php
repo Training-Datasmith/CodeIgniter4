@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Database\RawSql;
 
 $query = 'SELECT user2.name, user2.email, user2.country

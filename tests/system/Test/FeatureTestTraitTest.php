@@ -109,7 +109,9 @@ final class FeatureTestTraitTest extends CIUnitTestCase
             [
                 'GET',
                 'home',
-                static function (): void { echo 'test echo'; },
+                static function (): void {
+                    echo 'test echo';
+                },
             ],
         ]);
 

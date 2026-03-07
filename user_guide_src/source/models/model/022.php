@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Retrieve a Job instance
 $job = $model->find(15);
 

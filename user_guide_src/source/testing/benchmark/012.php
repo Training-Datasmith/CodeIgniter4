@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $length = timer('string length', static fn () => strlen('CI4'));
 
 /*

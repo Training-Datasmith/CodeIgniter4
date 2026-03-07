@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo $diff->years;   // -7
 echo $diff->months;  // -84
 echo $diff->weeks;   // -365

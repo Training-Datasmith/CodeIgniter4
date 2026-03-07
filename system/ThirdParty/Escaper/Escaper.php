@@ -7,6 +7,10 @@ namespace Laminas\Escaper;
 use function assert;
 use function bin2hex;
 use function ctype_digit;
+
+use const ENT_QUOTES;
+use const ENT_SUBSTITUTE;
+
 use function hexdec;
 use function htmlspecialchars;
 use function in_array;
@@ -19,11 +23,9 @@ use function rawurlencode;
 use function sprintf;
 use function strlen;
 use function strtolower;
+
 use function strtoupper;
 use function substr;
-
-use const ENT_QUOTES;
-use const ENT_SUBSTITUTE;
 
 /**
  * Context specific methods for use in secure output escaping
@@ -164,13 +166,13 @@ class Escaper implements EscaperInterface
         // set matcher callbacks
         $this->htmlAttrMatcher =
             /** @param array<array-key, string> $matches */
-            fn(array $matches): string => $this->htmlAttrMatcher($matches);
+            fn (array $matches): string => $this->htmlAttrMatcher($matches);
         $this->jsMatcher       =
             /** @param array<array-key, string> $matches */
-            fn(array $matches): string => $this->jsMatcher($matches);
+            fn (array $matches): string => $this->jsMatcher($matches);
         $this->cssMatcher      =
             /** @param array<array-key, string> $matches */
-            fn(array $matches): string => $this->cssMatcher($matches);
+            fn (array $matches): string => $this->cssMatcher($matches);
     }
 
     /**

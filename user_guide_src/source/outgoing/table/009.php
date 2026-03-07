@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $table = new \CodeIgniter\View\Table();
 
 $table->setHeading('Name', 'Color', 'Size');

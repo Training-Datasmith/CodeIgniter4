@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $data = [
     'email'   => 'ahmadinejad@example.com',
     'name'    => 'Ahmadinejad',

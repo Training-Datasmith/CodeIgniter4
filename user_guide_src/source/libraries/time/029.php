@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\I18n\Time;
 
 $time  = Time::parse('13 May 2020 10:00', 'America/Chicago');

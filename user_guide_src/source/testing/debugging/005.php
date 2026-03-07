@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $data[] = [
     'name'      => '',     // Name displayed on the left of the timeline
     'component' => '',     // Name of the Component listed in the middle of timeline

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Database\RawSql;
 
 $sql = 'user.id = device.user_id AND ((1=1 OR 1=1) OR (1=1 OR 1=1))';

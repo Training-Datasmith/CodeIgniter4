@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $arrayToFlatten = [
     'personal' => [
         'first_name' => 'john',

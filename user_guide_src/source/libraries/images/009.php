@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('image')
     ->withFile('/path/to/image/mypic.jpg')
     ->convert(IMAGETYPE_PNG)

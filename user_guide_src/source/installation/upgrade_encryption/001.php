@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $encrypter = service('encrypter');
 
 $plainText  = 'This is a plain-text message!';

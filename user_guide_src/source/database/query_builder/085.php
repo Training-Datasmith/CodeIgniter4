@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->set('field', 'field+1', false);
 $builder->where('id', 2);
 $builder->update();

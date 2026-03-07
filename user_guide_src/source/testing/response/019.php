@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Checks that "Hello World" does NOT exist on the page
 if ($results->dontSee('Hello World')) {
     // ...

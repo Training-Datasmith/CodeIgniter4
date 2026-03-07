@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder = $db->table('users')->select('id, name')->limit(10);
 $union   = $db->table('groups')->select('id, name');
 $builder->union($union)->get();

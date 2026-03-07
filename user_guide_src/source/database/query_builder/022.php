@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->where('name', $name);
 $builder->where('title', $title);
 $builder->where('status', $status);

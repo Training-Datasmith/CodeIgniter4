@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Basic signal registration
 $this->registerSignals();
 

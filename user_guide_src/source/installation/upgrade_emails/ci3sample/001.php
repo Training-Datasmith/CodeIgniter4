@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->load->library('email');
 
 $this->email->from('your@example.com', 'Your Name');

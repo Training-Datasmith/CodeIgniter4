@@ -1,6 +1,10 @@
 <?php
 
-$benchmark->record('slow_function', static function () { slow_function('...'); });
+declare(strict_types=1);
+
+$benchmark->record('slow_function', static function () {
+    slow_function('...');
+});
 
 /*
  * Same as:

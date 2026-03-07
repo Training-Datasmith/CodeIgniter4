@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (! $foo = cache('foo')) {
     echo 'Saving to the cache!<br>';
     $foo = 'foobarbaz!';

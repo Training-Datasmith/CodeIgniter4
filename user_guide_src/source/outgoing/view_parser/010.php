@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $template = '{locations}{name} lives in {city} on {planet}{/locations}.';
 
 $data = [

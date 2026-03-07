@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // In app/Config/Routes.php
 // Would execute the show404 method of the App\Errors class
 $routes->set404Override('App\Errors::show404');

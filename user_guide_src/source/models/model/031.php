@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $fieldValidationMessage = [
     'name' => [
         'required'   => 'Your baby name is missing.',

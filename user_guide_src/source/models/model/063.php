@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $model = model('SomeModel');
 
 $now = \CodeIgniter\I18n\Time::now();

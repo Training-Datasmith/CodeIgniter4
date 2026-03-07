@@ -1,6 +1,6 @@
 <?php
 
-use CodeIgniter\Database\RawSql;
+declare(strict_types=1);
 
 $query = $this->db->table('user2')->select('email, name, country')->where('country', 'Greece');
 

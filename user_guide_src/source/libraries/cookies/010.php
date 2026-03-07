@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Cookie\Cookie;
 use CodeIgniter\Cookie\CookieStore;
-use Config\Services;
 
 // getting cookie in the current cookie collection
 $store = new CookieStore([

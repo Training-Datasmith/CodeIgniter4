@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Language/en/Fruit.php
 
 return [

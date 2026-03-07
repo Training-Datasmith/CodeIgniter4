@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $imageProperties = [
     'src'    => 'images/picture.jpg',
     'alt'    => 'Me, demonstrating how to eat 4 slices of pizza at one time',

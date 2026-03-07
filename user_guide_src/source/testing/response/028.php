@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Verify that a link exists with 'Upgrade Account' as the text::
 $results->assertSeeLink('Upgrade Account');
 

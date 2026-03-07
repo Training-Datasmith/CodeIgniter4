@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $data = [
     'name'    => 'button',
     'id'      => 'button',

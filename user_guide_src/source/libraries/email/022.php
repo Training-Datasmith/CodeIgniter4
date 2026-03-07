@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $filename = '/img/photo1.jpg';
 $email->attach($filename);
 

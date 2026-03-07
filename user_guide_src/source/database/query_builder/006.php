@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo $builder->limit(10, 20)->getCompiledSelect(false);
 /*
  * Prints string: SELECT * FROM mytable LIMIT 20, 10

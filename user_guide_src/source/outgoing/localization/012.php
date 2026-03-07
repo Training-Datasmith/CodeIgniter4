@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // The language file, Tests.php:
 return [
     'apples'      => 'I have {0, number} apples.',

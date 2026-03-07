@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo object('movie.swf', 'application/x-shockwave-flash', 'class="test"');
 
 echo object(

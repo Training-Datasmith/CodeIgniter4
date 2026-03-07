@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Verify that "Hello World" is on the page
 $result->assertSee('Hello World');
 

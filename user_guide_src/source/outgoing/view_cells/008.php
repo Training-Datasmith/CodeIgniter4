@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // app/Cells/AlertMessageCell.php
 
 namespace App\Cells;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->like('title', 'match', 'none');   // Produces: WHERE `title` LIKE 'match' ESCAPE '!'
 $builder->like('title', 'match', 'before'); // Produces: WHERE `title` LIKE '%match' ESCAPE '!'
 $builder->like('title', 'match', 'after');  // Produces: WHERE `title` LIKE 'match%' ESCAPE '!'

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Defined as a model property
 $primaryKey = 'id';
 

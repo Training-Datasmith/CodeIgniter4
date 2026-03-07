@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $logger = new \CodeIgniter\Log\Handlers\FileHandler();
 
 $results = $this->withResponse($response)

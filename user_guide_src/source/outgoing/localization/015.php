@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // The language file, Tests.php
 return [
     'shortTime'  => 'The time is now {0, time, short}.',

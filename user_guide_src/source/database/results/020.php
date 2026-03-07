@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $query = $thisdb->query('SELECT title FROM my_table');
 
 foreach ($query->getResult() as $row) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Outputs "blog"
 echo parse_subdomain('blog.example.com');
 

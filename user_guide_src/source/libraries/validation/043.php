@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (! $validation->run($data)) {
     // handle validation errors
 }

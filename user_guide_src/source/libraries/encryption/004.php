@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // $key will be assigned a 32-byte (256-bit) random key
 $key = \CodeIgniter\Encryption\Encryption::createKey();
 

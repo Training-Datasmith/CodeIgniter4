@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that an input exists named 'user' with the value 'John Snow'
 if ($results->seeInField('user', 'John Snow')) {
     // ...

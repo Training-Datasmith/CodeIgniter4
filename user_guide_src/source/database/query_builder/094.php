@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->where('id', $id);
 $builder->delete();
 /*

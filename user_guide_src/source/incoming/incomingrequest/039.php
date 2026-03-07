@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // When the request body is 'foo=one&bar=two&baz[]=10&baz[]=20'
 var_dump($request->getRawInputVar('bar'));
 // Outputs: two

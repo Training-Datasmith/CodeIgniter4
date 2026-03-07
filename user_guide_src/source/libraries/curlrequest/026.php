@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $client->request('GET', '/status/500');
 // If the response code is 500, an HTTPException is thrown,
 // and a detailed error report is displayed if in development mode.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->db->transStart(); // actually starts a transaction
 $this->db->query('SOME QUERY 1 ...');
 $this->db->transStart(); // doesn't necessarily start another transaction

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Controllers\Gallery;
 
 $routes->resource('photos', ['namespace' => '', 'controller' => Gallery::class]);

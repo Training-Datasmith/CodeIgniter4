@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Use the system's CA bundle (this is the default setting)
 $client->request('GET', '/', ['verify' => true]);
 

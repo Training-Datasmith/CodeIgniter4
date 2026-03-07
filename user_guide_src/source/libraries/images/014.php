@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('image', 'imagick')
     ->withFile('/path/to/image/mypic.jpg')
     ->text('Copyright 2017 My Photo Co', [

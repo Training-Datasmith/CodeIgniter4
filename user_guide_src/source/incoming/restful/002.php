@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $routes->resource('photos', ['websafe' => 1]);
 
 // The following equivalent routes are created:

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $file = '/etc/php5/apache2/php.ini';
 echo set_realpath($file); // Prints '/etc/php5/apache2/php.ini'
 

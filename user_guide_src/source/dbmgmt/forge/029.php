@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->forge->addKey(['category', 'name'], false, false, 'category_name');
 $this->forge->addPrimaryKey('id', 'pk_actions');
 $this->forge->addForeignKey('userid', 'user', 'id', '', '', 'userid_fk');

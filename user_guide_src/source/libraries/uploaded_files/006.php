@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if ($imagefile = $this->request->getFiles()) {
     foreach ($imagefile['images'] as $img) {
         if ($img->isValid() && ! $img->hasMoved()) {

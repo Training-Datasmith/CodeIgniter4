@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\HTTP\URI;
 
 $uriString = URI::createURIString($scheme, $authority, $path, $query, $fragment);

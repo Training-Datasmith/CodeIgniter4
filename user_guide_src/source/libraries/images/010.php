@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('image', 'imagick')
     ->withFile('/path/to/image/mypic.jpg')
     ->fit(100, 150, 'left')

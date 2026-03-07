@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Verify that an element with class 'notice' exists
 $results->assertSeeElement('.notice');
 

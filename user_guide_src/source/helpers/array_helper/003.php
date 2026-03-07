@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Returns: 11
 $fizz = dot_array_search('foo.buzz.fizz', $data);
 

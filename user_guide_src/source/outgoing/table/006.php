@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $template = [
     'table_open' => '<table border="0" cellpadding="4" cellspacing="0">',
 

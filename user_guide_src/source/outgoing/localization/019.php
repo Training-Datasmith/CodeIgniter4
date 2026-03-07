@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Controllers/Translation/Lang.php
 $message  = lang('Text.info.success');
 $message2 = lang('Text.paragraph');

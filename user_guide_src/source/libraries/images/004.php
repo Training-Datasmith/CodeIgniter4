@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $image->withFile('/path/to/image/mypic.jpg')
     ->reorient()
     ->rotate(90)

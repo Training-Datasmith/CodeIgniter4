@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'errorEmailMissing'    => 'You must submit an email address',
     'errorURLMissing'      => 'You must submit a URL',

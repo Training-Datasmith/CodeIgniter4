@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $array = ['title' => $match, 'page1' => $match, 'page2' => $match];
 $builder->havingLike($array);
 /*

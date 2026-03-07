@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Cookie\Cookie;
 
 $cookie = new Cookie('login_token', 'admin');

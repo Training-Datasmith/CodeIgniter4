@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Place all files into $destination
 $frameworkPublisher->copy();
 

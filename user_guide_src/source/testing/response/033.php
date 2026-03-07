@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that h1 element which contains class "heading" is on the page
 if ($results->seeXPath('//h1[contains(@class, "heading")]')) {
     // ...

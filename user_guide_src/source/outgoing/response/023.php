@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $cookie = [
     'name'     => 'The Cookie Name',
     'value'    => 'The Value',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Database\RawSql;
 
 $query = $this->db->table('user2')

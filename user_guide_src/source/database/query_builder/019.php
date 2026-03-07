@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder = $db->table('blogs');
 $builder->select('*');
 $builder->join('comments', 'comments.id = blogs.id');

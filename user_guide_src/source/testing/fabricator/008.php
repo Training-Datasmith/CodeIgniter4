@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Test\Fabricator;
 use Tests\Support\Models\UserFabricator;
 

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Models\NewsModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
 
 class News extends BaseController
 {

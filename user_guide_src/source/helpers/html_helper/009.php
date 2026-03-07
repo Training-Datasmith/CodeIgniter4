@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $link = [
     'href'  => 'css/printer.css',
     'rel'   => 'stylesheet',

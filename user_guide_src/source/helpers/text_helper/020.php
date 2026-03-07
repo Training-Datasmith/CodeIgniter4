@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $string = 'Here is a simple string of text that will help us demonstrate this function.';
 echo word_wrap($string, 25);
 /*

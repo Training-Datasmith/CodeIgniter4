@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Math\Auth\Commands;
 
 use CodeIgniter\CLI\BaseCommand;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $builder->select('*')->from('my_table')
     ->groupStart()
         ->where('a', 'a')

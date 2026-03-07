@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\CLI\CLI;
 
 $thead = ['ID', 'Title', 'Updated At', 'Active'];

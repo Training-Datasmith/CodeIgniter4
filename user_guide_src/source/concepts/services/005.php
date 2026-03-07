@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $logger = single_service('logger');
 
 // The code above is the same as the code below.

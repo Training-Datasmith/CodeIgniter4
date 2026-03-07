@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 foreach ($list as $name => $address) {
     $email->clear();
 

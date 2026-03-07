@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $length = $benchmark->record('string length', static fn () => strlen('CI4'));
 
 /*

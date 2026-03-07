@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Example response with a single error message
 $response = [
     'status'   => 400,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class MyRules
 {
     public function required_with($value, string $params, array $data): bool

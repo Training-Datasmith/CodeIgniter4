@@ -135,7 +135,9 @@ final class TimerTest extends CIUnitTestCase
     public function testRecordFunctionNoReturn(): void
     {
         $timer       = new Timer();
-        $returnValue = $timer->record('longjohn', static function (): void { usleep(100000); });
+        $returnValue = $timer->record('longjohn', static function (): void {
+            usleep(100000);
+        });
 
         $this->assertGreaterThanOrEqual(0.1, $timer->getElapsedTime('longjohn'));
         $this->assertNull($returnValue);
@@ -168,7 +170,9 @@ final class TimerTest extends CIUnitTestCase
         $this->expectException(RuntimeException::class);
 
         $timer = new Timer();
-        $timer->record('ex', static function (): never { throw new RuntimeException(); });
+        $timer->record('ex', static function (): never {
+            throw new RuntimeException();
+        });
     }
 
     public function testRecordThrowsErrorOnCallableWithParams(): void
@@ -203,7 +207,9 @@ final class TimerTest extends CIUnitTestCase
 
     public function testCommonCallableExpectNoReturn(): void
     {
-        $returnValue = timer('common', static function (): void { usleep(100000); });
+        $returnValue = timer('common', static function (): void {
+            usleep(100000);
+        });
 
         $this->assertNotInstanceOf(Timer::class, $returnValue);
         $this->assertNull($returnValue);

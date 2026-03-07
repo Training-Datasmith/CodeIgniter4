@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $result = array_group_by($employees, ['gender', 'hr.department'], true);
 
 $result = [

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $options = [
     'small'  => 'Small Shirt',
     'med'    => 'Medium Shirt',

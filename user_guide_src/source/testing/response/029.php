@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Verify that an input exists named 'user' with the value 'John Snow'
 $results->assertSeeInField('user', 'John Snow');
 

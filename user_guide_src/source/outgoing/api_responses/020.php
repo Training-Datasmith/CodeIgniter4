@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Transformers\UserTransformer;

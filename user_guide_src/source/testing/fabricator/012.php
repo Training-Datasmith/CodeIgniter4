@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 [
     'id'         => 1,
     'first'      => 'Rachel',

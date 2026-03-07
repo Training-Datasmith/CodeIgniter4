@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $onlyInactive = service('request')->getPost('return_inactive');
 
 $users = $this->db->table('users')

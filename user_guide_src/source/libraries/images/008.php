@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $info = service('image', 'imagick')
     ->withFile('/path/to/image/mypic.jpg')
     ->getFile()

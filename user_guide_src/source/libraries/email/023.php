@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // You need to pass false while sending in order for the email data
 // to not be cleared - if that happens, printDebugger() would have
 // nothing to output.

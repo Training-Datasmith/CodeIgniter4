@@ -1,16 +1,18 @@
 <?php
 
-class Upload extends CI_Controller {
+declare(strict_types=1);
 
+class Upload extends CI_Controller
+{
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper(array('form', 'url'));
+        $this->load->helper(['form', 'url']);
     }
 
     public function index()
     {
-        $this->load->view('upload_form', array('error' => ' ' ));
+        $this->load->view('upload_form', ['error' => ' ' ]);
     }
 
     public function do_upload()
@@ -24,11 +26,11 @@ class Upload extends CI_Controller {
         $this->load->library('upload', $config);
 
         if (! $this->upload->do_upload('userfile')) {
-            $error = array('error' => $this->upload->display_errors());
+            $error = ['error' => $this->upload->display_errors()];
 
             $this->load->view('upload_form', $error);
         } else {
-            $data = array('upload_data' => $this->upload->data());
+            $data = ['upload_data' => $this->upload->data()];
 
             $this->load->view('upload_success', $data);
         }

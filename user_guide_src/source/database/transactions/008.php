@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // When DBDebug in the Database Config must be true.
 
 use CodeIgniter\Database\Exceptions\DatabaseException;

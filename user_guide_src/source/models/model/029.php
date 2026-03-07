@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $validationRules = [
     'username' => 'required|max_length[30]|alpha_numeric_space|min_length[3]',
     'email'    => [

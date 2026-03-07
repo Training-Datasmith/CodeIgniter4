@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Note that the parameter of the `getCompiledSelect()` method is false
 $sql = $builder->select(['field1', 'field2'])
     ->where('field3', 5)

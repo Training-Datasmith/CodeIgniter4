@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MyNamespace;
 
 use CodeIgniter\Debug\Toolbar\Collectors\BaseCollector;

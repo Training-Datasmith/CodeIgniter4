@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo $message->header('Accept-Language');
 /*
  * Outputs something like:

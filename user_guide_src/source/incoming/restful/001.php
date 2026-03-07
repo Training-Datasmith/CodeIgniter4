@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $routes->resource('photos');
 
 // Equivalent to the following:

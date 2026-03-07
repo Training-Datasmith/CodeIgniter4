@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo link_tag('favicon.ico', 'shortcut icon', 'image/ico');
 // <link href="http://site.com/favicon.ico" rel="shortcut icon" type="image/ico">
 

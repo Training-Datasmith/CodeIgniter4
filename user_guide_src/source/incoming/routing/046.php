@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // This can be overridden in app/Config/Routes.php
 $routes->setDefaultNamespace('App');
 

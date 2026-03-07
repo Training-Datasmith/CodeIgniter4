@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $request = new \CodeIgniter\HTTP\IncomingRequest(
     new \Config\App(),
     new \CodeIgniter\HTTP\URI('http://example.com'),

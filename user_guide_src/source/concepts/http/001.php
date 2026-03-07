@@ -1,6 +1,6 @@
 <?php
 
-use CodeIgniter\HTTP\IncomingRequest;
+declare(strict_types=1);
 
 $request = request();
 

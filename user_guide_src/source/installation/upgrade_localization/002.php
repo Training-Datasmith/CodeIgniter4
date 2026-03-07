@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Errors.php
 return [
     'errorEmailMissing'    => 'You must submit an email address',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $text = 'Ut vel faucibus odio. Quisque quis congue libero. Etiam gravida
 eros lorem, eget porttitor augue dignissim tincidunt. In eget risus eget
 mauris faucibus molestie vitae ultricies odio. Vestibulum id ultricies diam.

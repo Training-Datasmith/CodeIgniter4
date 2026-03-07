@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $validation->setRules(
     [
         'username' => 'required|max_length[30]|is_unique[users.username]',

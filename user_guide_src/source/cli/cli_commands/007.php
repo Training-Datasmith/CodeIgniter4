@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\CLI\CLI;
 
 $length = max(array_map('strlen', array_keys($this->options)));

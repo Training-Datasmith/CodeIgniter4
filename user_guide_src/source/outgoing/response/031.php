@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Go back to the previous page.
 return redirect()->back();
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entities\Cast;
 
 use CodeIgniter\Entity\Cast\BaseCast;

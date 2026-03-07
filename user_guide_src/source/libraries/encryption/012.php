@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo $encrypter->decrypt($ciphertext);
 echo $encrypter->decrypt($ciphertext, ['key' => 'New secret key']);
 echo $encrypter->decrypt($ciphertext, ['key' => 'New secret key', 'blockSize' => 32]);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Folder and file structure:
  * \<NamespaceName>(\<SubNamespaceNames>)*\<ClassName>

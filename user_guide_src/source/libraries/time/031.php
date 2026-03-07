@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $time = $time->addSeconds(23);
 $time = $time->addMinutes(15);
 $time = $time->addHours(12);

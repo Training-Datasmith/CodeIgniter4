@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Get an instance
 $timer = timer();
 

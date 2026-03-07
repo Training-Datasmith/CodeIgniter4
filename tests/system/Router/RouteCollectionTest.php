@@ -1048,12 +1048,14 @@ final class RouteCollectionTest extends CIUnitTestCase
         $routes->get('user/insert', 'myController::goto/$1/$2', ['as' => 'namedRoute1']);
         $routes->post(
             'user/insert',
-            static function (): void {},
+            static function (): void {
+            },
             ['as' => 'namedRoute2'],
         );
         $routes->put(
             'user/insert',
-            static function (): void {},
+            static function (): void {
+            },
             ['as' => 'namedRoute3'],
         );
 
@@ -1334,7 +1336,8 @@ final class RouteCollectionTest extends CIUnitTestCase
         ];
         $routes->add(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options,
         );
 
@@ -1351,13 +1354,15 @@ final class RouteCollectionTest extends CIUnitTestCase
         // This is the first route for `administrator`.
         $routes->get(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options1,
         );
         // The second route for `administrator` should be ignored.
         $routes->get(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options2,
         );
 
@@ -1426,17 +1431,20 @@ final class RouteCollectionTest extends CIUnitTestCase
         ];
         $routes->get(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options1,
         );
         $routes->post(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options2,
         );
         $routes->add(
             'administrator',
-            static function (): void {},
+            static function (): void {
+            },
             $options3,
         );
 

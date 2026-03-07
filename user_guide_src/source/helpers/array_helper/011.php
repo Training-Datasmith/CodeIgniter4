@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // using the same data from above
 $flattened = array_flatten_with_dots($arrayToFlatten, 'foo_');
 /*

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that a link exists with 'Upgrade Account' as the text::
 if ($results->seeLink('Upgrade Account')) {
     // ...

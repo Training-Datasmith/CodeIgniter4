@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // is_unique[table.field,ignore_field,ignore_value]
 
 $validation->setRules([

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\I18n\Time;
 
 $time1 = Time::parse('January 10, 2017 21:50:00', 'America/Chicago');

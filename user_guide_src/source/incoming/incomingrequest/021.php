@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $uri = $request->getUri();
 
 echo $uri->getScheme();         // http

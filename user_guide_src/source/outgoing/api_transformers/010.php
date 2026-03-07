@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Transformers;
 
-use App\Transformers\CommentTransformer;
-use App\Transformers\PostTransformer;
 use CodeIgniter\API\BaseTransformer;
 
 class UserTransformer extends BaseTransformer

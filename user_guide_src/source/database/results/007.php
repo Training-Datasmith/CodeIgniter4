@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $query = $db->query('SELECT * FROM users LIMIT 1;');
 $row   = $query->getRow(0, \App\Entities\User::class);
 

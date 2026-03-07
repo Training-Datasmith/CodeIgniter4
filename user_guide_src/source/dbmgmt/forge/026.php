@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $fields = [
     'old_name' => [
         'name' => 'new_name',

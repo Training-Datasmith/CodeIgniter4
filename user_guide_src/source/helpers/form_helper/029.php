@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $attributes = [
     'class' => 'mycustomclass',
     'style' => 'color: #000;',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // create an Encryption instance
 $encryption = new \CodeIgniter\Encryption\Encryption();
 

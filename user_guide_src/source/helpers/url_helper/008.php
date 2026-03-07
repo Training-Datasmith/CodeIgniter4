@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo anchor('news/local/123', 'My News', 'title="News title"');
 // Prints: <a href="http://example.com/index.php/news/local/123" title="News title">My News</a>
 

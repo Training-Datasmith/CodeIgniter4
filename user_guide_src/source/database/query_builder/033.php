@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // With closure
 use CodeIgniter\Database\BaseBuilder;
 

@@ -1,4 +1,6 @@
 <?php
 
+declare(strict_types=1);
+
 echo form_submit('mysubmit', 'Submit Post!');
 // Would produce:  <input type="submit" name="mysubmit" value="Submit Post!">

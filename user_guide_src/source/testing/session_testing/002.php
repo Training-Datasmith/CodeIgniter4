@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Set session data
 $testSession->set('framework', 'CodeIgniter4');
 

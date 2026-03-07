@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Router\RouteCollection;
 
 $routes->group('', ['filter' => 'cors'], static function (RouteCollection $routes): void {
@@ -14,5 +16,6 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
 
         return $response;
     });
-    $routes->options('product/(:any)', static function () {});
+    $routes->options('product/(:any)', static function () {
+    });
 });

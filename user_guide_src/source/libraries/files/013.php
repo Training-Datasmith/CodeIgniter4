@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo 'My files: ' . implode(PHP_EOL, $files->get());
 echo 'I have ' . count($files) . ' files!';
 

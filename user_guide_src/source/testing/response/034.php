@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that h1 element which contains class "heading" does NOT exist on the page
 if ($results->dontSeeXPath('//h1[contains(@class, "heading")]')) {
     // ...

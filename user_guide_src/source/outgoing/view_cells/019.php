@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // app/Cells/RecentPostsCell.php
 
 namespace App\Cells;

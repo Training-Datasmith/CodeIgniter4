@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // First you need to enable processing of the routes queue by priority.
 $routes->setPrioritize();
 

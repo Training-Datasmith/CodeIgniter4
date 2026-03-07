@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $forge->addPrimaryKey('blog_id', 'pd_name');
 // gives PRIMARY KEY `pd_name` (`blog_id`)
 

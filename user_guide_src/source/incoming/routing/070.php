@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // In app/Config/Routing.php
 use CodeIgniter\Config\Routing as BaseRouting;
 

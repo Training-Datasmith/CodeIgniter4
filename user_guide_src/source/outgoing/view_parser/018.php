@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $template = 'Hello, {firstname} {lastname}';
 $data     = [
     'title'     => 'Mr',

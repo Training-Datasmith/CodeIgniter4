@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $validation = service('validation');
 $validation->setRules([
     'username' => 'required',

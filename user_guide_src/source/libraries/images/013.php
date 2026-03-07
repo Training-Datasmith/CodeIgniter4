@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 service('image', 'imagick')
     ->withFile('/path/to/image/mypic.jpg')
     ->resize(200, 100, true, 'height')

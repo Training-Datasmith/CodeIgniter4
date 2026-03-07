@@ -1,3 +1,5 @@
 <?php
 
+declare(strict_types=1);
+
 $validation->run($data, 'signup');

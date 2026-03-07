@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $script = ['src' => 'js/printer.js', 'defer' => null];
 
 echo script_tag($script);

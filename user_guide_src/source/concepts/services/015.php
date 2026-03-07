@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $options1 = [
     'baseURI' => 'http://example.com/api/v1/',
     'timeout' => 3,

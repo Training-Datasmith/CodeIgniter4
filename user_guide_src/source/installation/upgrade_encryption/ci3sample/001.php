@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->load->library('encryption');
 
 $plain_text = 'This is a plain-text message!';

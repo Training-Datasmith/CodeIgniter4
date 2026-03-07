@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Publisher\Publisher;
 
 $vendorPublisher = new Publisher(ROOTPATH . 'vendor');

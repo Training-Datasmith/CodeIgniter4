@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $forge->addForeignKey('users_id', 'users', 'id', 'CASCADE', 'CASCADE', 'my_fk_name');
 // gives CONSTRAINT `my_fk_name` FOREIGN KEY(`users_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 

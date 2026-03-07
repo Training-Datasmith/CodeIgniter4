@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $db->resultMode = MYSQLI_USE_RESULT; // for unbuffered results
 
 $query = $db->query('YOUR QUERY');

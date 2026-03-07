@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $subquery = $db->table('countries')->select('name')->where('id', 1);
 $builder  = $db->table('users')->select('name')->selectSubquery($subquery, 'country');
 $query    = $builder->get();

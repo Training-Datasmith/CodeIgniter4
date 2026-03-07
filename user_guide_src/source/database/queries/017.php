@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Database\Query;
 
 $pQuery = $db->prepare(static function ($db) {

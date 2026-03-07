@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $query = $db->query('YOUR QUERY');
 
 $rows = $query->getCustomResultObject(\App\Entities\User::class);

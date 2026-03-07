@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $temp      = '';
 $template1 = '<li><a href="{link}">{title}</a></li>';
 $data1     = [

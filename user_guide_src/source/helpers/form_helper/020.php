@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $js = [
     'id'       => 'shirts',
     'onChange' => 'some_function();',

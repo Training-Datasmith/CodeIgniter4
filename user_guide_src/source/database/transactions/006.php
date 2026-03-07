@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->db->transBegin();
 
 $this->db->query('AN SQL QUERY...');

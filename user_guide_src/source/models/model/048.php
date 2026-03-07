@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Return as standard objects
 $users = $userModel->asObject()->where('status', 'active')->findAll();
 

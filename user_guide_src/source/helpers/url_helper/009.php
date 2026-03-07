@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $atts = [
     'width'       => 800,
     'height'      => 600,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Will place the new column after the `another_field` column:
 $fields = [
     'preferences' => ['type' => 'TEXT', 'after' => 'another_field'],

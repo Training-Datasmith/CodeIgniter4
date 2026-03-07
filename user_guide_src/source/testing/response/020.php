@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that an element with class 'notice' exists
 if ($results->seeElement('.notice')) {
     // ...

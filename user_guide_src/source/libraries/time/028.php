@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $time = $time->setYear(2017);
 $time = $time->setMonth(4);       // April
 $time = $time->setMonth('April');

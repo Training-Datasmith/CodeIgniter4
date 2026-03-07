@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $supported = [
     'application/json',
     'text/html',

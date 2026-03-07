@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Both 'item' and 'item2' will expire after 300 seconds
 $session->markAsTempdata(['item', 'item2'], 300);
 

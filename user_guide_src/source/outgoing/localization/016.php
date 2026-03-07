@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Displays "The time is now 23:21:28 GMT-5"
 echo lang('Test.longTime', [time()], 'ru-RU');
 

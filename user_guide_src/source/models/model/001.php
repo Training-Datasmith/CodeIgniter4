@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Create a new class manually.
 $userModel = new \App\Models\UserModel();
 

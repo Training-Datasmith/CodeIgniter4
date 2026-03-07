@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Generates a message like: User 123 logged into the system from 127.0.0.1
 $info = [
     'id'         => $user->id,

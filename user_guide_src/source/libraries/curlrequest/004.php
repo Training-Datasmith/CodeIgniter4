@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Config\App;
 
 $client = new \CodeIgniter\HTTP\CURLRequest(

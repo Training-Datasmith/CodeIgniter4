@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 [
     'personal.first_name' => 'john',
     'personal.last_name'  => 'smith',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CodeIgniter\Events\Events;
 
 Events::trigger('some_event', $foo, $bar, $baz);

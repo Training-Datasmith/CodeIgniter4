@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // get the rules for all but the "username" field
 $rules = $model->getValidationRules(['except' => ['username']]);
 // get the rules for only the "city" and "state" fields

@@ -1,5 +1,7 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+
+declare(strict_types=1);
+defined('BASEPATH') or exit('No direct script access allowed');
 
 // ...
 

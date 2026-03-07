@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Calls $Users->list()
 $routes->get('users', 'Users::list');
 

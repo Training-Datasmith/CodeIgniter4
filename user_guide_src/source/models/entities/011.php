@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $user = new \App\Entities\User();
 
 // Converted to Time instance

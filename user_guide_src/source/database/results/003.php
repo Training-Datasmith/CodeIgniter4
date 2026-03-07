@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $query = $db->query('SELECT * FROM users;');
 
 foreach ($query->getResult(\App\Entities\User::class) as $user) {

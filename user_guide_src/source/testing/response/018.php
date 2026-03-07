@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Check that "Hello World" is on the page
 if ($results->see('Hello World')) {
     // ...

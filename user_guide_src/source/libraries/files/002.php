@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Get the file's basename
 echo $file->getBasename();
 // Get last modified time

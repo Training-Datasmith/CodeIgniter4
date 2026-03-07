@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 // In app/Config/Events.php
 
 namespace Config;
 
 use CodeIgniter\Events\Events;
-use CodeIgniter\Exceptions\FrameworkException;
-use CodeIgniter\HotReloader\HotReloader;
 
 // ...
 

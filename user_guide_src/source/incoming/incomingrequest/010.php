@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * With a request body of:
  * {

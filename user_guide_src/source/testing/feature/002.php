@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Get a simple page
 $result = $this->call('GET', '/');
 

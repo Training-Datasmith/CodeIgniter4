@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // If your feature test contains this:
 $result = $this->withBodyFormat('json')->post('users', $userInfo);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $response = service('response')
     ->redirect('https://example.com/path')
     ->setHeader('Some', 'header')

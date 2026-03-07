@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Displays the view in /app/Views/map.php
 $routes->view('map/(:segment)/(:segment)', 'map');
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $this->load->library('table');
 
 $this->table->set_heading('Name', 'Color', 'Size');

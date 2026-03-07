@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $language    = $request->negotiate('language', ['en-US', 'en-GB', 'fr', 'es-mx']);
 $imageType   = $request->negotiate('media', ['image/png', 'image/jpg']);
 $charset     = $request->negotiate('charset', ['UTF-8', 'UTF-16']);

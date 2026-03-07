@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // app/Helpers/info_helper.php
 use CodeIgniter\CodeIgniter;
 

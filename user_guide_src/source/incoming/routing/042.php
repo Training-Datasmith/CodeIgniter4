@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $routes->get('users/(:num)', 'users/show/$1', ['offset' => 1]);
 
 // Creates:

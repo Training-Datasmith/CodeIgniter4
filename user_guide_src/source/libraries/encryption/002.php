@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $plainText  = 'This is a plain-text message!';
 $ciphertext = $encrypter->encrypt($plainText);
 

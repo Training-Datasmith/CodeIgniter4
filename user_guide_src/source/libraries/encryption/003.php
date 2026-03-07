@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Config\Encryption;
 
 $config         = config(Encryption::class);
