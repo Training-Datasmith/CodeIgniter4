@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,26 +23,23 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Text;
 
-use Kint\Value\AbstractValue;
-
-class LockPlugin extends AbstractPlugin
+use Kint\Value\Abstract_Value;
+class Lock_Plugin extends Abstract_Plugin
 {
-    public function render(AbstractValue $v): ?string
+    public function render(Abstract_Value $v): ?string
     {
-        switch ($v->getHint()) {
+        switch ($v->get_hint()) {
             case 'blacklist':
-                return $this->renderLockedHeader($v, 'BLACKLISTED');
+                return $this->render_locked_header($v, 'BLACKLISTED');
             case 'recursion':
-                return $this->renderLockedHeader($v, 'RECURSION');
+                return $this->render_locked_header($v, 'RECURSION');
             case 'depth_limit':
-                return $this->renderLockedHeader($v, 'DEPTH LIMIT');
+                return $this->render_locked_header($v, 'DEPTH LIMIT');
             case 'array_limit':
-                return $this->renderLockedHeader($v, 'ARRAY LIMIT');
+                return $this->render_locked_header($v, 'ARRAY LIMIT');
         }
-
         return null;
     }
 }

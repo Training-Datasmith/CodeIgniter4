@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,38 +9,32 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\Cache\ResponseCache;
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\DownloadResponse;
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
+use Code_Igniter\Cache\Response_Cache;
+use Code_Igniter\HTTP\Cli_Request;
+use Code_Igniter\HTTP\Download_Response;
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Redirect_Response;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 use Config\Cache;
-
 /**
  * Page Cache filter
  */
-class PageCache implements FilterInterface
+class Page_Cache implements Filter_Interface
 {
-    private readonly ResponseCache $pageCache;
-
+    private readonly Response_Cache $page_cache;
     /**
      * @var list<int>
      */
-    private readonly array $cacheStatusCodes;
-
+    private readonly array $cache_status_codes;
     public function __construct(?Cache $config = null)
     {
         $config ??= config('Cache');
-
-        $this->pageCache        = service('responsecache');
-        $this->cacheStatusCodes = $config->cacheStatusCodes ?? [];
+        $this->page_cache = service('responsecache');
+        $this->cache_status_codes = $config->cache_status_codes ?? [];
     }
-
     /**
      * Checks page cache and return if found.
      *
@@ -49,37 +42,27 @@ class PageCache implements FilterInterface
      *
      * @return ResponseInterface|null
      */
-    public function before(RequestInterface $request, $arguments = null)
+    public function before(Request_Interface $request, $arguments = null)
     {
-        assert($request instanceof CLIRequest || $request instanceof IncomingRequest);
-
+        assert($request instanceof Cli_Request || $request instanceof Incoming_Request);
         $response = service('response');
-
-        return $this->pageCache->get($request, $response);
+        return $this->page_cache->get($request, $response);
     }
-
     /**
      * Cache the page.
      *
      * @param array|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null)
     {
-        assert($request instanceof CLIRequest || $request instanceof IncomingRequest);
-
-        if (
-            ! $response instanceof DownloadResponse
-            && ! $response instanceof RedirectResponse
-            && ($this->cacheStatusCodes === [] || in_array($response->getStatusCode(), $this->cacheStatusCodes, true))
-        ) {
+        assert($request instanceof Cli_Request || $request instanceof Incoming_Request);
+        if (!$response instanceof Download_Response && !$response instanceof Redirect_Response && ($this->cache_status_codes === [] || in_array($response->get_status_code(), $this->cache_status_codes, true))) {
             // Cache it without the performance metrics replaced
             // so that we can have live speed updates along the way.
             // Must be run after filters to preserve the Response headers.
-            $this->pageCache->make($request, $response);
-
+            $this->page_cache->make($request, $response);
             return $response;
         }
-
         return null;
     }
 }

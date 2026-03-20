@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Log\Handlers;
+namespace Code_Igniter\Log\Handlers;
 
 /**
  * Expected behavior for a Log handler
  */
-interface HandlerInterface
+interface Handler_Interface
 {
     /**
      * Handles logging the message.
@@ -28,17 +26,15 @@ interface HandlerInterface
      * @param string $message
      */
     public function handle($level, $message): bool;
-
     /**
      * Checks whether the Handler will handle logging items of this
      * log Level.
      */
-    public function canHandle(string $level): bool;
-
+    public function can_handle(string $level): bool;
     /**
      * Sets the preferred date format to use when logging.
      *
      * @return HandlerInterface
      */
-    public function setDateFormat(string $format);
+    public function set_date_format(string $format);
 }

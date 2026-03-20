@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-use CodeIgniter\Helpers\Array\ArrayHelper;
-
+use Code_Igniter\Helpers\Array\Array_Helper;
 // CodeIgniter Array Helpers
-
-if (! function_exists('dot_array_search')) {
+if (!function_exists('dot_array_search')) {
     /**
      * Searches an array through dot syntax. Supports
      * wildcard searches, like foo.*.bar
@@ -24,11 +20,10 @@ if (! function_exists('dot_array_search')) {
      */
     function dot_array_search(string $index, array $array)
     {
-        return ArrayHelper::dotSearch($index, $array);
+        return Array_Helper::dot_search($index, $array);
     }
 }
-
-if (! function_exists('array_deep_search')) {
+if (!function_exists('array_deep_search')) {
     /**
      * Returns the value of an element at a key in an array of uncertain depth.
      *
@@ -41,18 +36,15 @@ if (! function_exists('array_deep_search')) {
         if (isset($array[$key])) {
             return $array[$key];
         }
-
         foreach ($array as $value) {
-            if (is_array($value) && ($result = array_deep_search($key, $value))) {
+            if (is_array($value) && $result = array_deep_search($key, $value)) {
                 return $result;
             }
         }
-
         return null;
     }
 }
-
-if (! function_exists('array_sort_by_multiple_keys')) {
+if (!function_exists('array_sort_by_multiple_keys')) {
     /**
      * Sorts a multidimensional array by its elements values. The array
      * columns to be used for sorting are passed as an associative
@@ -78,50 +70,41 @@ if (! function_exists('array_sort_by_multiple_keys')) {
      * @param array $sortColumns an associative array of columns to sort
      *                           after and their sorting flags
      */
-    function array_sort_by_multiple_keys(array &$array, array $sortColumns): bool
+    function array_sort_by_multiple_keys(array &$array, array $sort_columns): bool
     {
         // Check if there really are columns to sort after
-        if ($sortColumns === [] || $array === []) {
+        if ($sort_columns === [] || $array === []) {
             return false;
         }
-
         // Group sorting indexes and data
-        $tempArray = [];
-
-        foreach ($sortColumns as $key => $sortFlag) {
+        $temp_array = [];
+        foreach ($sort_columns as $key => $sort_flag) {
             // Get sorting values
             $carry = $array;
-
             // The '.' operator separates nested elements
-            foreach (explode('.', $key) as $keySegment) {
+            foreach (explode('.', $key) as $key_segment) {
                 // Loop elements if they are objects
                 if (is_object(reset($carry))) {
                     // Extract the object attribute
                     foreach ($carry as $index => $object) {
-                        $carry[$index] = $object->{$keySegment};
+                        $carry[$index] = $object->{$key_segment};
                     }
-
                     continue;
                 }
-
                 // Extract the target column if elements are arrays
-                $carry = array_column($carry, $keySegment);
+                $carry = array_column($carry, $key_segment);
             }
-
             // Store the collected sorting parameters
-            $tempArray[] = $carry;
-            $tempArray[] = $sortFlag;
+            $temp_array[] = $carry;
+            $temp_array[] = $sort_flag;
         }
-
         // Append the array as reference
-        $tempArray[] = &$array;
-
+        $temp_array[] =& $array;
         // Pass sorting arrays and flags as an argument list.
-        return array_multisort(...$tempArray);
+        return array_multisort(...$temp_array);
     }
 }
-
-if (! function_exists('array_flatten_with_dots')) {
+if (!function_exists('array_flatten_with_dots')) {
     /**
      * Flatten a multidimensional array using dots as separators.
      *
@@ -133,22 +116,18 @@ if (! function_exists('array_flatten_with_dots')) {
     function array_flatten_with_dots(iterable $array, string $id = ''): array
     {
         $flattened = [];
-
         foreach ($array as $key => $value) {
-            $newKey = $id . $key;
-
+            $new_key = $id . $key;
             if (is_array($value) && $value !== []) {
-                $flattened = array_merge($flattened, array_flatten_with_dots($value, $newKey . '.'));
+                $flattened = array_merge($flattened, array_flatten_with_dots($value, $new_key . '.'));
             } else {
-                $flattened[$newKey] = $value;
+                $flattened[$new_key] = $value;
             }
         }
-
         return $flattened;
     }
 }
-
-if (! function_exists('array_group_by')) {
+if (!function_exists('array_group_by')) {
     /**
      * Groups all rows by their index values. Result's depth equals number of indexes
      *
@@ -158,8 +137,8 @@ if (! function_exists('array_group_by')) {
      *
      * @return array Result array where rows are grouped together by indexes values.
      */
-    function array_group_by(array $array, array $indexes, bool $includeEmpty = false): array
+    function array_group_by(array $array, array $indexes, bool $include_empty = false): array
     {
-        return ArrayHelper::groupBy($array, $indexes, $includeEmpty);
+        return Array_Helper::group_by($array, $indexes, $include_empty);
     }
 }

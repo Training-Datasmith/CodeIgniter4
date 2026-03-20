@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,101 +23,82 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\MicrotimeValue;
-use Kint\Value\Representation\MicrotimeRepresentation;
-
-class MicrotimePlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Microtime_Value;
+use Kint\Value\Representation\Microtime_Representation;
+class Microtime_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     private static ?array $last = null;
     private static ?float $start = null;
     private static int $times = 0;
     private static ?string $group = null;
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string', 'double'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        $c = $v->getContext();
-
-        if ($c->getDepth() > 0) {
+        $c = $v->get_context();
+        if ($c->get_depth() > 0) {
             return $v;
         }
-
         if (\is_string($var)) {
-            if ('microtime()' !== $c->getName() || !\preg_match('/^0\\.[0-9]{8} [0-9]{10}$/', $var)) {
+            if ('microtime()' !== $c->get_name() || !\preg_match('/^0\.[0-9]{8} [0-9]{10}$/', $var)) {
                 return $v;
             }
-
             $usec = (int) \substr($var, 2, 6);
             $sec = (int) \substr($var, 11, 10);
         } else {
-            if ('microtime(...)' !== $c->getName()) {
+            if ('microtime(...)' !== $c->get_name()) {
                 return $v;
             }
-
             $sec = (int) \floor($var);
             $usec = $var - $sec;
             $usec = (int) \floor($usec * 1000000);
         }
-
-        $time = $sec + ($usec / 1000000);
-
+        $time = $sec + $usec / 1000000;
         if (null !== self::$last) {
-            $last_time = self::$last[0] + (self::$last[1] / 1000000);
+            $last_time = self::$last[0] + self::$last[1] / 1000000;
             $lap = $time - $last_time;
             ++self::$times;
         } else {
             $lap = null;
             self::$start = $time;
         }
-
         self::$last = [$sec, $usec];
-
         if (null !== $lap) {
             $total = $time - self::$start;
-            $r = new MicrotimeRepresentation($sec, $usec, self::getGroup(), $lap, $total, self::$times);
+            $r = new Microtime_Representation($sec, $usec, self::get_group(), $lap, $total, self::$times);
         } else {
-            $r = new MicrotimeRepresentation($sec, $usec, self::getGroup());
+            $r = new Microtime_Representation($sec, $usec, self::get_group());
         }
-
-        $out = new MicrotimeValue($v);
-        $out->removeRepresentation('contents');
-        $out->addRepresentation($r);
-
+        $out = new Microtime_Value($v);
+        $out->remove_representation('contents');
+        $out->add_representation($r);
         return $out;
     }
-
     /** @psalm-api */
     public static function clean(): void
     {
         self::$last = null;
         self::$start = null;
         self::$times = 0;
-        self::newGroup();
+        self::new_group();
     }
-
-    private static function getGroup(): string
+    private static function get_group(): string
     {
         if (null === self::$group) {
-            return self::newGroup();
+            return self::new_group();
         }
-
         return self::$group;
     }
-
-    private static function newGroup(): string
+    private static function new_group(): string
     {
         return self::$group = \bin2hex(\random_bytes(4));
     }

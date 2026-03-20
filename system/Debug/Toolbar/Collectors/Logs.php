@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Debug\Toolbar\Collectors;
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
 /**
  * Loags collector
  */
-class Logs extends BaseCollector
+class Logs extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -24,16 +22,14 @@ class Logs extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = false;
-
+    protected $has_timeline = false;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = true;
-
+    protected $has_tab_content = true;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -41,14 +37,12 @@ class Logs extends BaseCollector
      * @var string
      */
     protected $title = 'Logs';
-
     /**
      * Our collected data.
      *
      * @var list<array{level: string, msg: string}>
      */
     protected $data = [];
-
     /**
      * Returns the data of this collector to be formatted in the toolbar.
      *
@@ -56,21 +50,16 @@ class Logs extends BaseCollector
      */
     public function display(): array
     {
-        return [
-            'logs' => $this->collectLogs(),
-        ];
+        return ['logs' => $this->collect_logs()];
     }
-
     /**
      * Does this collector actually have any data to display?
      */
-    public function isEmpty(): bool
+    public function is_empty(): bool
     {
-        $this->collectLogs();
-
+        $this->collect_logs();
         return $this->data === [];
     }
-
     /**
      * Display the icon.
      *
@@ -80,22 +69,18 @@ class Logs extends BaseCollector
     {
         return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACYSURBVEhLYxgFJIHU1FSjtLS0i0D8AYj7gEKMEBkqAaAFF4D4ERCvAFrwH4gDoFIMKSkpFkB+OTEYqgUTACXfA/GqjIwMQyD9H2hRHlQKJFcBEiMGQ7VgAqCBvUgK32dmZspCpagGGNPT0/1BLqeF4bQHQJePpiIwhmrBBEADR1MRfgB0+WgqAmOoFkwANHA0FY0CUgEDAwCQ0PUpNB3kqwAAAABJRU5ErkJggg==';
     }
-
     /**
      * Ensures the data has been collected.
      *
      * @return list<array{level: string, msg: string}>
      */
-    protected function collectLogs()
+    protected function collect_logs()
     {
         if ($this->data !== []) {
             return $this->data;
         }
-
-        $cache = service('logger')->logCache;
-
+        $cache = service('logger')->log_cache;
         $this->data = $cache ?? [];
-
         return $this->data;
     }
 }

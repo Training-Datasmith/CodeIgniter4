@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\Cookie\Cookie;
-use CodeIgniter\Cookie\CookieStore;
-use CodeIgniter\Exceptions\InvalidArgumentException;
-use CodeIgniter\HTTP\Exceptions\HTTPException;
-use CodeIgniter\Pager\PagerInterface;
+use Code_Igniter\Cookie\Cookie;
+use Code_Igniter\Cookie\Cookie_Store;
+use Code_Igniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\HTTP\Exceptions\Http_Exception;
+use Code_Igniter\Pager\Pager_Interface;
 use DateTime;
-
 /**
  * Representation of an outgoing, server-side response.
  * Most of these methods are supplied by ResponseTrait.
@@ -32,79 +29,78 @@ use DateTime;
  * - Headers
  * - Message body
  */
-interface ResponseInterface extends MessageInterface
+interface Response_Interface extends Message_Interface
 {
     /**
      * Constants for status codes.
      * From  https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
      */
     // Informational
-    public const HTTP_CONTINUE                        = 100;
-    public const HTTP_SWITCHING_PROTOCOLS             = 101;
-    public const HTTP_PROCESSING                      = 102;
-    public const HTTP_EARLY_HINTS                     = 103;
-    public const HTTP_OK                              = 200;
-    public const HTTP_CREATED                         = 201;
-    public const HTTP_ACCEPTED                        = 202;
-    public const HTTP_NONAUTHORITATIVE_INFORMATION    = 203;
-    public const HTTP_NO_CONTENT                      = 204;
-    public const HTTP_RESET_CONTENT                   = 205;
-    public const HTTP_PARTIAL_CONTENT                 = 206;
-    public const HTTP_MULTI_STATUS                    = 207;
-    public const HTTP_ALREADY_REPORTED                = 208;
-    public const HTTP_IM_USED                         = 226;
-    public const HTTP_MULTIPLE_CHOICES                = 300;
-    public const HTTP_MOVED_PERMANENTLY               = 301;
-    public const HTTP_FOUND                           = 302;
-    public const HTTP_SEE_OTHER                       = 303;
-    public const HTTP_NOT_MODIFIED                    = 304;
-    public const HTTP_USE_PROXY                       = 305;
-    public const HTTP_SWITCH_PROXY                    = 306;
-    public const HTTP_TEMPORARY_REDIRECT              = 307;
-    public const HTTP_PERMANENT_REDIRECT              = 308;
-    public const HTTP_BAD_REQUEST                     = 400;
-    public const HTTP_UNAUTHORIZED                    = 401;
-    public const HTTP_PAYMENT_REQUIRED                = 402;
-    public const HTTP_FORBIDDEN                       = 403;
-    public const HTTP_NOT_FOUND                       = 404;
-    public const HTTP_METHOD_NOT_ALLOWED              = 405;
-    public const HTTP_NOT_ACCEPTABLE                  = 406;
-    public const HTTP_PROXY_AUTHENTICATION_REQUIRED   = 407;
-    public const HTTP_REQUEST_TIMEOUT                 = 408;
-    public const HTTP_CONFLICT                        = 409;
-    public const HTTP_GONE                            = 410;
-    public const HTTP_LENGTH_REQUIRED                 = 411;
-    public const HTTP_PRECONDITION_FAILED             = 412;
-    public const HTTP_PAYLOAD_TOO_LARGE               = 413;
-    public const HTTP_URI_TOO_LONG                    = 414;
-    public const HTTP_UNSUPPORTED_MEDIA_TYPE          = 415;
-    public const HTTP_RANGE_NOT_SATISFIABLE           = 416;
-    public const HTTP_EXPECTATION_FAILED              = 417;
-    public const HTTP_IM_A_TEAPOT                     = 418;
-    public const HTTP_MISDIRECTED_REQUEST             = 421;
-    public const HTTP_UNPROCESSABLE_ENTITY            = 422;
-    public const HTTP_LOCKED                          = 423;
-    public const HTTP_FAILED_DEPENDENCY               = 424;
-    public const HTTP_TOO_EARLY                       = 425;
-    public const HTTP_UPGRADE_REQUIRED                = 426;
-    public const HTTP_PRECONDITION_REQUIRED           = 428;
-    public const HTTP_TOO_MANY_REQUESTS               = 429;
+    public const HTTP_CONTINUE = 100;
+    public const HTTP_SWITCHING_PROTOCOLS = 101;
+    public const HTTP_PROCESSING = 102;
+    public const HTTP_EARLY_HINTS = 103;
+    public const HTTP_OK = 200;
+    public const HTTP_CREATED = 201;
+    public const HTTP_ACCEPTED = 202;
+    public const HTTP_NONAUTHORITATIVE_INFORMATION = 203;
+    public const HTTP_NO_CONTENT = 204;
+    public const HTTP_RESET_CONTENT = 205;
+    public const HTTP_PARTIAL_CONTENT = 206;
+    public const HTTP_MULTI_STATUS = 207;
+    public const HTTP_ALREADY_REPORTED = 208;
+    public const HTTP_IM_USED = 226;
+    public const HTTP_MULTIPLE_CHOICES = 300;
+    public const HTTP_MOVED_PERMANENTLY = 301;
+    public const HTTP_FOUND = 302;
+    public const HTTP_SEE_OTHER = 303;
+    public const HTTP_NOT_MODIFIED = 304;
+    public const HTTP_USE_PROXY = 305;
+    public const HTTP_SWITCH_PROXY = 306;
+    public const HTTP_TEMPORARY_REDIRECT = 307;
+    public const HTTP_PERMANENT_REDIRECT = 308;
+    public const HTTP_BAD_REQUEST = 400;
+    public const HTTP_UNAUTHORIZED = 401;
+    public const HTTP_PAYMENT_REQUIRED = 402;
+    public const HTTP_FORBIDDEN = 403;
+    public const HTTP_NOT_FOUND = 404;
+    public const HTTP_METHOD_NOT_ALLOWED = 405;
+    public const HTTP_NOT_ACCEPTABLE = 406;
+    public const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
+    public const HTTP_REQUEST_TIMEOUT = 408;
+    public const HTTP_CONFLICT = 409;
+    public const HTTP_GONE = 410;
+    public const HTTP_LENGTH_REQUIRED = 411;
+    public const HTTP_PRECONDITION_FAILED = 412;
+    public const HTTP_PAYLOAD_TOO_LARGE = 413;
+    public const HTTP_URI_TOO_LONG = 414;
+    public const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
+    public const HTTP_RANGE_NOT_SATISFIABLE = 416;
+    public const HTTP_EXPECTATION_FAILED = 417;
+    public const HTTP_IM_A_TEAPOT = 418;
+    public const HTTP_MISDIRECTED_REQUEST = 421;
+    public const HTTP_UNPROCESSABLE_ENTITY = 422;
+    public const HTTP_LOCKED = 423;
+    public const HTTP_FAILED_DEPENDENCY = 424;
+    public const HTTP_TOO_EARLY = 425;
+    public const HTTP_UPGRADE_REQUIRED = 426;
+    public const HTTP_PRECONDITION_REQUIRED = 428;
+    public const HTTP_TOO_MANY_REQUESTS = 429;
     public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
-    public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS   = 451;
-    public const HTTP_CLIENT_CLOSED_REQUEST           = 499;
-    public const HTTP_INTERNAL_SERVER_ERROR           = 500;
-    public const HTTP_NOT_IMPLEMENTED                 = 501;
-    public const HTTP_BAD_GATEWAY                     = 502;
-    public const HTTP_SERVICE_UNAVAILABLE             = 503;
-    public const HTTP_GATEWAY_TIMEOUT                 = 504;
-    public const HTTP_HTTP_VERSION_NOT_SUPPORTED      = 505;
-    public const HTTP_VARIANT_ALSO_NEGOTIATES         = 506;
-    public const HTTP_INSUFFICIENT_STORAGE            = 507;
-    public const HTTP_LOOP_DETECTED                   = 508;
-    public const HTTP_NOT_EXTENDED                    = 510;
+    public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
+    public const HTTP_CLIENT_CLOSED_REQUEST = 499;
+    public const HTTP_INTERNAL_SERVER_ERROR = 500;
+    public const HTTP_NOT_IMPLEMENTED = 501;
+    public const HTTP_BAD_GATEWAY = 502;
+    public const HTTP_SERVICE_UNAVAILABLE = 503;
+    public const HTTP_GATEWAY_TIMEOUT = 504;
+    public const HTTP_HTTP_VERSION_NOT_SUPPORTED = 505;
+    public const HTTP_VARIANT_ALSO_NEGOTIATES = 506;
+    public const HTTP_INSUFFICIENT_STORAGE = 507;
+    public const HTTP_LOOP_DETECTED = 508;
+    public const HTTP_NOT_EXTENDED = 510;
     public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
-    public const HTTP_NETWORK_CONNECT_TIMEOUT_ERROR   = 599;
-
+    public const HTTP_NETWORK_CONNECT_TIMEOUT_ERROR = 599;
     /**
      * Gets the response status code.
      *
@@ -113,8 +109,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @return int Status code.
      */
-    public function getStatusCode(): int;
-
+    public function get_status_code(): int;
     /**
      * Return an instance with the specified status code and, optionally, reason phrase.
      *
@@ -133,8 +128,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @throws HTTPException For invalid status code arguments.
      */
-    public function setStatusCode(int $code, string $reason = '');
-
+    public function set_status_code(int $code, string $reason = '');
     /**
      * Gets the response reason phrase associated with the status code.
      *
@@ -149,19 +143,16 @@ interface ResponseInterface extends MessageInterface
      *
      * @return string Reason phrase; must return an empty string if none present.
      */
-    public function getReasonPhrase();
-
+    public function get_reason_phrase();
     // --------------------------------------------------------------------
     // Convenience Methods
     // --------------------------------------------------------------------
-
     /**
      * Sets the date header
      *
      * @return $this
      */
-    public function setDate(DateTime $date);
-
+    public function set_date(DateTime $date);
     /**
      * Sets the Last-Modified date header.
      *
@@ -172,8 +163,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @return $this
      */
-    public function setLastModified($date);
-
+    public function set_last_modified($date);
     /**
      * Set the Link Header
      *
@@ -183,20 +173,17 @@ interface ResponseInterface extends MessageInterface
      *
      * @todo Recommend moving to Pager
      */
-    public function setLink(PagerInterface $pager);
-
+    public function set_link(Pager_Interface $pager);
     /**
      * Sets the Content Type header for this response with the mime type
      * and, optionally, the charset.
      *
      * @return $this
      */
-    public function setContentType(string $mime, string $charset = 'UTF-8');
-
+    public function set_content_type(string $mime, string $charset = 'UTF-8');
     // --------------------------------------------------------------------
     // Formatter Methods
     // --------------------------------------------------------------------
-
     /**
      * Converts the $body into JSON and sets the Content Type header.
      *
@@ -204,8 +191,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @return $this
      */
-    public function setJSON($body, bool $unencoded = false);
-
+    public function set_json($body, bool $unencoded = false);
     /**
      * Returns the current body, converted to JSON is it isn't already.
      *
@@ -213,8 +199,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @throws InvalidArgumentException If the body property is not array.
      */
-    public function getJSON();
-
+    public function get_json();
     /**
      * Converts $body into XML, and sets the correct Content-Type.
      *
@@ -222,8 +207,7 @@ interface ResponseInterface extends MessageInterface
      *
      * @return $this
      */
-    public function setXML($body);
-
+    public function set_xml($body);
     /**
      * Retrieves the current body into XML and returns it.
      *
@@ -231,22 +215,19 @@ interface ResponseInterface extends MessageInterface
      *
      * @throws InvalidArgumentException If the body property is not array.
      */
-    public function getXML();
-
+    public function get_xml();
     // --------------------------------------------------------------------
     // Cache Control Methods
     //
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
     // --------------------------------------------------------------------
-
     /**
      * Sets the appropriate headers to ensure this response
      * is not cached by the browsers.
      *
      * @return $this
      */
-    public function noCache();
-
+    public function no_cache();
     /**
      * A shortcut method that allows the developer to set all of the
      * cache-control headers in one method call.
@@ -273,37 +254,31 @@ interface ResponseInterface extends MessageInterface
      *
      * @return $this
      */
-    public function setCache(array $options = []);
-
+    public function set_cache(array $options = []);
     // --------------------------------------------------------------------
     // Output Methods
     // --------------------------------------------------------------------
-
     /**
      * Sends the output to the browser.
      *
      * @return $this
      */
     public function send();
-
     /**
      * Sends the headers of this HTTP request to the browser.
      *
      * @return $this
      */
-    public function sendHeaders();
-
+    public function send_headers();
     /**
      * Sends the Body of the message to the browser.
      *
      * @return $this
      */
-    public function sendBody();
-
+    public function send_body();
     // --------------------------------------------------------------------
     // Cookie Methods
     // --------------------------------------------------------------------
-
     /**
      * Set a cookie
      *
@@ -322,55 +297,38 @@ interface ResponseInterface extends MessageInterface
      *
      * @return $this
      */
-    public function setCookie(
-        $name,
-        $value = '',
-        $expire = 0,
-        $domain = '',
-        $path = '/',
-        $prefix = '',
-        $secure = false,
-        $httponly = false,
-        $samesite = null,
-    );
-
+    public function set_cookie($name, $value = '', $expire = 0, $domain = '', $path = '/', $prefix = '', $secure = false, $httponly = false, $samesite = null);
     /**
      * Checks to see if the Response has a specified cookie or not.
      */
-    public function hasCookie(string $name, ?string $value = null, string $prefix = ''): bool;
-
+    public function has_cookie(string $name, ?string $value = null, string $prefix = ''): bool;
     /**
      * Returns the cookie
      *
      * @return array<string, Cookie>|Cookie|null
      */
-    public function getCookie(?string $name = null, string $prefix = '');
-
+    public function get_cookie(?string $name = null, string $prefix = '');
     /**
      * Sets a cookie to be deleted when the response is sent.
      *
      * @return $this
      */
-    public function deleteCookie(string $name = '', string $domain = '', string $path = '/', string $prefix = '');
-
+    public function delete_cookie(string $name = '', string $domain = '', string $path = '/', string $prefix = '');
     /**
      * Returns all cookies currently set.
      *
      * @return array<string, Cookie>
      */
-    public function getCookies();
-
+    public function get_cookies();
     /**
      * Returns the `CookieStore` instance.
      *
      * @return CookieStore
      */
-    public function getCookieStore();
-
+    public function get_cookie_store();
     // --------------------------------------------------------------------
     // Response Methods
     // --------------------------------------------------------------------
-
     /**
      * Perform a redirect to a new URL, in two flavors: header or location.
      *
@@ -382,7 +340,6 @@ interface ResponseInterface extends MessageInterface
      * @throws HTTPException For invalid status code.
      */
     public function redirect(string $uri, string $method = 'auto', ?int $code = null);
-
     /**
      * Force a download.
      *
@@ -395,14 +352,12 @@ interface ResponseInterface extends MessageInterface
      *
      * @return DownloadResponse|null
      */
-    public function download(string $filename = '', $data = '', bool $setMime = false);
-
+    public function download(string $filename = '', $data = '', bool $set_mime = false);
     // --------------------------------------------------------------------
     // CSP Methods
     // --------------------------------------------------------------------
-
     /**
      * Get Content Security Policy handler.
      */
-    public function getCSP(): ContentSecurityPolicy;
+    public function get_csp(): Content_Security_Policy;
 }

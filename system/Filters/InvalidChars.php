@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,14 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Security\Exceptions\SecurityException;
-
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
+use Code_Igniter\Security\Exceptions\Security_Exception;
 /**
  * InvalidChars filter.
  *
@@ -28,7 +25,7 @@ use CodeIgniter\Security\Exceptions\SecurityException;
  *
  * @see \CodeIgniter\Filters\InvalidCharsTest
  */
-class InvalidChars implements FilterInterface
+class Invalid_Chars implements Filter_Interface
 {
     /**
      * Data source
@@ -36,51 +33,39 @@ class InvalidChars implements FilterInterface
      * @var string
      */
     protected $source;
-
     /**
      * Regular expressions for valid control codes
      *
      * @var string
      */
-    protected $controlCodeRegex = '/\A[\r\n\t[:^cntrl:]]*\z/u';
-
+    protected $control_code_regex = '/\A[\r\n\t[:^cntrl:]]*\z/u';
     /**
      * Check invalid characters.
      *
      * @param list<string>|null $arguments
      */
-    public function before(RequestInterface $request, $arguments = null)
+    public function before(Request_Interface $request, $arguments = null)
     {
-        if (! $request instanceof IncomingRequest) {
+        if (!$request instanceof Incoming_Request) {
             return null;
         }
-
-        $data = [
-            'get'      => $request->getGet(),
-            'post'     => $request->getPost(),
-            'cookie'   => $request->getCookie(),
-            'rawInput' => $request->getRawInput(),
-        ];
-
+        $data = ['get' => $request->get_get(), 'post' => $request->get_post(), 'cookie' => $request->get_cookie(), 'rawInput' => $request->get_raw_input()];
         foreach ($data as $source => $values) {
             $this->source = $source;
-            $this->checkEncoding($values);
-            $this->checkControl($values);
+            $this->check_encoding($values);
+            $this->check_control($values);
         }
-
         return null;
     }
-
     /**
      * We don't have anything to do here.
      *
      * @param list<string>|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null)
     {
         return null;
     }
-
     /**
      * Check the character encoding is valid UTF-8.
      *
@@ -88,21 +73,17 @@ class InvalidChars implements FilterInterface
      *
      * @return array|string
      */
-    protected function checkEncoding($value)
+    protected function check_encoding($value)
     {
         if (is_array($value)) {
-            array_map($this->checkEncoding(...), $value);
-
+            array_map($this->check_encoding(...), $value);
             return $value;
         }
-
         if (mb_check_encoding($value, 'UTF-8')) {
             return $value;
         }
-
-        throw SecurityException::forInvalidUTF8Chars($this->source, $value);
+        throw Security_Exception::for_invalid_utf8chars($this->source, $value);
     }
-
     /**
      * Check for the presence of control characters except line breaks and tabs.
      *
@@ -110,18 +91,15 @@ class InvalidChars implements FilterInterface
      *
      * @return array|string
      */
-    protected function checkControl($value)
+    protected function check_control($value)
     {
         if (is_array($value)) {
-            array_map($this->checkControl(...), $value);
-
+            array_map($this->check_control(...), $value);
             return $value;
         }
-
-        if (preg_match($this->controlCodeRegex, $value) === 1) {
+        if (preg_match($this->control_code_regex, $value) === 1) {
             return $value;
         }
-
-        throw SecurityException::forInvalidControlChars($this->source, $value);
+        throw Security_Exception::for_invalid_control_chars($this->source, $value);
     }
 }

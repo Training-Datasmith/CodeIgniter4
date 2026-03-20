@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,19 +9,17 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Encryption;
 
-namespace CodeIgniter\Commands\Encryption;
-
-use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-use CodeIgniter\Config\DotEnv;
-use CodeIgniter\Encryption\Encryption;
+use Code_Igniter\CLI\Base_Command;
+use Code_Igniter\CLI\CLI;
+use Code_Igniter\Config\Dot_Env;
+use Code_Igniter\Encryption\Encryption;
 use Config\Paths;
-
 /**
  * Generates a new encryption key.
  */
-class GenerateKey extends BaseCommand
+class Generate_Key extends Base_Command
 {
     /**
      * The Command's group.
@@ -30,177 +27,136 @@ class GenerateKey extends BaseCommand
      * @var string
      */
     protected $group = 'Encryption';
-
     /**
      * The Command's name.
      *
      * @var string
      */
     protected $name = 'key:generate';
-
     /**
      * The Command's usage.
      *
      * @var string
      */
     protected $usage = 'key:generate [options]';
-
     /**
      * The Command's short description.
      *
      * @var string
      */
     protected $description = 'Generates a new encryption key and writes it in an `.env` file.';
-
     /**
      * The command's options
      *
      * @var array<string, string>
      */
-    protected $options = [
-        '--force'  => 'Force overwrite existing key in `.env` file.',
-        '--length' => 'The length of the random string that should be returned in bytes. Defaults to 32.',
-        '--prefix' => 'Prefix to prepend to encoded key (either hex2bin or base64). Defaults to hex2bin.',
-        '--show'   => 'Shows the generated key in the terminal instead of storing in the `.env` file.',
-    ];
-
+    protected $options = ['--force' => 'Force overwrite existing key in `.env` file.', '--length' => 'The length of the random string that should be returned in bytes. Defaults to 32.', '--prefix' => 'Prefix to prepend to encoded key (either hex2bin or base64). Defaults to hex2bin.', '--show' => 'Shows the generated key in the terminal instead of storing in the `.env` file.'];
     /**
      * Actually execute the command.
      */
     public function run(array $params)
     {
-        $prefix = $params['prefix'] ?? CLI::getOption('prefix');
-
+        $prefix = $params['prefix'] ?? CLI::get_option('prefix');
         if (in_array($prefix, [null, true], true)) {
             $prefix = 'hex2bin';
-        } elseif (! in_array($prefix, ['hex2bin', 'base64'], true)) {
-            $prefix = CLI::prompt('Please provide a valid prefix to use.', ['hex2bin', 'base64'], 'required'); // @codeCoverageIgnore
+        } elseif (!in_array($prefix, ['hex2bin', 'base64'], true)) {
+            $prefix = CLI::prompt('Please provide a valid prefix to use.', ['hex2bin', 'base64'], 'required');
+            // @codeCoverageIgnore
         }
-
-        $length = $params['length'] ?? CLI::getOption('length');
-
+        $length = $params['length'] ?? CLI::get_option('length');
         if (in_array($length, [null, true], true)) {
             $length = 32;
         }
-
-        $encodedKey = $this->generateRandomKey($prefix, $length);
-
-        if (array_key_exists('show', $params) || (bool) CLI::getOption('show')) {
-            CLI::write($encodedKey, 'yellow');
-            CLI::newLine();
-
+        $encoded_key = $this->generate_random_key($prefix, $length);
+        if (array_key_exists('show', $params) || (bool) CLI::get_option('show')) {
+            CLI::write($encoded_key, 'yellow');
+            CLI::new_line();
             return;
         }
-
-        if (! $this->setNewEncryptionKey($encodedKey, $params)) {
+        if (!$this->set_new_encryption_key($encoded_key, $params)) {
             CLI::write('Error in setting new encryption key to .env file.', 'light_gray', 'red');
-            CLI::newLine();
-
+            CLI::new_line();
             return;
         }
-
         // force DotEnv to reload the new env vars
         putenv('encryption.key');
         unset($_ENV['encryption.key'], $_SERVER['encryption.key']);
-        $dotenv = new DotEnv((new Paths())->envDirectory ?? ROOTPATH);
+        $dotenv = new Dot_Env((new Paths())->env_directory ?? ROOTPATH);
         $dotenv->load();
-
         CLI::write('Application\'s new encryption key was successfully set.', 'green');
-        CLI::newLine();
+        CLI::new_line();
     }
-
     /**
      * Generates a key and encodes it.
      */
-    protected function generateRandomKey(string $prefix, int $length): string
+    protected function generate_random_key(string $prefix, int $length): string
     {
-        $key = Encryption::createKey($length);
-
+        $key = Encryption::create_key($length);
         if ($prefix === 'hex2bin') {
             return 'hex2bin:' . bin2hex($key);
         }
-
         return 'base64:' . base64_encode($key);
     }
-
     /**
      * Sets the new encryption key in your .env file.
      *
      * @param array<int|string, string|null> $params
      */
-    protected function setNewEncryptionKey(string $key, array $params): bool
+    protected function set_new_encryption_key(string $key, array $params): bool
     {
-        $currentKey = env('encryption.key', '');
-
-        if ($currentKey !== '' && ! $this->confirmOverwrite($params)) {
+        $current_key = env('encryption.key', '');
+        if ($current_key !== '' && !$this->confirm_overwrite($params)) {
             // Not yet testable since it requires keyboard input
-            return false; // @codeCoverageIgnore
+            return false;
+            // @codeCoverageIgnore
         }
-
-        return $this->writeNewEncryptionKeyToFile($currentKey, $key);
+        return $this->write_new_encryption_key_to_file($current_key, $key);
     }
-
     /**
      * Checks whether to overwrite existing encryption key.
      *
      * @param array<int|string, string|null> $params
      */
-    protected function confirmOverwrite(array $params): bool
+    protected function confirm_overwrite(array $params): bool
     {
-        return (array_key_exists('force', $params) || CLI::getOption('force')) || CLI::prompt('Overwrite existing key?', ['n', 'y']) === 'y';
+        return array_key_exists('force', $params) || CLI::get_option('force') || CLI::prompt('Overwrite existing key?', ['n', 'y']) === 'y';
     }
-
     /**
      * Writes the new encryption key to .env file.
      */
-    protected function writeNewEncryptionKeyToFile(string $oldKey, string $newKey): bool
+    protected function write_new_encryption_key_to_file(string $old_key, string $new_key): bool
     {
-        $baseEnv = ROOTPATH . 'env';
-        $envFile = ((new Paths())->envDirectory ?? ROOTPATH) . '.env';
-
-        if (! is_file($envFile)) {
-            if (! is_file($baseEnv)) {
+        $base_env = ROOTPATH . 'env';
+        $env_file = ((new Paths())->env_directory ?? ROOTPATH) . '.env';
+        if (!is_file($env_file)) {
+            if (!is_file($base_env)) {
                 CLI::write('Both default shipped `env` file and custom `.env` are missing.', 'yellow');
-                CLI::write('Here\'s your new key instead: ' . CLI::color($newKey, 'yellow'));
-                CLI::newLine();
-
+                CLI::write('Here\'s your new key instead: ' . CLI::color($new_key, 'yellow'));
+                CLI::new_line();
                 return false;
             }
-
-            copy($baseEnv, $envFile);
+            copy($base_env, $env_file);
         }
-
-        $oldFileContents = (string) file_get_contents($envFile);
-        $replacementKey  = "\nencryption.key = {$newKey}";
-
-        if (! str_contains($oldFileContents, 'encryption.key')) {
-            return file_put_contents($envFile, $replacementKey, FILE_APPEND) !== false;
+        $old_file_contents = (string) file_get_contents($env_file);
+        $replacement_key = "\nencryption.key = {$new_key}";
+        if (!str_contains($old_file_contents, 'encryption.key')) {
+            return file_put_contents($env_file, $replacement_key, FILE_APPEND) !== false;
         }
-
-        $newFileContents = preg_replace($this->keyPattern($oldKey), $replacementKey, $oldFileContents);
-
-        if ($newFileContents === $oldFileContents) {
-            $newFileContents = preg_replace(
-                '/^[#\s]*encryption.key[=\s]*(?:hex2bin\:[a-f0-9]{64}|base64\:(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)$/m',
-                $replacementKey,
-                $oldFileContents,
-            );
+        $new_file_contents = preg_replace($this->key_pattern($old_key), $replacement_key, $old_file_contents);
+        if ($new_file_contents === $old_file_contents) {
+            $new_file_contents = preg_replace('/^[#\s]*encryption.key[=\s]*(?:hex2bin\:[a-f0-9]{64}|base64\:(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)$/m', $replacement_key, $old_file_contents);
         }
-
-        return file_put_contents($envFile, $newFileContents) !== false;
+        return file_put_contents($env_file, $new_file_contents) !== false;
     }
-
     /**
      * Get the regex of the current encryption key.
      */
-    protected function keyPattern(string $oldKey): string
+    protected function key_pattern(string $old_key): string
     {
-        $escaped = preg_quote($oldKey, '/');
-
+        $escaped = preg_quote($old_key, '/');
         if ($escaped !== '') {
             $escaped = "[{$escaped}]*";
         }
-
-        return "/^[#\\s]*encryption.key[=\\s]*{$escaped}$/m";
+        return "/^[#\\s]*encryption.key[=\\s]*{$escaped}\$/m";
     }
 }

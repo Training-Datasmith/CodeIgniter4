@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\DataCaster\Cast;
+namespace Code_Igniter\Data_Caster\Cast;
 
 /**
  * Class IntegerCast
@@ -19,17 +17,13 @@ namespace CodeIgniter\DataCaster\Cast;
  * (PHP) [int --> int       ] --> (DB driver) --> (DB column) int
  *       [    <-- int|string] <-- (DB driver) <-- (DB column) int
  */
-class IntegerCast extends BaseCast
+class Integer_Cast extends Base_Cast
 {
-    public static function get(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): int {
-        if (! is_string($value) && ! is_int($value)) {
-            self::invalidTypeValueError($value);
+    public static function get(mixed $value, array $params = [], ?object $helper = null): int
+    {
+        if (!is_string($value) && !is_int($value)) {
+            self::invalid_type_value_error($value);
         }
-
         return (int) $value;
     }
 }

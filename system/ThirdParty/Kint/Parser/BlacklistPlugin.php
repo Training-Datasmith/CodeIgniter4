@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,16 +23,14 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ContextInterface;
-use Kint\Value\InstanceValue;
-use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-
-class BlacklistPlugin extends AbstractPlugin implements PluginBeginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Context_Interface;
+use Kint\Value\Instance_Value;
+use Psr\Container\Container_Interface;
+use Psr\Event_Dispatcher\Event_Dispatcher_Interface;
+class Blacklist_Plugin extends Abstract_Plugin implements Plugin_Begin_Interface
 {
     /**
      * List of classes and interfaces to blacklist.
@@ -41,56 +38,44 @@ class BlacklistPlugin extends AbstractPlugin implements PluginBeginInterface
      * @var class-string[]
      */
     public static array $blacklist = [];
-
     /**
      * List of classes and interfaces to blacklist except when dumped directly.
      *
      * @var class-string[]
      */
-    public static array $shallow_blacklist = [
-        ContainerInterface::class,
-        EventDispatcherInterface::class,
-    ];
-
-    public function getTypes(): array
+    public static array $shallow_blacklist = [Container_Interface::class, Event_Dispatcher_Interface::class];
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_BEGIN;
     }
-
-    public function parseBegin(&$var, ContextInterface $c): ?AbstractValue
+    public function parse_begin(&$var, Context_Interface $c): ?Abstract_Value
     {
         foreach (self::$blacklist as $class) {
             if ($var instanceof $class) {
-                return $this->blacklistValue($var, $c);
+                return $this->blacklist_value($var, $c);
             }
         }
-
-        if ($c->getDepth() <= 0) {
+        if ($c->get_depth() <= 0) {
             return null;
         }
-
         foreach (self::$shallow_blacklist as $class) {
             if ($var instanceof $class) {
-                return $this->blacklistValue($var, $c);
+                return $this->blacklist_value($var, $c);
             }
         }
-
         return null;
     }
-
     /**
      * @param object &$var
      */
-    protected function blacklistValue(&$var, ContextInterface $c): InstanceValue
+    protected function blacklist_value(&$var, Context_Interface $c): Instance_Value
     {
-        $object = new InstanceValue($c, \get_class($var), \spl_object_hash($var), \spl_object_id($var));
-        $object->flags |= AbstractValue::FLAG_BLACKLIST;
-
+        $object = new Instance_Value($c, \get_class($var), \spl_object_hash($var), \spl_object_id($var));
+        $object->flags |= Abstract_Value::FLAG_BLACKLIST;
         return $object;
     }
 }

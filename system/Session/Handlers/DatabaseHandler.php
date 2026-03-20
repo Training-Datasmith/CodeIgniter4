@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,83 +9,71 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Session\Handlers;
 
-namespace CodeIgniter\Session\Handlers;
-
-use CodeIgniter\Database\BaseBuilder;
-use CodeIgniter\Database\BaseConnection;
-use CodeIgniter\Session\Exceptions\SessionException;
+use Code_Igniter\Database\Base_Builder;
+use Code_Igniter\Database\Base_Connection;
+use Code_Igniter\Session\Exceptions\Session_Exception;
 use Config\Database;
 use Config\Session as SessionConfig;
-
 /**
  * Base database session handler.
  *
  * Do not use this class. Use database specific handler class.
  */
-class DatabaseHandler extends BaseHandler
+class Database_Handler extends Base_Handler
 {
     /**
      * The database group to use for storage.
      *
      * @var string
      */
-    protected $DBGroup;
-
+    protected $db_group;
     /**
      * The name of the table to store session info.
      *
      * @var string
      */
     protected $table;
-
     /**
      * The DB Connection instance.
      *
      * @var BaseConnection
      */
     protected $db;
-
     /**
      * The database type.
      *
      * @var string
      */
     protected $platform;
-
     /**
      * Row exists flag.
      *
      * @var bool
      */
-    protected $rowExists = false;
-
+    protected $row_exists = false;
     /**
      * ID prefix for multiple session cookies.
      */
-    protected string $idPrefix;
-
+    protected string $id_prefix;
     /**
      * @throws SessionException
      */
-    public function __construct(SessionConfig $config, string $ipAddress)
+    public function __construct(Session_Config $config, string $ip_address)
     {
-        parent::__construct($config, $ipAddress);
-
-        $this->table = $this->savePath;
-
+        parent::__construct($config, $ip_address);
+        $this->table = $this->save_path;
         if ($this->table === '') {
-            throw SessionException::forMissingDatabaseTable();
+            throw Session_Exception::for_missing_database_table();
         }
-
         // Store Session configurations
-        $this->DBGroup = $config->DBGroup ?? config(Database::class)->defaultGroup;
+        $this->db_group = $config->db_group ?? config(Database::class)->default_group;
         // Add session cookie name for multiple session cookies.
-        $this->idPrefix = $config->cookieName . ':';
-        $this->db       = Database::connect($this->DBGroup);
-        $this->platform = $this->db->getPlatform();
+        $this->id_prefix = $config->cookie_name . ':';
+        $this->db = Database::connect($this->db_group);
+        $this->platform = $this->db->get_platform();
     }
-
     /**
      * Re-initialize existing session, or creates a new one.
      *
@@ -95,13 +82,11 @@ class DatabaseHandler extends BaseHandler
      */
     public function open($path, $name): bool
     {
-        if ($this->db->connID === false) {
+        if ($this->db->conn_id === false) {
             $this->db->initialize();
         }
-
         return true;
     }
-
     /**
      * Reads the session data from the session storage, and returns the results.
      *
@@ -109,54 +94,41 @@ class DatabaseHandler extends BaseHandler
      */
     public function read($id): false|string
     {
-        if ($this->lockSession($id) === false) {
+        if ($this->lock_session($id) === false) {
             $this->fingerprint = md5('');
-
             return '';
         }
-
-        if (! isset($this->sessionID)) {
-            $this->sessionID = $id;
+        if (!isset($this->session_id)) {
+            $this->session_id = $id;
         }
-
-        $builder = $this->db->table($this->table)->where('id', $this->idPrefix . $id);
-
-        if ($this->matchIP) {
-            $builder = $builder->where('ip_address', $this->ipAddress);
+        $builder = $this->db->table($this->table)->where('id', $this->id_prefix . $id);
+        if ($this->match_ip) {
+            $builder = $builder->where('ip_address', $this->ip_address);
         }
-
-        $this->setSelect($builder);
-
-        $result = $builder->get()->getRow();
-
+        $this->set_select($builder);
+        $result = $builder->get()->get_row();
         if ($result === null) {
             // PHP7 will reuse the same SessionHandler object after
             // ID regeneration, so we need to explicitly set this to
             // FALSE instead of relying on the default ...
-            $this->rowExists   = false;
+            $this->row_exists = false;
             $this->fingerprint = md5('');
-
             return '';
         }
-
-        $result = is_bool($result) ? '' : $this->decodeData($result->data);
-
+        $result = is_bool($result) ? '' : $this->decode_data($result->data);
         $this->fingerprint = md5($result);
-        $this->rowExists   = true;
-
+        $this->row_exists = true;
         return $result;
     }
-
     /**
      * Sets SELECT clause.
      *
      * @return void
      */
-    protected function setSelect(BaseBuilder $builder)
+    protected function set_select(Base_Builder $builder)
     {
         $builder->select('data');
     }
-
     /**
      * Decodes column data.
      *
@@ -164,11 +136,10 @@ class DatabaseHandler extends BaseHandler
      *
      * @return false|string
      */
-    protected function decodeData($data)
+    protected function decode_data($data)
     {
         return $data;
     }
-
     /**
      * Writes the session data to the session storage.
      *
@@ -180,66 +151,47 @@ class DatabaseHandler extends BaseHandler
         if ($this->lock === false) {
             return $this->fail();
         }
-
-        if ($this->sessionID !== $id) {
-            $this->rowExists = false;
-            $this->sessionID = $id;
+        if ($this->session_id !== $id) {
+            $this->row_exists = false;
+            $this->session_id = $id;
         }
-
-        if ($this->rowExists === false) {
-            $insertData = [
-                'id'         => $this->idPrefix . $id,
-                'ip_address' => $this->ipAddress,
-                'data'       => $this->prepareData($data),
-            ];
-
-            if (! $this->db->table($this->table)->set('timestamp', 'now()', false)->insert($insertData)) {
+        if ($this->row_exists === false) {
+            $insert_data = ['id' => $this->id_prefix . $id, 'ip_address' => $this->ip_address, 'data' => $this->prepare_data($data)];
+            if (!$this->db->table($this->table)->set('timestamp', 'now()', false)->insert($insert_data)) {
                 return $this->fail();
             }
-
             $this->fingerprint = md5($data);
-            $this->rowExists   = true;
-
+            $this->row_exists = true;
             return true;
         }
-
-        $builder = $this->db->table($this->table)->where('id', $this->idPrefix . $id);
-
-        if ($this->matchIP) {
-            $builder = $builder->where('ip_address', $this->ipAddress);
+        $builder = $this->db->table($this->table)->where('id', $this->id_prefix . $id);
+        if ($this->match_ip) {
+            $builder = $builder->where('ip_address', $this->ip_address);
         }
-
-        $updateData = [];
-
+        $update_data = [];
         if ($this->fingerprint !== md5($data)) {
-            $updateData['data'] = $this->prepareData($data);
+            $update_data['data'] = $this->prepare_data($data);
         }
-
-        if (! $builder->set('timestamp', 'now()', false)->update($updateData)) {
+        if (!$builder->set('timestamp', 'now()', false)->update($update_data)) {
             return $this->fail();
         }
-
         $this->fingerprint = md5($data);
-
         return true;
     }
-
     /**
      * Prepare data to insert/update.
      */
-    protected function prepareData(string $data): string
+    protected function prepare_data(string $data): string
     {
         return $data;
     }
-
     /**
      * Closes the current session.
      */
     public function close(): bool
     {
-        return ($this->lock && ! $this->releaseLock()) ? $this->fail() : true;
+        return $this->lock && !$this->release_lock() ? $this->fail() : true;
     }
-
     /**
      * Destroys a session.
      *
@@ -248,26 +200,20 @@ class DatabaseHandler extends BaseHandler
     public function destroy($id): bool
     {
         if ($this->lock) {
-            $builder = $this->db->table($this->table)->where('id', $this->idPrefix . $id);
-
-            if ($this->matchIP) {
-                $builder = $builder->where('ip_address', $this->ipAddress);
+            $builder = $this->db->table($this->table)->where('id', $this->id_prefix . $id);
+            if ($this->match_ip) {
+                $builder = $builder->where('ip_address', $this->ip_address);
             }
-
-            if (! $builder->delete()) {
+            if (!$builder->delete()) {
                 return $this->fail();
             }
         }
-
         if ($this->close()) {
-            $this->destroyCookie();
-
+            $this->destroy_cookie();
             return true;
         }
-
         return $this->fail();
     }
-
     /**
      * Cleans up expired sessions.
      *
@@ -278,23 +224,17 @@ class DatabaseHandler extends BaseHandler
      */
     public function gc($max_lifetime): false|int
     {
-        return $this->db->table($this->table)->where(
-            'timestamp <',
-            "now() - INTERVAL {$max_lifetime} second",
-            false,
-        )->delete() ? 1 : $this->fail();
+        return $this->db->table($this->table)->where('timestamp <', "now() - INTERVAL {$max_lifetime} second", false)->delete() ? 1 : $this->fail();
     }
-
     /**
      * Releases the lock, if any.
      */
-    protected function releaseLock(): bool
+    protected function release_lock(): bool
     {
-        if (! $this->lock) {
+        if (!$this->lock) {
             return true;
         }
-
         // Unsupported DB? Let the parent handle the simple version.
-        return parent::releaseLock();
+        return parent::release_lock();
     }
 }

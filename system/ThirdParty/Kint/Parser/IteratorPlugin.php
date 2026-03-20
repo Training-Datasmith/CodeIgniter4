@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,28 +23,26 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Dom\NamedNodeMap;
-use Dom\NodeList;
-use DOMNamedNodeMap;
-use DOMNodeList;
-use Kint\Value\AbstractValue;
-use Kint\Value\ArrayValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\InstanceValue;
-use Kint\Value\Representation\ContainerRepresentation;
-use Kint\Value\Representation\ValueRepresentation;
-use Kint\Value\UninitializedValue;
+use Dom\Named_Node_Map;
+use Dom\Node_List;
+use Dom_Named_Node_Map;
+use Dom_Node_List;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Array_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Instance_Value;
+use Kint\Value\Representation\Container_Representation;
+use Kint\Value\Representation\Value_Representation;
+use Kint\Value\Uninitialized_Value;
 use mysqli_result;
 use PDOStatement;
-use SimpleXMLElement;
-use SplFileObject;
+use Simple_Xml_Element;
+use Spl_File_Object;
 use Throwable;
 use Traversable;
-
-class IteratorPlugin extends AbstractPlugin implements PluginCompleteInterface
+class Iterator_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     /**
      * List of classes and interfaces to blacklist.
@@ -56,87 +53,63 @@ class IteratorPlugin extends AbstractPlugin implements PluginCompleteInterface
      *
      * @psalm-var class-string[]
      */
-    public static array $blacklist = [
-        NamedNodeMap::class,
-        NodeList::class,
-        DOMNamedNodeMap::class,
-        DOMNodeList::class,
-        mysqli_result::class,
-        PDOStatement::class,
-        SimpleXMLElement::class,
-        SplFileObject::class,
-    ];
-
-    public function getTypes(): array
+    public static array $blacklist = [Named_Node_Map::class, Node_List::class, Dom_Named_Node_Map::class, Dom_Node_List::class, mysqli_result::class, PDOStatement::class, Simple_Xml_Element::class, Spl_File_Object::class];
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!$var instanceof Traversable || !$v instanceof InstanceValue || $v->getRepresentation('iterator')) {
+        if (!$var instanceof Traversable || !$v instanceof Instance_Value || $v->get_representation('iterator')) {
             return $v;
         }
-
-        $c = $v->getContext();
-
+        $c = $v->get_context();
         foreach (self::$blacklist as $class) {
             if ($var instanceof $class) {
-                $base = new BaseContext($class.' Iterator Contents');
-                $base->depth = $c->getDepth() + 1;
-                if (null !== ($ap = $c->getAccessPath())) {
-                    $base->access_path = 'iterator_to_array('.$ap.', false)';
+                $base = new Base_Context($class . ' Iterator Contents');
+                $base->depth = $c->get_depth() + 1;
+                if (null !== $ap = $c->get_access_path()) {
+                    $base->access_path = 'iterator_to_array(' . $ap . ', false)';
                 }
-
-                $b = new UninitializedValue($base);
-                $b->flags |= AbstractValue::FLAG_BLACKLIST;
-
-                $v->addRepresentation(new ValueRepresentation('Iterator', $b));
-
+                $b = new Uninitialized_Value($base);
+                $b->flags |= Abstract_Value::FLAG_BLACKLIST;
+                $v->add_representation(new Value_Representation('Iterator', $b));
                 return $v;
             }
         }
-
         try {
             $data = \iterator_to_array($var, false);
         } catch (Throwable $t) {
             return $v;
         }
-
         if (!\count($data)) {
             return $v;
         }
-
-        $base = new BaseContext('Iterator Contents');
-        $base->depth = $c->getDepth();
-        if (null !== ($ap = $c->getAccessPath())) {
-            $base->access_path = 'iterator_to_array('.$ap.', false)';
+        $base = new Base_Context('Iterator Contents');
+        $base->depth = $c->get_depth();
+        if (null !== $ap = $c->get_access_path()) {
+            $base->access_path = 'iterator_to_array(' . $ap . ', false)';
         }
-
-        $iter_val = $this->getParser()->parse($data, $base);
-
+        $iter_val = $this->get_parser()->parse($data, $base);
         // Since we didn't get TRIGGER_DEPTH_LIMIT and set the iterator to the
         // same depth we can assume at least 1 level deep will exist
-        if ($iter_val instanceof ArrayValue && $iterator_items = $iter_val->getContents()) {
-            $r = new ContainerRepresentation('Iterator', $iterator_items);
+        if ($iter_val instanceof Array_Value && $iterator_items = $iter_val->get_contents()) {
+            $r = new Container_Representation('Iterator', $iterator_items);
             $iterator_items = \array_values($iterator_items);
         } else {
-            $r = new ValueRepresentation('Iterator', $iter_val);
+            $r = new Value_Representation('Iterator', $iter_val);
             $iterator_items = [$iter_val];
         }
-
-        if ((bool) $v->getChildren()) {
-            $v->addRepresentation($r);
+        if ((bool) $v->get_children()) {
+            $v->add_representation($r);
         } else {
-            $v->setChildren($iterator_items);
-            $v->addRepresentation($r, 0);
+            $v->set_children($iterator_items);
+            $v->add_representation($r, 0);
         }
-
         return $v;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,36 +9,25 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Data_Caster\Cast;
 
-namespace CodeIgniter\DataCaster\Cast;
-
-use CodeIgniter\Exceptions\InvalidArgumentException;
-
-abstract class BaseCast implements CastInterface
+use Code_Igniter\Exceptions\InvalidArgumentException;
+abstract class Base_Cast implements Cast_Interface
 {
-    public static function get(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): mixed {
+    public static function get(mixed $value, array $params = [], ?object $helper = null): mixed
+    {
         return $value;
     }
-
-    public static function set(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): mixed {
+    public static function set(mixed $value, array $params = [], ?object $helper = null): mixed
+    {
         return $value;
     }
-
-    protected static function invalidTypeValueError(mixed $value): never
+    protected static function invalid_type_value_error(mixed $value): never
     {
         $message = '[' . static::class . '] Invalid value type: ' . get_debug_type($value);
         if (is_scalar($value)) {
             $message .= ', and its value: ' . var_export($value, true);
         }
-
         throw new InvalidArgumentException($message);
     }
 }

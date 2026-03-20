@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,19 +9,17 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter;
 
-namespace CodeIgniter;
-
-use CodeIgniter\Cache\FactoriesCache;
-use CodeIgniter\CLI\Console;
-use CodeIgniter\Config\DotEnv;
+use Code_Igniter\Cache\Factories_Cache;
+use Code_Igniter\CLI\Console;
+use Code_Igniter\Config\Dot_Env;
 use Config\App;
 use Config\Autoload;
 use Config\Modules;
 use Config\Optimize;
 use Config\Paths;
 use Config\Services;
-
 /**
  * Bootstrap for the application
  *
@@ -39,43 +36,34 @@ class Boot
      *
      * @return int Exit code.
      */
-    public static function bootWeb(Paths $paths): int
+    public static function boot_web(Paths $paths): int
     {
-        static::definePathConstants($paths);
-        if (! defined('APP_NAMESPACE')) {
-            static::loadConstants();
+        static::define_path_constants($paths);
+        if (!defined('APP_NAMESPACE')) {
+            static::load_constants();
         }
-        static::checkMissingExtensions();
-
-        static::loadDotEnv($paths);
-        static::defineEnvironment();
-        static::loadEnvironmentBootstrap($paths);
-
-        static::loadCommonFunctions();
-        static::loadAutoloader();
-        static::setExceptionHandler();
-        static::initializeKint();
-
-        $configCacheEnabled = class_exists(Optimize::class)
-            && (new Optimize())->configCacheEnabled;
-        if ($configCacheEnabled) {
-            $factoriesCache = static::loadConfigCache();
+        static::check_missing_extensions();
+        static::load_dot_env($paths);
+        static::define_environment();
+        static::load_environment_bootstrap($paths);
+        static::load_common_functions();
+        static::load_autoloader();
+        static::set_exception_handler();
+        static::initialize_kint();
+        $config_cache_enabled = class_exists(Optimize::class) && (new Optimize())->config_cache_enabled;
+        if ($config_cache_enabled) {
+            $factories_cache = static::load_config_cache();
         }
-
-        static::autoloadHelpers();
-
-        $app = static::initializeCodeIgniter();
-        static::runCodeIgniter($app);
-
-        if ($configCacheEnabled) {
-            static::saveConfigCache($factoriesCache);
+        static::autoload_helpers();
+        $app = static::initialize_code_igniter();
+        static::run_code_igniter($app);
+        if ($config_cache_enabled) {
+            static::save_config_cache($factories_cache);
         }
-
         // Exits the application, setting the exit code for CLI-based
         // applications that might be watching.
         return EXIT_SUCCESS;
     }
-
     /**
      * Bootstrap for FrankenPHP worker mode.
      *
@@ -85,30 +73,24 @@ class Boot
      *
      * @used-by `public/frankenphp-worker.php`
      */
-    public static function bootWorker(Paths $paths): CodeIgniter
+    public static function boot_worker(Paths $paths): Code_Igniter
     {
-        static::definePathConstants($paths);
-        if (! defined('APP_NAMESPACE')) {
-            static::loadConstants();
+        static::define_path_constants($paths);
+        if (!defined('APP_NAMESPACE')) {
+            static::load_constants();
         }
-        static::checkMissingExtensions();
-
-        static::loadDotEnv($paths);
-        static::defineEnvironment();
-        static::loadEnvironmentBootstrap($paths);
-
-        static::loadCommonFunctions();
-        static::loadAutoloader();
-        static::setExceptionHandler();
-        static::initializeKint();
-
-        static::checkOptimizationsForWorker();
-
-        static::autoloadHelpers();
-
-        return Boot::initializeCodeIgniter();
+        static::check_missing_extensions();
+        static::load_dot_env($paths);
+        static::define_environment();
+        static::load_environment_bootstrap($paths);
+        static::load_common_functions();
+        static::load_autoloader();
+        static::set_exception_handler();
+        static::initialize_kint();
+        static::check_optimizations_for_worker();
+        static::autoload_helpers();
+        return Boot::initialize_code_igniter();
     }
-
     /**
      * Used by command line scripts other than
      * * `spark`
@@ -117,330 +99,261 @@ class Boot
      *
      * @used-by `system/util_bootstrap.php`
      */
-    public static function bootConsole(Paths $paths): void
+    public static function boot_console(Paths $paths): void
     {
-        static::definePathConstants($paths);
-        static::loadConstants();
-        static::checkMissingExtensions();
-
-        static::loadDotEnv($paths);
-        static::loadEnvironmentBootstrap($paths);
-
-        static::loadCommonFunctions();
-        static::loadAutoloader();
-        static::setExceptionHandler();
-        static::initializeKint();
-        static::autoloadHelpers();
-
+        static::define_path_constants($paths);
+        static::load_constants();
+        static::check_missing_extensions();
+        static::load_dot_env($paths);
+        static::load_environment_bootstrap($paths);
+        static::load_common_functions();
+        static::load_autoloader();
+        static::set_exception_handler();
+        static::initialize_kint();
+        static::autoload_helpers();
         // We need to force the request to be a CLIRequest since we're in console
-        Services::createRequest(new App(), true);
-        service('routes')->loadRoutes();
+        Services::create_request(new App(), true);
+        service('routes')->load_routes();
     }
-
     /**
      * Used by `spark`
      *
      * @return int Exit code.
      */
-    public static function bootSpark(Paths $paths): int
+    public static function boot_spark(Paths $paths): int
     {
-        static::definePathConstants($paths);
-        if (! defined('APP_NAMESPACE')) {
-            static::loadConstants();
+        static::define_path_constants($paths);
+        if (!defined('APP_NAMESPACE')) {
+            static::load_constants();
         }
-        static::checkMissingExtensions();
-
-        static::loadDotEnv($paths);
-        static::defineEnvironment();
-        static::loadEnvironmentBootstrap($paths);
-
-        static::loadCommonFunctions();
-        static::loadAutoloader();
-        static::setExceptionHandler();
-        static::initializeKint();
-        static::autoloadHelpers();
-
-        static::initializeCodeIgniter();
-        $console = static::initializeConsole();
-
-        return static::runCommand($console);
+        static::check_missing_extensions();
+        static::load_dot_env($paths);
+        static::define_environment();
+        static::load_environment_bootstrap($paths);
+        static::load_common_functions();
+        static::load_autoloader();
+        static::set_exception_handler();
+        static::initialize_kint();
+        static::autoload_helpers();
+        static::initialize_code_igniter();
+        $console = static::initialize_console();
+        return static::run_command($console);
     }
-
     /**
      * Used by `system/Test/bootstrap.php`
      */
-    public static function bootTest(Paths $paths): void
+    public static function boot_test(Paths $paths): void
     {
-        static::loadConstants();
-        static::checkMissingExtensions();
-
-        static::loadDotEnv($paths);
-        static::loadEnvironmentBootstrap($paths, false);
-
-        static::loadCommonFunctionsMock();
-        static::loadCommonFunctions();
-
-        static::loadAutoloader();
-        static::setExceptionHandler();
-        static::initializeKint();
-        static::autoloadHelpers();
+        static::load_constants();
+        static::check_missing_extensions();
+        static::load_dot_env($paths);
+        static::load_environment_bootstrap($paths, false);
+        static::load_common_functions_mock();
+        static::load_common_functions();
+        static::load_autoloader();
+        static::set_exception_handler();
+        static::initialize_kint();
+        static::autoload_helpers();
     }
-
     /**
      * Used by `preload.php`
      */
     public static function preload(Paths $paths): void
     {
-        static::definePathConstants($paths);
-        static::loadConstants();
-        static::defineEnvironment();
-        static::loadEnvironmentBootstrap($paths, false);
-
-        static::loadAutoloader();
+        static::define_path_constants($paths);
+        static::load_constants();
+        static::define_environment();
+        static::load_environment_bootstrap($paths, false);
+        static::load_autoloader();
     }
-
     /**
      * Load environment settings from .env files into $_SERVER and $_ENV
      */
-    protected static function loadDotEnv(Paths $paths): void
+    protected static function load_dot_env(Paths $paths): void
     {
-        require_once $paths->systemDirectory . '/Config/DotEnv.php';
-        $envDirectory = $paths->envDirectory ?? $paths->appDirectory . '/../';
-        (new DotEnv($envDirectory))->load();
+        require_once $paths->system_directory . '/Config/DotEnv.php';
+        $env_directory = $paths->env_directory ?? $paths->app_directory . '/../';
+        (new Dot_Env($env_directory))->load();
     }
-
-    protected static function defineEnvironment(): void
+    protected static function define_environment(): void
     {
-        if (! defined('ENVIRONMENT')) {
+        if (!defined('ENVIRONMENT')) {
             // @phpstan-ignore-next-line
-            $env = $_ENV['CI_ENVIRONMENT'] ?? $_SERVER['CI_ENVIRONMENT']
-                ?? getenv('CI_ENVIRONMENT')
-                ?: 'production';
-
+            $env = $_ENV['CI_ENVIRONMENT'] ?? $_SERVER['CI_ENVIRONMENT'] ?? getenv('CI_ENVIRONMENT') ?: 'production';
             define('ENVIRONMENT', $env);
         }
     }
-
-    protected static function loadEnvironmentBootstrap(Paths $paths, bool $exit = true): void
+    protected static function load_environment_bootstrap(Paths $paths, bool $exit = true): void
     {
-        if (is_file($paths->appDirectory . '/Config/Boot/' . ENVIRONMENT . '.php')) {
-            require_once $paths->appDirectory . '/Config/Boot/' . ENVIRONMENT . '.php';
-
+        if (is_file($paths->app_directory . '/Config/Boot/' . ENVIRONMENT . '.php')) {
+            require_once $paths->app_directory . '/Config/Boot/' . ENVIRONMENT . '.php';
             return;
         }
-
         if ($exit) {
             header('HTTP/1.1 503 Service Unavailable.', true, 503);
             echo 'The application environment is not set correctly.';
-
             exit(EXIT_ERROR);
         }
     }
-
     /**
      * The path constants provide convenient access to the folders throughout
      * the application. We have to set them up here, so they are available in
      * the config files that are loaded.
      */
-    protected static function definePathConstants(Paths $paths): void
+    protected static function define_path_constants(Paths $paths): void
     {
         // The path to the application directory.
-        if (! defined('APPPATH')) {
-            define('APPPATH', realpath(rtrim($paths->appDirectory, '\\/ ')) . DIRECTORY_SEPARATOR);
+        if (!defined('APPPATH')) {
+            define('APPPATH', realpath(rtrim($paths->app_directory, '\/ ')) . DIRECTORY_SEPARATOR);
         }
-
         // The path to the project root directory. Just above APPPATH.
-        if (! defined('ROOTPATH')) {
+        if (!defined('ROOTPATH')) {
             define('ROOTPATH', realpath(APPPATH . '../') . DIRECTORY_SEPARATOR);
         }
-
         // The path to the system directory.
-        if (! defined('SYSTEMPATH')) {
-            define('SYSTEMPATH', realpath(rtrim($paths->systemDirectory, '\\/ ')) . DIRECTORY_SEPARATOR);
+        if (!defined('SYSTEMPATH')) {
+            define('SYSTEMPATH', realpath(rtrim($paths->system_directory, '\/ ')) . DIRECTORY_SEPARATOR);
         }
-
         // The path to the writable directory.
-        if (! defined('WRITEPATH')) {
-            $writePath = realpath(rtrim($paths->writableDirectory, '\\/ '));
-
-            if ($writePath === false) {
+        if (!defined('WRITEPATH')) {
+            $write_path = realpath(rtrim($paths->writable_directory, '\/ '));
+            if ($write_path === false) {
                 header('HTTP/1.1 503 Service Unavailable.', true, 503);
                 echo 'The WRITEPATH is not set correctly.';
-
                 // EXIT_ERROR is not yet defined
                 exit(1);
             }
-            define('WRITEPATH', $writePath . DIRECTORY_SEPARATOR);
+            define('WRITEPATH', $write_path . DIRECTORY_SEPARATOR);
         }
-
         // The path to the tests directory
-        if (! defined('TESTPATH')) {
-            define('TESTPATH', realpath(rtrim($paths->testsDirectory, '\\/ ')) . DIRECTORY_SEPARATOR);
+        if (!defined('TESTPATH')) {
+            define('TESTPATH', realpath(rtrim($paths->tests_directory, '\/ ')) . DIRECTORY_SEPARATOR);
         }
     }
-
-    protected static function loadConstants(): void
+    protected static function load_constants(): void
     {
         require_once APPPATH . 'Config/Constants.php';
     }
-
-    protected static function loadCommonFunctions(): void
+    protected static function load_common_functions(): void
     {
         // Require app/Common.php file if exists.
         if (is_file(APPPATH . 'Common.php')) {
             require_once APPPATH . 'Common.php';
         }
-
         // Require system/Common.php
         require_once SYSTEMPATH . 'Common.php';
     }
-
-    protected static function loadCommonFunctionsMock(): void
+    protected static function load_common_functions_mock(): void
     {
         require_once SYSTEMPATH . 'Test/Mock/MockCommon.php';
     }
-
     /**
      * The autoloader allows all the pieces to work together in the framework.
      * We have to load it here, though, so that the config files can use the
      * path constants.
      */
-    protected static function loadAutoloader(): void
+    protected static function load_autoloader(): void
     {
-        if (! class_exists(Autoload::class, false)) {
+        if (!class_exists(Autoload::class, false)) {
             require_once SYSTEMPATH . 'Config/AutoloadConfig.php';
             require_once APPPATH . 'Config/Autoload.php';
             require_once SYSTEMPATH . 'Modules/Modules.php';
             require_once APPPATH . 'Config/Modules.php';
         }
-
         require_once SYSTEMPATH . 'Autoloader/Autoloader.php';
         require_once SYSTEMPATH . 'Config/BaseService.php';
         require_once SYSTEMPATH . 'Config/Services.php';
         require_once APPPATH . 'Config/Services.php';
-
         // Initialize and register the loader with the SPL autoloader stack.
         Services::autoloader()->initialize(new Autoload(), new Modules())->register();
     }
-
-    protected static function autoloadHelpers(): void
+    protected static function autoload_helpers(): void
     {
-        service('autoloader')->loadHelpers();
+        service('autoloader')->load_helpers();
     }
-
-    protected static function setExceptionHandler(): void
+    protected static function set_exception_handler(): void
     {
         service('exceptions')->initialize();
     }
-
-    protected static function checkMissingExtensions(): void
+    protected static function check_missing_extensions(): void
     {
         if (is_file(COMPOSER_PATH)) {
             return;
         }
-
         // Run this check for manual installations
-        $missingExtensions = [];
-
-        foreach ([
-            'intl',
-            'mbstring',
-        ] as $extension) {
-            if (! extension_loaded($extension)) {
-                $missingExtensions[] = $extension;
+        $missing_extensions = [];
+        foreach (['intl', 'mbstring'] as $extension) {
+            if (!extension_loaded($extension)) {
+                $missing_extensions[] = $extension;
             }
         }
-
-        if ($missingExtensions === []) {
+        if ($missing_extensions === []) {
             return;
         }
-
-        $message = sprintf(
-            'The framework needs the following extension(s) installed and loaded: %s.',
-            implode(', ', $missingExtensions),
-        );
-
+        $message = sprintf('The framework needs the following extension(s) installed and loaded: %s.', implode(', ', $missing_extensions));
         header('HTTP/1.1 503 Service Unavailable.', true, 503);
         echo $message;
-
         exit(EXIT_ERROR);
     }
-
-    protected static function checkOptimizationsForWorker(): void
+    protected static function check_optimizations_for_worker(): void
     {
         if (class_exists(Optimize::class)) {
             $optimize = new Optimize();
-
-            if ($optimize->configCacheEnabled || $optimize->locatorCacheEnabled) {
-                echo 'Optimization settings (configCacheEnabled, locatorCacheEnabled) '
-                    . 'must be disabled in Config\Optimize when running in Worker Mode.';
-
+            if ($optimize->config_cache_enabled || $optimize->locator_cache_enabled) {
+                echo 'Optimization settings (configCacheEnabled, locatorCacheEnabled) ' . 'must be disabled in Config\Optimize when running in Worker Mode.';
                 exit(EXIT_ERROR);
             }
         }
     }
-
-    protected static function initializeKint(): void
+    protected static function initialize_kint(): void
     {
-        service('autoloader')->initializeKint(CI_DEBUG);
+        service('autoloader')->initialize_kint(CI_DEBUG);
     }
-
-    protected static function loadConfigCache(): FactoriesCache
+    protected static function load_config_cache(): Factories_Cache
     {
-        $factoriesCache = new FactoriesCache();
-        $factoriesCache->load('config');
-
-        return $factoriesCache;
+        $factories_cache = new Factories_Cache();
+        $factories_cache->load('config');
+        return $factories_cache;
     }
-
     /**
      * The CodeIgniter class contains the core functionality to make
      * the application run, and does all the dirty work to get
      * the pieces all working together.
      */
-    protected static function initializeCodeIgniter(): CodeIgniter
+    protected static function initialize_code_igniter(): Code_Igniter
     {
         $app = service('codeigniter');
         $app->initialize();
         $context = is_cli() ? 'php-cli' : 'web';
-        $app->setContext($context);
-
+        $app->set_context($context);
         return $app;
     }
-
     /**
      * Now that everything is set up, it's time to actually fire
      * up the engines and make this app do its thang.
      */
-    protected static function runCodeIgniter(CodeIgniter $app): void
+    protected static function run_code_igniter(Code_Igniter $app): void
     {
         $app->run();
     }
-
-    protected static function saveConfigCache(FactoriesCache $factoriesCache): void
+    protected static function save_config_cache(Factories_Cache $factories_cache): void
     {
-        $factoriesCache->save('config');
+        $factories_cache->save('config');
     }
-
-    protected static function initializeConsole(): Console
+    protected static function initialize_console(): Console
     {
         $console = new Console();
-
         // Show basic information before we do anything else.
         if (is_int($suppress = array_search('--no-header', $_SERVER['argv'], true))) {
             unset($_SERVER['argv'][$suppress]);
             $suppress = true;
         }
-
-        $console->showHeader($suppress);
-
+        $console->show_header($suppress);
         return $console;
     }
-
-    protected static function runCommand(Console $console): int
+    protected static function run_command(Console $console): int
     {
         $exit = $console->run();
-
         return is_int($exit) ? $exit : EXIT_SUCCESS;
     }
 }

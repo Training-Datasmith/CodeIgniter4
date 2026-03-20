@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,24 +9,20 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Files\Exceptions;
 
-namespace CodeIgniter\Files\Exceptions;
-
-use CodeIgniter\Exceptions\DebugTraceableTrait;
-use CodeIgniter\Exceptions\RuntimeException;
-
-class FileException extends RuntimeException implements ExceptionInterface
+use Code_Igniter\Exceptions\Debug_Traceable_Trait;
+use Code_Igniter\Exceptions\RuntimeException;
+class File_Exception extends RuntimeException implements Exception_Interface
 {
-    use DebugTraceableTrait;
-
+    use Debug_Traceable_Trait;
     /**
      * @return static
      */
-    public static function forUnableToMove(?string $from = null, ?string $to = null, ?string $error = null)
+    public static function for_unable_to_move(?string $from = null, ?string $to = null, ?string $error = null)
     {
         return new static(lang('Files.cannotMove', [$from, $to, $error]));
     }
-
     /**
      * Throws when an item is expected to be a directory but is not or is missing.
      *
@@ -35,11 +30,10 @@ class FileException extends RuntimeException implements ExceptionInterface
      *
      * @return static
      */
-    public static function forExpectedDirectory(string $caller)
+    public static function for_expected_directory(string $caller)
     {
         return new static(lang('Files.expectedDirectory', [$caller]));
     }
-
     /**
      * Throws when an item is expected to be a file but is not or is missing.
      *
@@ -47,7 +41,7 @@ class FileException extends RuntimeException implements ExceptionInterface
      *
      * @return static
      */
-    public static function forExpectedFile(string $caller)
+    public static function for_expected_file(string $caller)
     {
         return new static(lang('Files.expectedFile', [$caller]));
     }

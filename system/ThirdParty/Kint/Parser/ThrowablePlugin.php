@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,44 +23,37 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\InstanceValue;
-use Kint\Value\Representation\SourceRepresentation;
-use Kint\Value\ThrowableValue;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Instance_Value;
+use Kint\Value\Representation\Source_Representation;
+use Kint\Value\Throwable_Value;
 use RuntimeException;
 use Throwable;
-
-class ThrowablePlugin extends AbstractPlugin implements PluginCompleteInterface
+class Throwable_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!$var instanceof Throwable || !$v instanceof InstanceValue) {
+        if (!$var instanceof Throwable || !$v instanceof Instance_Value) {
             return $v;
         }
-
-        $throw = new ThrowableValue($v->getContext(), $var);
-        $throw->setChildren($v->getChildren());
+        $throw = new Throwable_Value($v->get_context(), $var);
+        $throw->set_children($v->get_children());
         $throw->flags = $v->flags;
-        $throw->appendRepresentations($v->getRepresentations());
-
+        $throw->append_representations($v->get_representations());
         try {
-            $throw->addRepresentation(new SourceRepresentation($var->getFile(), $var->getLine(), null, true), 0);
+            $throw->add_representation(new Source_Representation($var->get_file(), $var->get_line(), null, true), 0);
         } catch (RuntimeException $e) {
         }
-
         return $throw;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Debug\Toolbar\Collectors;
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
 use DateTime;
-
 /**
  * History collector
  *
  * @see \CodeIgniter\Debug\Toolbar\Collectors\HistoryTest
  */
-class History extends BaseCollector
+class History extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -28,24 +25,21 @@ class History extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = false;
-
+    protected $has_timeline = false;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = true;
-
+    protected $has_tab_content = true;
     /**
      * Whether this collector needs to display
      * a label or not.
      *
      * @var bool
      */
-    protected $hasLabel = true;
-
+    protected $has_label = true;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -53,12 +47,10 @@ class History extends BaseCollector
      * @var string
      */
     protected $title = 'History';
-
     /**
      * @var array History files
      */
     protected $files = [];
-
     /**
      * Specify time limit & file count for debug history.
      *
@@ -67,48 +59,30 @@ class History extends BaseCollector
      *
      * @return void
      */
-    public function setFiles(string $current, int $limit = 20)
+    public function set_files(string $current, int $limit = 20)
     {
         $filenames = glob(WRITEPATH . 'debugbar/debugbar_*.json');
-
-        $files   = [];
+        $files = [];
         $counter = 0;
-
         foreach (array_reverse($filenames) as $filename) {
             $counter++;
-
             // Oldest files will be deleted
             if ($limit >= 0 && $counter > $limit) {
                 unlink($filename);
-
                 continue;
             }
-
             // Get the contents of this specific history request
             $contents = file_get_contents($filename);
-
             $contents = @json_decode($contents);
             if (json_last_error() === JSON_ERROR_NONE) {
                 preg_match('/debugbar_(.*)\.json$/s', $filename, $time);
                 $time = sprintf('%.6F', $time[1] ?? 0);
-
                 // Debugbar files shown in History Collector
-                $files[] = [
-                    'time'        => $time,
-                    'datetime'    => DateTime::createFromFormat('U.u', $time)->format('Y-m-d H:i:s.u'),
-                    'active'      => $time === $current,
-                    'status'      => $contents->vars->response->statusCode,
-                    'method'      => $contents->method,
-                    'url'         => $contents->url,
-                    'isAJAX'      => $contents->isAJAX ? 'Yes' : 'No',
-                    'contentType' => $contents->vars->response->contentType,
-                ];
+                $files[] = ['time' => $time, 'datetime' => DateTime::create_from_format('U.u', $time)->format('Y-m-d H:i:s.u'), 'active' => $time === $current, 'status' => $contents->vars->response->status_code, 'method' => $contents->method, 'url' => $contents->url, 'isAJAX' => $contents->is_ajax ? 'Yes' : 'No', 'contentType' => $contents->vars->response->content_type];
             }
         }
-
         $this->files = $files;
     }
-
     /**
      * Returns the data of this collector to be formatted in the toolbar
      */
@@ -116,23 +90,20 @@ class History extends BaseCollector
     {
         return ['files' => $this->files];
     }
-
     /**
      * Displays the number of included files as a badge in the tab button.
      */
-    public function getBadgeValue(): int
+    public function get_badge_value(): int
     {
         return count($this->files);
     }
-
     /**
      * Return true if there are no history files.
      */
-    public function isEmpty(): bool
+    public function is_empty(): bool
     {
         return $this->files === [];
     }
-
     /**
      * Display the icon.
      *

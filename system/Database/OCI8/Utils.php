@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,24 +9,21 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Database\OCI8;
 
-namespace CodeIgniter\Database\OCI8;
-
-use CodeIgniter\Database\BaseUtils;
-use CodeIgniter\Database\Exceptions\DatabaseException;
-
+use Code_Igniter\Database\Base_Utils;
+use Code_Igniter\Database\Exceptions\Database_Exception;
 /**
  * Utils for OCI8
  */
-class Utils extends BaseUtils
+class Utils extends Base_Utils
 {
     /**
      * List databases statement
      *
      * @var string
      */
-    protected $listDatabases = 'SELECT TABLESPACE_NAME FROM USER_TABLESPACES';
-
+    protected $list_databases = 'SELECT TABLESPACE_NAME FROM USER_TABLESPACES';
     /**
      * Platform dependent version of the backup function.
      *
@@ -35,6 +31,6 @@ class Utils extends BaseUtils
      */
     public function _backup(?array $prefs = null)
     {
-        throw new DatabaseException('Unsupported feature of the database platform you are using.');
+        throw new Database_Exception('Unsupported feature of the database platform you are using.');
     }
 }

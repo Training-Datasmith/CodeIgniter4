@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,133 +23,99 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
 use Kint\Utils;
-use Kint\Value\AbstractValue;
-use Kint\Value\ArrayValue;
-use Kint\Value\Context\ArrayContext;
-use Kint\Value\Representation\ContainerRepresentation;
-use Kint\Value\Representation\SourceRepresentation;
-use Kint\Value\Representation\ValueRepresentation;
-use Kint\Value\TraceFrameValue;
-use Kint\Value\TraceValue;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Array_Value;
+use Kint\Value\Context\Array_Context;
+use Kint\Value\Representation\Container_Representation;
+use Kint\Value\Representation\Source_Representation;
+use Kint\Value\Representation\Value_Representation;
+use Kint\Value\Trace_Frame_Value;
+use Kint\Value\Trace_Value;
 use RuntimeException;
-
 /**
  * @psalm-import-type TraceFrame from TraceFrameValue
  */
-class TracePlugin extends AbstractPlugin implements PluginCompleteInterface
+class Trace_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     public static array $blacklist = ['spl_autoload_call'];
     public static array $path_blacklist = [];
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['array'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!$v instanceof ArrayValue) {
+        if (!$v instanceof Array_Value) {
             return $v;
         }
-
         // Shallow copy so we don't have to worry about touching var
         $trace = $var;
-
-        if (!Utils::isTrace($trace)) {
+        if (!Utils::is_trace($trace)) {
             return $v;
         }
-
-        $pdepth = $this->getParser()->getDepthLimit();
-        $c = $v->getContext();
-
+        $pdepth = $this->get_parser()->get_depth_limit();
+        $c = $v->get_context();
         // We need at least 2 levels in order to get $trace[n]['args']
-        if ($pdepth && $c->getDepth() + 2 >= $pdepth) {
+        if ($pdepth && $c->get_depth() + 2 >= $pdepth) {
             return $v;
         }
-
-        $contents = $v->getContents();
-
-        self::$blacklist = Utils::normalizeAliases(self::$blacklist);
-        $path_blacklist = self::normalizePaths(self::$path_blacklist);
-
+        $contents = $v->get_contents();
+        self::$blacklist = Utils::normalize_aliases(self::$blacklist);
+        $path_blacklist = self::normalize_paths(self::$path_blacklist);
         $frames = [];
-
         foreach ($contents as $frame) {
-            if (!$frame instanceof ArrayValue || !$frame->getContext() instanceof ArrayContext) {
+            if (!$frame instanceof Array_Value || !$frame->get_context() instanceof Array_Context) {
                 continue;
             }
-
-            $index = $frame->getContext()->getName();
-
-            if (!isset($trace[$index]['file']) || Utils::traceFrameIsListed($trace[$index], self::$blacklist)) {
+            $index = $frame->get_context()->get_name();
+            if (!isset($trace[$index]['file']) || Utils::trace_frame_is_listed($trace[$index], self::$blacklist)) {
                 continue;
             }
-
-            if (false !== ($realfile = \realpath($trace[$index]['file']))) {
+            if (false !== $realfile = \realpath($trace[$index]['file'])) {
                 foreach ($path_blacklist as $path) {
                     if (0 === \strpos($realfile, $path)) {
                         continue 2;
                     }
                 }
             }
-
-            $frame = new TraceFrameValue($frame, $trace[$index]);
-
-            if (null !== ($file = $frame->getFile()) && null !== ($line = $frame->getLine())) {
+            $frame = new Trace_Frame_Value($frame, $trace[$index]);
+            if (null !== ($file = $frame->get_file()) && null !== $line = $frame->get_line()) {
                 try {
-                    $frame->addRepresentation(new SourceRepresentation($file, $line));
+                    $frame->add_representation(new Source_Representation($file, $line));
                 } catch (RuntimeException $e) {
                 }
             }
-
-            if ($args = $frame->getArgs()) {
-                $frame->addRepresentation(new ContainerRepresentation('Arguments', $args));
+            if ($args = $frame->get_args()) {
+                $frame->add_representation(new Container_Representation('Arguments', $args));
             }
-
-            if ($obj = $frame->getObject()) {
-                $frame->addRepresentation(
-                    new ValueRepresentation(
-                        'Callee object ['.$obj->getClassName().']',
-                        $obj,
-                        'callee_object'
-                    )
-                );
+            if ($obj = $frame->get_object()) {
+                $frame->add_representation(new Value_Representation('Callee object [' . $obj->get_class_name() . ']', $obj, 'callee_object'));
             }
-
             $frames[$index] = $frame;
         }
-
-        $traceobj = new TraceValue($c, \count($frames), $frames);
-
+        $traceobj = new Trace_Value($c, \count($frames), $frames);
         if ($frames) {
-            $traceobj->addRepresentation(new ContainerRepresentation('Contents', $frames, null, true));
+            $traceobj->add_representation(new Container_Representation('Contents', $frames, null, true));
         }
-
         return $traceobj;
     }
-
-    protected static function normalizePaths(array $paths): array
+    protected static function normalize_paths(array $paths): array
     {
         $normalized = [];
-
         foreach ($paths as $path) {
             $realpath = \realpath($path);
             if (false !== $realpath && \is_dir($realpath)) {
                 $realpath .= DIRECTORY_SEPARATOR;
             }
-
             $normalized[] = $realpath;
         }
-
         return $normalized;
     }
 }

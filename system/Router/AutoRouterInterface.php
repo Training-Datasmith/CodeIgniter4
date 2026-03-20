@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,17 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Router;
+namespace Code_Igniter\Router;
 
 /**
  * Expected behavior of a AutoRouter.
  */
-interface AutoRouterInterface
+interface Auto_Router_Interface
 {
     /**
      * Returns controller, method and params from the URI.
      *
      * @return array [directory_name, controller_name, controller_method, params]
      */
-    public function getRoute(string $uri, string $httpVerb): array;
+    public function get_route(string $uri, string $http_verb): array;
 }

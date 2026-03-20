@@ -6,37 +6,59 @@ use CodeIgniter\Database\Migration;
 
 class {class} extends Migration
 {
-<?php if ($session): ?>
-    protected $DBGroup = '<?= $DBGroup ?>';
+<?php 
+if ($session) {
+    ?>
+    protected $DBGroup = '<?php 
+    echo $db_group;
+    ?>';
 
     public function up()
     {
         $this->forge->addField([
             'id' => ['type' => 'VARCHAR', 'constraint' => 128, 'null' => false],
-<?php if ($DBDriver === 'MySQLi'): ?>
+<?php 
+    if ($db_driver === 'MySQLi') {
+        ?>
             'ip_address' => ['type' => 'VARCHAR', 'constraint' => 45, 'null' => false],
             '`timestamp` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL',
             'data' => ['type' => 'BLOB', 'null' => false],
- <?php elseif ($DBDriver === 'Postgre'): ?>
+ <?php 
+    } elseif ($db_driver === 'Postgre') {
+        ?>
             'ip_address inet NOT NULL',
             'timestamp timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL',
             "data bytea DEFAULT '' NOT NULL",
-<?php endif; ?>
+<?php 
+    }
+    ?>
         ]);
-<?php if ($matchIP) : ?>
+<?php 
+    if ($match_ip) {
+        ?>
         $this->forge->addKey(['id', 'ip_address'], true);
-<?php else: ?>
+<?php 
+    } else {
+        ?>
         $this->forge->addKey('id', true);
-<?php endif ?>
+<?php 
+    }
+    ?>
         $this->forge->addKey('timestamp');
-        $this->forge->createTable('<?= $table ?>', true);
+        $this->forge->createTable('<?php 
+    echo $table;
+    ?>', true);
     }
 
     public function down()
     {
-        $this->forge->dropTable('<?= $table ?>', true);
+        $this->forge->dropTable('<?php 
+    echo $table;
+    ?>', true);
     }
-<?php else: ?>
+<?php 
+} else {
+    ?>
     public function up()
     {
         //
@@ -46,5 +68,7 @@ class {class} extends Migration
     {
         //
     }
-<?php endif ?>
+<?php 
+}
+?>
 }

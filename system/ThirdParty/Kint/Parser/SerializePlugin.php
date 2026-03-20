@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,16 +23,14 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\Representation\ValueRepresentation;
-use Kint\Value\UninitializedValue;
-
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Representation\Value_Representation;
+use Kint\Value\Uninitialized_Value;
 /** @psalm-api */
-class SerializePlugin extends AbstractPlugin implements PluginCompleteInterface
+class Serialize_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     /**
      * Disables automatic unserialization on arrays and objects.
@@ -48,64 +45,49 @@ class SerializePlugin extends AbstractPlugin implements PluginCompleteInterface
      * stuff by default. Which is what we're doing for anything that's not scalar.
      */
     public static bool $safe_mode = true;
-
     /**
      * @psalm-var bool|class-string[]
      */
     public static $allowed_classes = false;
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         $trimmed = \rtrim($var);
-
-        if ('N;' !== $trimmed && !\preg_match('/^(?:[COabis]:\\d+[:;]|d:\\d+(?:\\.\\d+);)/', $trimmed)) {
+        if ('N;' !== $trimmed && !\preg_match('/^(?:[COabis]:\d+[:;]|d:\d+(?:\.\d+);)/', $trimmed)) {
             return $v;
         }
-
         $options = ['allowed_classes' => self::$allowed_classes];
-
-        $c = $v->getContext();
-
-        $base = new BaseContext('unserialize('.$c->getName().')');
-        $base->depth = $c->getDepth() + 1;
-
-        if (null !== ($ap = $c->getAccessPath())) {
-            $base->access_path = 'unserialize('.$ap;
+        $c = $v->get_context();
+        $base = new Base_Context('unserialize(' . $c->get_name() . ')');
+        $base->depth = $c->get_depth() + 1;
+        if (null !== $ap = $c->get_access_path()) {
+            $base->access_path = 'unserialize(' . $ap;
             if (true === self::$allowed_classes) {
                 $base->access_path .= ')';
             } else {
-                $base->access_path .= ', '.\var_export($options, true).')';
+                $base->access_path .= ', ' . \var_export($options, true) . ')';
             }
         }
-
         if (self::$safe_mode && \in_array($trimmed[0], ['C', 'O', 'a'], true)) {
-            $data = new UninitializedValue($base);
-            $data->flags |= AbstractValue::FLAG_BLACKLIST;
+            $data = new Uninitialized_Value($base);
+            $data->flags |= Abstract_Value::FLAG_BLACKLIST;
         } else {
             // Suppress warnings on unserializeable variable
             $data = @\unserialize($trimmed, $options);
-
             if (false === $data && 'b:0;' !== \substr($trimmed, 0, 4)) {
                 return $v;
             }
-
-            $data = $this->getParser()->parse($data, $base);
+            $data = $this->get_parser()->parse($data, $base);
         }
-
-        $data->flags |= AbstractValue::FLAG_GENERATED;
-
-        $v->addRepresentation(new ValueRepresentation('Serialized', $data), 0);
-
+        $data->flags |= Abstract_Value::FLAG_GENERATED;
+        $v->add_representation(new Value_Representation('Serialized', $data), 0);
         return $v;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,22 +9,20 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Files;
 
-namespace CodeIgniter\Files;
-
-use CodeIgniter\Files\Exceptions\FileException;
-use CodeIgniter\Files\Exceptions\FileNotFoundException;
-use CodeIgniter\I18n\Time;
+use Code_Igniter\Files\Exceptions\File_Exception;
+use Code_Igniter\Files\Exceptions\File_Not_Found_Exception;
+use Code_Igniter\I18n\Time;
 use Config\Mimes;
 use RuntimeException;
-use SplFileInfo;
-
+use Spl_File_Info;
 /**
  * Wrapper for PHP's built-in SplFileInfo, with goodies.
  *
  * @see \CodeIgniter\Files\FileTest
  */
-class File extends SplFileInfo
+class File extends Spl_File_Info
 {
     /**
      * The files size in bytes
@@ -33,27 +30,23 @@ class File extends SplFileInfo
      * @var int
      */
     protected $size;
-
     /**
      * @var string|null
      */
-    protected $originalMimeType;
-
+    protected $original_mime_type;
     /**
      * Run our SplFileInfo constructor with an optional verification
      * that the path is really a file.
      *
      * @throws FileNotFoundException
      */
-    public function __construct(string $path, bool $checkFile = false)
+    public function __construct(string $path, bool $check_file = false)
     {
-        if ($checkFile && ! is_file($path)) {
-            throw FileNotFoundException::forFileNotFound($path);
+        if ($check_file && !is_file($path)) {
+            throw File_Not_Found_Exception::for_file_not_found($path);
         }
-
         parent::__construct($path);
     }
-
     /**
      * Retrieve the file size.
      *
@@ -63,31 +56,28 @@ class File extends SplFileInfo
      *
      * @throws RuntimeException if the file does not exist or an error occurs
      */
-    public function getSize(): false|int
+    public function get_size(): false|int
     {
-        return $this->size ?? ($this->size = parent::getSize());
+        return $this->size ?? $this->size = parent::get_size();
     }
-
     /**
      * Retrieve the file size by unit, calculated in IEC standards with 1024 as base value.
      *
      * @param positive-int $precision
      */
-    public function getSizeByBinaryUnit(FileSizeUnit $unit = FileSizeUnit::B, int $precision = 3): int|string
+    public function get_size_by_binary_unit(File_Size_Unit $unit = File_Size_Unit::B, int $precision = 3): int|string
     {
-        return $this->getSizeByUnitInternal(1024, $unit, $precision);
+        return $this->get_size_by_unit_internal(1024, $unit, $precision);
     }
-
     /**
      * Retrieve the file size by unit, calculated in metric standards with 1000 as base value.
      *
      * @param positive-int $precision
      */
-    public function getSizeByMetricUnit(FileSizeUnit $unit = FileSizeUnit::B, int $precision = 3): int|string
+    public function get_size_by_metric_unit(File_Size_Unit $unit = File_Size_Unit::B, int $precision = 3): int|string
     {
-        return $this->getSizeByUnitInternal(1000, $unit, $precision);
+        return $this->get_size_by_unit_internal(1000, $unit, $precision);
     }
-
     /**
      * Retrieve the file size by unit.
      *
@@ -95,29 +85,25 @@ class File extends SplFileInfo
      *
      * @return false|int|string
      */
-    public function getSizeByUnit(string $unit = 'b')
+    public function get_size_by_unit(string $unit = 'b')
     {
         return match (strtolower($unit)) {
-            'kb'    => $this->getSizeByBinaryUnit(FileSizeUnit::KB),
-            'mb'    => $this->getSizeByBinaryUnit(FileSizeUnit::MB),
-            default => $this->getSize(),
+            'kb' => $this->get_size_by_binary_unit(File_Size_Unit::KB),
+            'mb' => $this->get_size_by_binary_unit(File_Size_Unit::MB),
+            default => $this->get_size(),
         };
     }
-
     /**
      * Attempts to determine the file extension based on the trusted
      * getType() method. If the mime type is unknown, will return null.
      */
-    public function guessExtension(): ?string
+    public function guess_extension(): ?string
     {
         // naively get the path extension using pathinfo
-        $pathinfo = pathinfo($this->getRealPath() ?: $this->__toString()) + ['extension' => ''];
-
-        $proposedExtension = $pathinfo['extension'];
-
-        return Mimes::guessExtensionFromType($this->getMimeType(), $proposedExtension);
+        $pathinfo = pathinfo($this->get_real_path() ?: $this->__toString()) + ['extension' => ''];
+        $proposed_extension = $pathinfo['extension'];
+        return Mimes::guess_extension_from_type($this->get_mime_type(), $proposed_extension);
     }
-
     /**
      * Retrieve the media type of the file. SHOULD not use information from
      * the $_FILES array, but should use other methods to more accurately
@@ -125,53 +111,43 @@ class File extends SplFileInfo
      *
      * @return string The media type we determined it to be.
      */
-    public function getMimeType(): string
+    public function get_mime_type(): string
     {
-        if (! function_exists('finfo_open')) {
-            return $this->originalMimeType ?? 'application/octet-stream'; // @codeCoverageIgnore
+        if (!function_exists('finfo_open')) {
+            return $this->original_mime_type ?? 'application/octet-stream';
+            // @codeCoverageIgnore
         }
-
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-
-        return finfo_file($finfo, $this->getRealPath() ?: $this->__toString());
+        return finfo_file($finfo, $this->get_real_path() ?: $this->__toString());
     }
-
     /**
      * Generates a random names based on a simple hash and the time, with
      * the correct file extension attached.
      */
-    public function getRandomName(): string
+    public function get_random_name(): string
     {
-        $extension = $this->getExtension();
+        $extension = $this->get_extension();
         $extension = empty($extension) ? '' : '.' . $extension;
-
-        return Time::now()->getTimestamp() . '_' . bin2hex(random_bytes(10)) . $extension;
+        return Time::now()->get_timestamp() . '_' . bin2hex(random_bytes(10)) . $extension;
     }
-
     /**
      * Moves a file to a new location.
      *
      * @return File
      */
-    public function move(string $targetPath, ?string $name = null, bool $overwrite = false)
+    public function move(string $target_path, ?string $name = null, bool $overwrite = false)
     {
-        $targetPath = rtrim($targetPath, '/') . '/';
-        $name ??= $this->getBasename();
-        $destination = $overwrite ? $targetPath . $name : $this->getDestination($targetPath . $name);
-
-        $oldName = $this->getRealPath() ?: $this->__toString();
-
-        if (! @rename($oldName, $destination)) {
+        $target_path = rtrim($target_path, '/') . '/';
+        $name ??= $this->get_basename();
+        $destination = $overwrite ? $target_path . $name : $this->get_destination($target_path . $name);
+        $old_name = $this->get_real_path() ?: $this->__toString();
+        if (!@rename($old_name, $destination)) {
             $error = error_get_last();
-
-            throw FileException::forUnableToMove($this->getBasename(), $targetPath, strip_tags($error['message']));
+            throw File_Exception::for_unable_to_move($this->get_basename(), $target_path, strip_tags($error['message']));
         }
-
         @chmod($destination, 0777 & ~umask());
-
         return new self($destination);
     }
-
     /**
      * Returns the destination path for the move operation where overwriting is not expected.
      *
@@ -179,23 +155,20 @@ class File extends SplFileInfo
      * last element is an integer as there may be cases that the delimiter may be present in the filename.
      * For the all other cases, it appends an integer starting from zero before the file's extension.
      */
-    public function getDestination(string $destination, string $delimiter = '_', int $i = 0): string
+    public function get_destination(string $destination, string $delimiter = '_', int $i = 0): string
     {
         if ($delimiter === '') {
             $delimiter = '_';
         }
-
         while (is_file($destination)) {
-            $info      = pathinfo($destination);
+            $info = pathinfo($destination);
             $extension = isset($info['extension']) ? '.' . $info['extension'] : '';
-
             if (str_contains($info['filename'], $delimiter)) {
                 $parts = explode($delimiter, $info['filename']);
-
                 if (is_numeric(end($parts))) {
                     $i = end($parts);
                     array_pop($parts);
-                    $parts[]     = ++$i;
+                    $parts[] = ++$i;
                     $destination = $info['dirname'] . DIRECTORY_SEPARATOR . implode($delimiter, $parts) . $extension;
                 } else {
                     $destination = $info['dirname'] . DIRECTORY_SEPARATOR . $info['filename'] . $delimiter . ++$i . $extension;
@@ -204,20 +177,16 @@ class File extends SplFileInfo
                 $destination = $info['dirname'] . DIRECTORY_SEPARATOR . $info['filename'] . $delimiter . ++$i . $extension;
             }
         }
-
         return $destination;
     }
-
-    private function getSizeByUnitInternal(int $fileSizeBase, FileSizeUnit $unit, int $precision): int|string
+    private function get_size_by_unit_internal(int $file_size_base, File_Size_Unit $unit, int $precision): int|string
     {
         $exponent = $unit->value;
-        $divider  = $fileSizeBase ** $exponent;
-        $size     = $this->getSize() / $divider;
-
-        if ($unit !== FileSizeUnit::B) {
+        $divider = $file_size_base ** $exponent;
+        $size = $this->get_size() / $divider;
+        if ($unit !== File_Size_Unit::B) {
             $size = number_format($size, $precision);
         }
-
         return $size;
     }
 }

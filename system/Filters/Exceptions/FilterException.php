@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,13 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters\Exceptions;
 
-namespace CodeIgniter\Filters\Exceptions;
-
-use CodeIgniter\Exceptions\ConfigException;
-
+use Code_Igniter\Exceptions\Config_Exception;
 /**
  * FilterException
  */
-class FilterException extends ConfigException
+class Filter_Exception extends Config_Exception
 {
     /**
      * Thrown when the provided alias is not within
@@ -26,17 +23,16 @@ class FilterException extends ConfigException
      *
      * @return static
      */
-    public static function forNoAlias(string $alias)
+    public static function for_no_alias(string $alias)
     {
         return new static(lang('Filters.noFilter', [$alias]));
     }
-
     /**
      * Thrown when the filter class does not implement FilterInterface.
      *
      * @return static
      */
-    public static function forIncorrectInterface(string $class)
+    public static function for_incorrect_interface(string $class)
     {
         return new static(lang('Filters.incorrectInterface', [$class]));
     }

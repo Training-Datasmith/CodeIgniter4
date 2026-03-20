@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,47 +23,39 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer;
 
-trait AssetRendererTrait
+trait Asset_Renderer_Trait
 {
     public static ?string $theme = null;
-
     /** @psalm-var array{js?:string, css?:array<path, string|false>} */
-    private static array $assetCache = [];
-
+    private static array $asset_cache = [];
     /** @psalm-api */
-    public static function renderJs(): string
+    public static function render_js(): string
     {
-        if (!isset(self::$assetCache['js'])) {
-            self::$assetCache['js'] = \file_get_contents(KINT_DIR.'/resources/compiled/main.js');
+        if (!isset(self::$asset_cache['js'])) {
+            self::$asset_cache['js'] = \file_get_contents(KINT_DIR . '/resources/compiled/main.js');
         }
-
-        return self::$assetCache['js'];
+        return self::$asset_cache['js'];
     }
-
     /** @psalm-api */
-    public static function renderCss(): ?string
+    public static function render_css(): ?string
     {
         if (!isset(self::$theme)) {
             return null;
         }
-
-        if (!isset(self::$assetCache['css'][self::$theme])) {
-            if (\file_exists(KINT_DIR.'/resources/compiled/'.self::$theme)) {
-                self::$assetCache['css'][self::$theme] = \file_get_contents(KINT_DIR.'/resources/compiled/'.self::$theme);
+        if (!isset(self::$asset_cache['css'][self::$theme])) {
+            if (\file_exists(KINT_DIR . '/resources/compiled/' . self::$theme)) {
+                self::$asset_cache['css'][self::$theme] = \file_get_contents(KINT_DIR . '/resources/compiled/' . self::$theme);
             } elseif (\file_exists(self::$theme)) {
-                self::$assetCache['css'][self::$theme] = \file_get_contents(self::$theme);
+                self::$asset_cache['css'][self::$theme] = \file_get_contents(self::$theme);
             } else {
-                self::$assetCache['css'][self::$theme] = false;
+                self::$asset_cache['css'][self::$theme] = false;
             }
         }
-
-        if (false === self::$assetCache['css'][self::$theme]) {
+        if (false === self::$asset_cache['css'][self::$theme]) {
             return null;
         }
-
-        return self::$assetCache['css'][self::$theme];
+        return self::$asset_cache['css'][self::$theme];
     }
 }

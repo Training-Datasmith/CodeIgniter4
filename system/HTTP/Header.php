@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\HTTP;
+namespace Code_Igniter\HTTP;
 
 use InvalidArgumentException;
 use Stringable;
-
 /**
  * Class Header
  *
@@ -31,7 +28,6 @@ class Header implements Stringable
      * @var string
      */
     protected $name;
-
     /**
      * The value of the header. May have more than one
      * value. If so, will be an array of strings.
@@ -47,7 +43,6 @@ class Header implements Stringable
      * @var array<int|string, array<string, string>|string>|string
      */
     protected $value;
-
     /**
      * Header constructor. name is mandatory, if a value is provided, it will be set.
      *
@@ -55,29 +50,26 @@ class Header implements Stringable
      */
     public function __construct(string $name, $value = null)
     {
-        $this->setName($name);
-        $this->setValue($value);
+        $this->set_name($name);
+        $this->set_value($value);
     }
-
     /**
      * Returns the name of the header, in the same case it was set.
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * Gets the raw value of the header. This may return either a string
      * or an array, depending on whether the header has multiple values or not.
      *
      * @return array<int|string, array<string, string>|string>|string
      */
-    public function getValue()
+    public function get_value()
     {
         return $this->value;
     }
-
     /**
      * Sets the name of the header, overwriting any previous value.
      *
@@ -85,14 +77,12 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    public function setName(string $name)
+    public function set_name(string $name)
     {
-        $this->validateName($name);
+        $this->validate_name($name);
         $this->name = $name;
-
         return $this;
     }
-
     /**
      * Sets the value of the header, overwriting any previous value(s).
      *
@@ -102,17 +92,13 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    public function setValue($value = null)
+    public function set_value($value = null)
     {
         $value = is_array($value) ? $value : (string) $value;
-
-        $this->validateValue($value);
-
+        $this->validate_value($value);
         $this->value = $value;
-
         return $this;
     }
-
     /**
      * Appends a value to the list of values for this header. If the
      * header is a single value string, it will be converted to an array.
@@ -123,25 +109,20 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    public function appendValue($value = null)
+    public function append_value($value = null)
     {
         if ($value === null) {
             return $this;
         }
-
-        $this->validateValue($value);
-
-        if (! is_array($this->value)) {
+        $this->validate_value($value);
+        if (!is_array($this->value)) {
             $this->value = [$this->value];
         }
-
-        if (! in_array($value, $this->value, true)) {
+        if (!in_array($value, $this->value, true)) {
             $this->value[] = is_array($value) ? $value : (string) $value;
         }
-
         return $this;
     }
-
     /**
      * Prepends a value to the list of values for this header. If the
      * header is a single value string, it will be converted to an array.
@@ -152,23 +133,18 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    public function prependValue($value = null)
+    public function prepend_value($value = null)
     {
         if ($value === null) {
             return $this;
         }
-
-        $this->validateValue($value);
-
-        if (! is_array($this->value)) {
+        $this->validate_value($value);
+        if (!is_array($this->value)) {
             $this->value = [$this->value];
         }
-
         array_unshift($this->value, $value);
-
         return $this;
     }
-
     /**
      * Retrieves a comma-separated string of the values for a single header.
      *
@@ -178,40 +154,35 @@ class Header implements Stringable
      *
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
      */
-    public function getValueLine(): string
+    public function get_value_line(): string
     {
         if (is_string($this->value)) {
             return $this->value;
         }
-        if (! is_array($this->value)) {
+        if (!is_array($this->value)) {
             return '';
         }
-
         $options = [];
-
         foreach ($this->value as $key => $value) {
-            if (is_string($key) && ! is_array($value)) {
+            if (is_string($key) && !is_array($value)) {
                 $options[] = $key . '=' . $value;
             } elseif (is_array($value)) {
-                $key       = key($value);
+                $key = key($value);
                 $options[] = $key . '=' . $value[$key];
             } elseif (is_numeric($key)) {
                 $options[] = $value;
             }
         }
-
         return implode(', ', $options);
     }
-
     /**
      * Returns a representation of the entire header string, including
      * the header name and all values converted to the proper format.
      */
     public function __toString(): string
     {
-        return $this->name . ': ' . $this->getValueLine();
+        return $this->name . ': ' . $this->get_value_line();
     }
-
     /**
      * Validate header name.
      *
@@ -221,13 +192,12 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    private function validateName(string $name): void
+    private function validate_name(string $name): void
     {
         if (preg_match('/^[a-zA-Z0-9\'`#$%&*+.^_|~!-]+$/D', $name) !== 1) {
             throw new InvalidArgumentException('The header name is not valid as per RFC 7230.');
         }
     }
-
     /**
      * Validate header value.
      *
@@ -239,21 +209,18 @@ class Header implements Stringable
      *
      * @throws InvalidArgumentException
      */
-    private function validateValue(array|int|string $value): void
+    private function validate_value(array|int|string $value): void
     {
         if (is_int($value)) {
             return;
         }
-
         if (is_array($value)) {
             foreach ($value as $key => $val) {
-                $this->validateValue($key);
-                $this->validateValue($val);
+                $this->validate_value($key);
+                $this->validate_value($val);
             }
-
             return;
         }
-
         // The regular expression excludes obs-fold per RFC 7230#3.2.4, as sending folded lines
         // is deprecated and rare. This obscure HTTP/1.1 feature is unlikely to impact legitimate
         // use cases. Libraries like Guzzle and AMPHP follow the same principle.

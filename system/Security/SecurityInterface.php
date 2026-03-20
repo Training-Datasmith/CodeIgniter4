@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Security;
 
-namespace CodeIgniter\Security;
-
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\Security\Exceptions\SecurityException;
-
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\Security\Exceptions\Security_Exception;
 /**
  * Expected behavior of a Security.
  */
-interface SecurityInterface
+interface Security_Interface
 {
     /**
      * CSRF Verify
@@ -28,33 +25,27 @@ interface SecurityInterface
      *
      * @throws SecurityException
      */
-    public function verify(RequestInterface $request);
-
+    public function verify(Request_Interface $request);
     /**
      * Returns the CSRF Hash.
      */
-    public function getHash(): ?string;
-
+    public function get_hash(): ?string;
     /**
      * Returns the CSRF Token Name.
      */
-    public function getTokenName(): string;
-
+    public function get_token_name(): string;
     /**
      * Returns the CSRF Header Name.
      */
-    public function getHeaderName(): string;
-
+    public function get_header_name(): string;
     /**
      * Returns the CSRF Cookie Name.
      */
-    public function getCookieName(): string;
-
+    public function get_cookie_name(): string;
     /**
      * Check if request should be redirect on failure.
      */
-    public function shouldRedirect(): bool;
-
+    public function should_redirect(): bool;
     /**
      * Sanitize Filename
      *
@@ -71,5 +62,5 @@ interface SecurityInterface
      * @param string $str          Input file name
      * @param bool   $relativePath Whether to preserve paths
      */
-    public function sanitizeFilename(string $str, bool $relativePath = false): string;
+    public function sanitize_filename(string $str, bool $relative_path = false): string;
 }

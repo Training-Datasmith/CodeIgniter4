@@ -6,9 +6,13 @@ use CodeIgniter\Model;
 
 class {class} extends Model
 {
-<?php if (is_string($dbGroup)): ?>
+<?php 
+if (is_string($db_group)) {
+    ?>
     protected $DBGroup          = '{dbGroup}';
-<?php endif; ?>
+<?php 
+}
+?>
     protected $table            = '{table}';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;

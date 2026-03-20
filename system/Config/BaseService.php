@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,61 +9,60 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Config;
 
-namespace CodeIgniter\Config;
-
-use CodeIgniter\Autoloader\Autoloader;
-use CodeIgniter\Autoloader\FileLocator;
-use CodeIgniter\Autoloader\FileLocatorCached;
-use CodeIgniter\Autoloader\FileLocatorInterface;
-use CodeIgniter\Cache\CacheInterface;
-use CodeIgniter\Cache\ResponseCache;
-use CodeIgniter\CLI\Commands;
-use CodeIgniter\CodeIgniter;
-use CodeIgniter\Database\ConnectionInterface;
-use CodeIgniter\Database\MigrationRunner;
-use CodeIgniter\Debug\Exceptions;
-use CodeIgniter\Debug\Iterator;
-use CodeIgniter\Debug\Timer;
-use CodeIgniter\Debug\Toolbar;
-use CodeIgniter\Email\Email;
-use CodeIgniter\Encryption\EncrypterInterface;
-use CodeIgniter\Exceptions\InvalidArgumentException;
-use CodeIgniter\Filters\Filters;
-use CodeIgniter\Format\Format;
-use CodeIgniter\Honeypot\Honeypot;
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\ContentSecurityPolicy;
-use CodeIgniter\HTTP\CURLRequest;
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\Negotiate;
-use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\HTTP\Request;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\HTTP\SiteURIFactory;
-use CodeIgniter\HTTP\URI;
-use CodeIgniter\Images\Handlers\BaseHandler;
-use CodeIgniter\Language\Language;
-use CodeIgniter\Log\Logger;
-use CodeIgniter\Pager\Pager;
-use CodeIgniter\Router\RouteCollection;
-use CodeIgniter\Router\RouteCollectionInterface;
-use CodeIgniter\Router\Router;
-use CodeIgniter\Security\Security;
-use CodeIgniter\Session\Session;
-use CodeIgniter\Superglobals;
-use CodeIgniter\Throttle\Throttler;
-use CodeIgniter\Typography\Typography;
-use CodeIgniter\Validation\ValidationInterface;
-use CodeIgniter\View\Cell;
-use CodeIgniter\View\Parser;
-use CodeIgniter\View\RendererInterface;
-use CodeIgniter\View\View;
+use Code_Igniter\Autoloader\Autoloader;
+use Code_Igniter\Autoloader\File_Locator;
+use Code_Igniter\Autoloader\File_Locator_Cached;
+use Code_Igniter\Autoloader\File_Locator_Interface;
+use Code_Igniter\Cache\Cache_Interface;
+use Code_Igniter\Cache\Response_Cache;
+use Code_Igniter\CLI\Commands;
+use Code_Igniter\Code_Igniter;
+use Code_Igniter\Database\Connection_Interface;
+use Code_Igniter\Database\Migration_Runner;
+use Code_Igniter\Debug\Exceptions;
+use Code_Igniter\Debug\Iterator;
+use Code_Igniter\Debug\Timer;
+use Code_Igniter\Debug\Toolbar;
+use Code_Igniter\Email\Email;
+use Code_Igniter\Encryption\Encrypter_Interface;
+use Code_Igniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Filters\Filters;
+use Code_Igniter\Format\Format;
+use Code_Igniter\Honeypot\Honeypot;
+use Code_Igniter\HTTP\Cli_Request;
+use Code_Igniter\HTTP\Content_Security_Policy;
+use Code_Igniter\HTTP\Curl_Request;
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Negotiate;
+use Code_Igniter\HTTP\Redirect_Response;
+use Code_Igniter\HTTP\Request;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
+use Code_Igniter\HTTP\Site_Uri_Factory;
+use Code_Igniter\HTTP\URI;
+use Code_Igniter\Images\Handlers\Base_Handler;
+use Code_Igniter\Language\Language;
+use Code_Igniter\Log\Logger;
+use Code_Igniter\Pager\Pager;
+use Code_Igniter\Router\Route_Collection;
+use Code_Igniter\Router\Route_Collection_Interface;
+use Code_Igniter\Router\Router;
+use Code_Igniter\Security\Security;
+use Code_Igniter\Session\Session;
+use Code_Igniter\Superglobals;
+use Code_Igniter\Throttle\Throttler;
+use Code_Igniter\Typography\Typography;
+use Code_Igniter\Validation\Validation_Interface;
+use Code_Igniter\View\Cell;
+use Code_Igniter\View\Parser;
+use Code_Igniter\View\Renderer_Interface;
+use Code_Igniter\View\View;
 use Config\App;
 use Config\Autoload;
 use Config\Cache;
-use Config\ContentSecurityPolicy as CSPConfig;
+use Config\Content_Security_Policy as CSPConfig;
 use Config\Encryption;
 use Config\Exceptions as ConfigExceptions;
 use Config\Filters as ConfigFilters;
@@ -80,8 +78,7 @@ use Config\Session as ConfigSession;
 use Config\Toolbar as ConfigToolbar;
 use Config\Validation as ConfigValidation;
 use Config\View as ConfigView;
-use Config\WorkerMode;
-
+use Config\Worker_Mode;
 /**
  * Services Configuration file.
  *
@@ -143,7 +140,7 @@ use Config\WorkerMode;
  * @method static ValidationInterface        validation(ConfigValidation $config = null, $getShared = true)
  * @method static Cell                       viewcell($getShared = true)
  */
-class BaseService
+class Base_Service
 {
     /**
      * Cache for instance of any services that
@@ -153,28 +150,24 @@ class BaseService
      * @var array<string, object> [key => instance]
      */
     protected static $instances = [];
-
     /**
      * Factory method list.
      *
      * @var array<string, (callable(mixed ...$params): object)> [key => callable]
      */
     protected static array $factories = [];
-
     /**
      * Mock objects for testing which are returned if exist.
      *
      * @var array<string, object> [key => instance]
      */
     protected static $mocks = [];
-
     /**
      * Have we already discovered other Services?
      *
      * @var bool
      */
     protected static $discovered = false;
-
     /**
      * A cache of other service classes we've found.
      *
@@ -183,14 +176,12 @@ class BaseService
      * @deprecated 4.5.0 No longer used.
      */
     protected static $services = [];
-
     /**
      * A cache of the names of services classes found.
      *
      * @var list<string>
      */
-    private static array $serviceNames = [];
-
+    private static array $service_names = [];
     /**
      * Simple method to get an entry fast.
      *
@@ -202,7 +193,6 @@ class BaseService
     {
         return static::$instances[$key] ?? static::__callStatic($key, []);
     }
-
     /**
      * Checks if a service instance has been created.
      *
@@ -214,7 +204,6 @@ class BaseService
     {
         return isset(static::$instances[$key]);
     }
-
     /**
      * Sets an entry.
      *
@@ -225,10 +214,8 @@ class BaseService
         if (isset(static::$instances[$key])) {
             throw new InvalidArgumentException('The entry for "' . $key . '" is already set.');
         }
-
         static::$instances[$key] = $value;
     }
-
     /**
      * Overrides an existing entry.
      *
@@ -238,7 +225,6 @@ class BaseService
     {
         static::$instances[$key] = $value;
     }
-
     /**
      * Returns a shared instance of any of the class' services.
      *
@@ -248,44 +234,36 @@ class BaseService
      *
      * @return object
      */
-    protected static function getSharedInstance(string $key, ...$params)
+    protected static function get_shared_instance(string $key, ...$params)
     {
         $key = strtolower($key);
-
         // Returns mock if exists
         if (isset(static::$mocks[$key])) {
             return static::$mocks[$key];
         }
-
-        if (! isset(static::$instances[$key])) {
+        if (!isset(static::$instances[$key])) {
             // Make sure $getShared is false
             $params[] = false;
-
-            static::$instances[$key] = AppServices::$key(...$params);
+            static::$instances[$key] = App_Services::$key(...$params);
         }
-
         return static::$instances[$key];
     }
-
     /**
      * The Autoloader class is the central class that handles our
      * spl_autoload_register method, and helper methods.
      *
      * @return Autoloader
      */
-    public static function autoloader(bool $getShared = true)
+    public static function autoloader(bool $get_shared = true)
     {
-        if ($getShared) {
+        if ($get_shared) {
             if (empty(static::$instances['autoloader'])) {
                 static::$instances['autoloader'] = new Autoloader();
             }
-
             return static::$instances['autoloader'];
         }
-
         return new Autoloader();
     }
-
     /**
      * The file locator provides utility methods for looking for non-classes
      * within namespaced folders, as well as convenience methods for
@@ -293,26 +271,21 @@ class BaseService
      *
      * @return FileLocatorInterface
      */
-    public static function locator(bool $getShared = true)
+    public static function locator(bool $get_shared = true)
     {
-        if ($getShared) {
+        if ($get_shared) {
             if (empty(static::$instances['locator'])) {
-                $cacheEnabled = class_exists(Optimize::class)
-                    && (new Optimize())->locatorCacheEnabled;
-
-                if ($cacheEnabled) {
-                    static::$instances['locator'] = new FileLocatorCached(new FileLocator(static::autoloader()));
+                $cache_enabled = class_exists(Optimize::class) && (new Optimize())->locator_cache_enabled;
+                if ($cache_enabled) {
+                    static::$instances['locator'] = new File_Locator_Cached(new File_Locator(static::autoloader()));
                 } else {
-                    static::$instances['locator'] = new FileLocator(static::autoloader());
+                    static::$instances['locator'] = new File_Locator(static::autoloader());
                 }
             }
-
             return static::$mocks['locator'] ?? static::$instances['locator'];
         }
-
-        return new FileLocator(static::autoloader());
+        return new File_Locator(static::autoloader());
     }
-
     /**
      * Provides the ability to perform case-insensitive calling of service
      * names.
@@ -324,38 +297,29 @@ class BaseService
         if (isset(static::$factories[$name])) {
             return static::$factories[$name](...$arguments);
         }
-
-        $service = static::serviceExists($name);
-
+        $service = static::service_exists($name);
         if ($service === null) {
             return null;
         }
-
         return $service::$name(...$arguments);
     }
-
     /**
      * Check if the requested service is defined and return the declaring
      * class. Return null if not found.
      */
-    public static function serviceExists(string $name): ?string
+    public static function service_exists(string $name): ?string
     {
-        static::buildServicesCache();
-
-        $services = array_merge(self::$serviceNames, [Services::class]);
-        $name     = strtolower($name);
-
+        static::build_services_cache();
+        $services = array_merge(self::$service_names, [Services::class]);
+        $name = strtolower($name);
         foreach ($services as $service) {
             if (method_exists($service, $name)) {
                 static::$factories[$name] = [$service, $name];
-
                 return $service;
             }
         }
-
         return null;
     }
-
     /**
      * Reset shared instances and mocks for testing.
      *
@@ -363,17 +327,15 @@ class BaseService
      *
      * @testTag only available to test code
      */
-    public static function reset(bool $initAutoloader = true)
+    public static function reset(bool $init_autoloader = true)
     {
-        static::$mocks     = [];
+        static::$mocks = [];
         static::$instances = [];
         static::$factories = [];
-
-        if ($initAutoloader) {
+        if ($init_autoloader) {
             static::autoloader()->initialize(new Autoload(), new Modules());
         }
     }
-
     /**
      * Reconnect cache connection for worker mode at the start of a request.
      * Checks if cache connection is alive and reconnects if needed.
@@ -381,46 +343,38 @@ class BaseService
      * This should be called at the beginning of each request in worker mode,
      * before the application runs.
      */
-    public static function reconnectCacheForWorkerMode(): void
+    public static function reconnect_cache_for_worker_mode(): void
     {
-        if (! isset(static::$instances['cache'])) {
+        if (!isset(static::$instances['cache'])) {
             return;
         }
-
         $cache = static::$instances['cache'];
-
-        if (! $cache->ping()) {
+        if (!$cache->ping()) {
             $cache->reconnect();
         }
     }
-
     /**
      * Resets all services except those in the persistent list.
      * Used for worker mode to preserve expensive-to-initialize services.
      *
      * Called at the END of each request to clean up state.
      */
-    public static function resetForWorkerMode(WorkerMode $config): void
+    public static function reset_for_worker_mode(Worker_Mode $config): void
     {
         // Reset mocks (testing only, safe to clear)
         static::$mocks = [];
-
         // Reset factories
         static::$factories = [];
-
         // Process each service instance
-        $persistentInstances = [];
-
-        foreach (static::$instances as $serviceName => $service) {
+        $persistent_instances = [];
+        foreach (static::$instances as $service_name => $service) {
             // Persist services in the persistent list
-            if (in_array($serviceName, $config->persistentServices, true)) {
-                $persistentInstances[$serviceName] = $service;
+            if (in_array($service_name, $config->persistent_services, true)) {
+                $persistent_instances[$service_name] = $service;
             }
         }
-
-        static::$instances = $persistentInstances;
+        static::$instances = $persistent_instances;
     }
-
     /**
      * Resets any mock and shared instances for a single service.
      *
@@ -428,12 +382,11 @@ class BaseService
      *
      * @testTag only available to test code
      */
-    public static function resetSingle(string $name)
+    public static function reset_single(string $name)
     {
         $name = strtolower($name);
         unset(static::$mocks[$name], static::$instances[$name]);
     }
-
     /**
      * Inject mock object for testing.
      *
@@ -443,49 +396,41 @@ class BaseService
      *
      * @testTag only available to test code
      */
-    public static function injectMock(string $name, $mock)
+    public static function inject_mock(string $name, $mock)
     {
-        static::$instances[$name]         = $mock;
+        static::$instances[$name] = $mock;
         static::$mocks[strtolower($name)] = $mock;
     }
-
     /**
      * Resets the service cache.
      */
-    public static function resetServicesCache(): void
+    public static function reset_services_cache(): void
     {
-        self::$serviceNames = [];
+        self::$service_names = [];
         static::$discovered = false;
     }
-
-    protected static function buildServicesCache(): void
+    protected static function build_services_cache(): void
     {
-        if (! static::$discovered) {
-            if ((new Modules())->shouldDiscover('services')) {
+        if (!static::$discovered) {
+            if ((new Modules())->should_discover('services')) {
                 $locator = static::locator();
-                $files   = $locator->search('Config/Services');
-
-                $systemPath = static::autoloader()->getNamespace('CodeIgniter')[0];
-
+                $files = $locator->search('Config/Services');
+                $system_path = static::autoloader()->get_namespace('CodeIgniter')[0];
                 // Get instances of all service classes and cache them locally.
                 foreach ($files as $file) {
                     // Does not search `CodeIgniter` namespace to prevent from loading twice.
-                    if (str_starts_with($file, $systemPath)) {
+                    if (str_starts_with($file, $system_path)) {
                         continue;
                     }
-
-                    $classname = $locator->findQualifiedNameFromPath($file);
-
+                    $classname = $locator->find_qualified_name_from_path($file);
                     if ($classname === false) {
                         continue;
                     }
-
                     if ($classname !== Services::class) {
-                        self::$serviceNames[] = $classname;
+                        self::$service_names[] = $classname;
                     }
                 }
             }
-
             static::$discovered = true;
         }
     }

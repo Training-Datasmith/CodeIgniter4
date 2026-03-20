@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,12 +23,10 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Value;
 
-use Kint\Value\Context\ContextInterface;
-
-class ArrayValue extends AbstractValue
+use Kint\Value\Context\Context_Interface;
+class Array_Value extends Abstract_Value
 {
     /** @psalm-readonly */
     protected int $size;
@@ -39,32 +36,27 @@ class ArrayValue extends AbstractValue
      * @psalm-var AbstractValue[]
      */
     protected array $contents;
-
     /** @psalm-param AbstractValue[] $contents */
-    public function __construct(ContextInterface $context, int $size, array $contents)
+    public function __construct(Context_Interface $context, int $size, array $contents)
     {
         parent::__construct($context, 'array');
         $this->size = $size;
         $this->contents = $contents;
     }
-
-    public function getSize(): int
+    public function get_size(): int
     {
         return $this->size;
     }
-
     /** @psalm-return AbstractValue[] */
-    public function getContents()
+    public function get_contents()
     {
         return $this->contents;
     }
-
-    public function getDisplaySize(): string
+    public function get_display_size(): string
     {
         return (string) $this->size;
     }
-
-    public function getDisplayChildren(): array
+    public function get_display_children(): array
     {
         return $this->contents;
     }

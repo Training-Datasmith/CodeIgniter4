@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Security\Exceptions\SecurityException;
-use CodeIgniter\Security\Security;
-
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Redirect_Response;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
+use Code_Igniter\Security\Exceptions\Security_Exception;
+use Code_Igniter\Security\Security;
 /**
  * CSRF filter.
  *
@@ -28,7 +25,7 @@ use CodeIgniter\Security\Security;
  * @codeCoverageIgnore
  * @see \CodeIgniter\Filters\CSRFTest
  */
-class CSRF implements FilterInterface
+class CSRF implements Filter_Interface
 {
     /**
      * CSRF verification.
@@ -39,34 +36,29 @@ class CSRF implements FilterInterface
      *
      * @throws SecurityException
      */
-    public function before(RequestInterface $request, $arguments = null)
+    public function before(Request_Interface $request, $arguments = null)
     {
-        if (! $request instanceof IncomingRequest) {
+        if (!$request instanceof Incoming_Request) {
             return null;
         }
-
         /** @var Security $security */
         $security = service('security');
-
         try {
             $security->verify($request);
-        } catch (SecurityException $e) {
-            if ($security->shouldRedirect() && ! $request->isAJAX()) {
-                return redirect()->back()->with('error', $e->getMessage());
+        } catch (Security_Exception $e) {
+            if ($security->should_redirect() && !$request->is_ajax()) {
+                return redirect()->back()->with('error', $e->get_message());
             }
-
             throw $e;
         }
-
         return null;
     }
-
     /**
      * We don't have anything to do here.
      *
      * @param list<string>|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null)
     {
         return null;
     }

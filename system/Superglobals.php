@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,11 +9,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter;
 
-namespace CodeIgniter;
-
-use CodeIgniter\Exceptions\InvalidArgumentException;
-
+use Code_Igniter\Exceptions\InvalidArgumentException;
 /**
  * Superglobals manipulation.
  *
@@ -46,32 +43,26 @@ final class Superglobals
      * @var array<string, server_items>
      */
     private array $server = [];
-
     /**
      * @var array<string, get_items>
      */
     private array $get = [];
-
     /**
      * @var array<string, post_items>
      */
     private array $post = [];
-
     /**
      * @var array<string, cookie_items>
      */
     private array $cookie = [];
-
     /**
      * @var array<string, files_items>
      */
     private array $files = [];
-
     /**
      * @var array<string, request_items>
      */
     private array $request = [];
-
     /**
      * @param array<string, server_items>|null  $server
      * @param array<string, get_items>|null     $get
@@ -80,23 +71,10 @@ final class Superglobals
      * @param array<string, files_items>|null   $files
      * @param array<string, request_items>|null $request
      */
-    public function __construct(
-        ?array $server = null,
-        ?array $get = null,
-        ?array $post = null,
-        ?array $cookie = null,
-        ?array $files = null,
-        ?array $request = null,
-    ) {
-        $this
-            ->setServerArray($server ?? $_SERVER)
-            ->setGetArray($get ?? $_GET)
-            ->setPostArray($post ?? $_POST)
-            ->setCookieArray($cookie ?? $_COOKIE)
-            ->setFilesArray($files ?? $_FILES)
-            ->setRequestArray($request ?? $_REQUEST);
+    public function __construct(?array $server = null, ?array $get = null, ?array $post = null, ?array $cookie = null, ?array $files = null, ?array $request = null)
+    {
+        $this->set_server_array($server ?? $_SERVER)->set_get_array($get ?? $_GET)->set_post_array($post ?? $_POST)->set_cookie_array($cookie ?? $_COOKIE)->set_files_array($files ?? $_FILES)->set_request_array($request ?? $_REQUEST);
     }
-
     /**
      * Get a value from $_SERVER.
      *
@@ -108,53 +86,45 @@ final class Superglobals
     {
         return $this->server[$key] ?? $default;
     }
-
     /**
      * Set a value in $_SERVER.
      *
      * @param server_items $value
      */
-    public function setServer(string $key, array|float|int|string $value): self
+    public function set_server(string $key, array|float|int|string $value): self
     {
         $this->server[$key] = $value;
-        $_SERVER[$key]      = $value;
-
+        $_SERVER[$key] = $value;
         return $this;
     }
-
     /**
      * Remove a key from $_SERVER.
      */
-    public function unsetServer(string $key): self
+    public function unset_server(string $key): self
     {
         unset($this->server[$key], $_SERVER[$key]);
-
         return $this;
     }
-
     /**
      * Get all $_SERVER values.
      *
      * @return array<string, server_items>
      */
-    public function getServerArray(): array
+    public function get_server_array(): array
     {
         return $this->server;
     }
-
     /**
      * Set the entire $_SERVER array.
      *
      * @param array<string, server_items> $array
      */
-    public function setServerArray(array $array): self
+    public function set_server_array(array $array): self
     {
         $this->server = $array;
-        $_SERVER      = $array;
-
+        $_SERVER = $array;
         return $this;
     }
-
     /**
      * Get a value from $_GET.
      *
@@ -166,53 +136,45 @@ final class Superglobals
     {
         return $this->get[$key] ?? $default;
     }
-
     /**
      * Set a value in $_GET.
      *
      * @param get_items $value
      */
-    public function setGet(string $key, array|string $value): self
+    public function set_get(string $key, array|string $value): self
     {
         $this->get[$key] = $value;
-        $_GET[$key]      = $value;
-
+        $_GET[$key] = $value;
         return $this;
     }
-
     /**
      * Remove a key from $_GET.
      */
-    public function unsetGet(string $key): self
+    public function unset_get(string $key): self
     {
         unset($this->get[$key], $_GET[$key]);
-
         return $this;
     }
-
     /**
      * Get all $_GET values.
      *
      * @return array<string, get_items>
      */
-    public function getGetArray(): array
+    public function get_get_array(): array
     {
         return $this->get;
     }
-
     /**
      * Set the entire $_GET array.
      *
      * @param array<string, get_items> $array
      */
-    public function setGetArray(array $array): self
+    public function set_get_array(array $array): self
     {
         $this->get = $array;
-        $_GET      = $array;
-
+        $_GET = $array;
         return $this;
     }
-
     /**
      * Get a value from $_POST.
      *
@@ -224,53 +186,45 @@ final class Superglobals
     {
         return $this->post[$key] ?? $default;
     }
-
     /**
      * Set a value in $_POST.
      *
      * @param post_items $value
      */
-    public function setPost(string $key, array|string $value): self
+    public function set_post(string $key, array|string $value): self
     {
         $this->post[$key] = $value;
-        $_POST[$key]      = $value;
-
+        $_POST[$key] = $value;
         return $this;
     }
-
     /**
      * Remove a key from $_POST.
      */
-    public function unsetPost(string $key): self
+    public function unset_post(string $key): self
     {
         unset($this->post[$key], $_POST[$key]);
-
         return $this;
     }
-
     /**
      * Get all $_POST values.
      *
      * @return array<string, post_items>
      */
-    public function getPostArray(): array
+    public function get_post_array(): array
     {
         return $this->post;
     }
-
     /**
      * Set the entire $_POST array.
      *
      * @param array<string, post_items> $array
      */
-    public function setPostArray(array $array): self
+    public function set_post_array(array $array): self
     {
         $this->post = $array;
-        $_POST      = $array;
-
+        $_POST = $array;
         return $this;
     }
-
     /**
      * Get a value from $_COOKIE.
      *
@@ -282,53 +236,45 @@ final class Superglobals
     {
         return $this->cookie[$key] ?? $default;
     }
-
     /**
      * Set a value in $_COOKIE.
      *
      * @param cookie_items $value
      */
-    public function setCookie(string $key, array|string $value): self
+    public function set_cookie(string $key, array|string $value): self
     {
         $this->cookie[$key] = $value;
-        $_COOKIE[$key]      = $value;
-
+        $_COOKIE[$key] = $value;
         return $this;
     }
-
     /**
      * Remove a key from $_COOKIE.
      */
-    public function unsetCookie(string $key): self
+    public function unset_cookie(string $key): self
     {
         unset($this->cookie[$key], $_COOKIE[$key]);
-
         return $this;
     }
-
     /**
      * Get all $_COOKIE values.
      *
      * @return array<string, cookie_items>
      */
-    public function getCookieArray(): array
+    public function get_cookie_array(): array
     {
         return $this->cookie;
     }
-
     /**
      * Set the entire $_COOKIE array.
      *
      * @param array<string, cookie_items> $array
      */
-    public function setCookieArray(array $array): self
+    public function set_cookie_array(array $array): self
     {
         $this->cookie = $array;
-        $_COOKIE      = $array;
-
+        $_COOKIE = $array;
         return $this;
     }
-
     /**
      * Get a value from $_REQUEST.
      *
@@ -340,76 +286,65 @@ final class Superglobals
     {
         return $this->request[$key] ?? $default;
     }
-
     /**
      * Set a value in $_REQUEST.
      *
      * @param request_items $value
      */
-    public function setRequest(string $key, array|string $value): self
+    public function set_request(string $key, array|string $value): self
     {
         $this->request[$key] = $value;
-        $_REQUEST[$key]      = $value;
-
+        $_REQUEST[$key] = $value;
         return $this;
     }
-
     /**
      * Remove a key from $_REQUEST.
      */
-    public function unsetRequest(string $key): self
+    public function unset_request(string $key): self
     {
         unset($this->request[$key], $_REQUEST[$key]);
-
         return $this;
     }
-
     /**
      * Get all $_REQUEST values.
      *
      * @return array<string, request_items>
      */
-    public function getRequestArray(): array
+    public function get_request_array(): array
     {
         return $this->request;
     }
-
     /**
      * Set the entire $_REQUEST array.
      *
      * @param array<string, request_items> $array
      */
-    public function setRequestArray(array $array): self
+    public function set_request_array(array $array): self
     {
         $this->request = $array;
-        $_REQUEST      = $array;
-
+        $_REQUEST = $array;
         return $this;
     }
-
     /**
      * Get all $_FILES values.
      *
      * @return array<string, files_items>
      */
-    public function getFilesArray(): array
+    public function get_files_array(): array
     {
         return $this->files;
     }
-
     /**
      * Set the entire $_FILES array.
      *
      * @param array<string, files_items> $array
      */
-    public function setFilesArray(array $array): self
+    public function set_files_array(array $array): self
     {
         $this->files = $array;
-        $_FILES      = $array;
-
+        $_FILES = $array;
         return $this;
     }
-
     /**
      * Get a superglobal array by name.
      *
@@ -419,21 +354,18 @@ final class Superglobals
      *
      * @throws InvalidArgumentException If the superglobal name is invalid
      */
-    public function getGlobalArray(string $name): array
+    public function get_global_array(string $name): array
     {
         return match ($name) {
-            'server'  => $this->server,
-            'get'     => $this->get,
-            'post'    => $this->post,
-            'cookie'  => $this->cookie,
-            'files'   => $this->files,
+            'server' => $this->server,
+            'get' => $this->get,
+            'post' => $this->post,
+            'cookie' => $this->cookie,
+            'files' => $this->files,
             'request' => $this->request,
-            default   => throw new InvalidArgumentException(
-                "Invalid superglobal name '{$name}'. Must be one of: server, get, post, cookie, files, request.",
-            ),
+            default => throw new InvalidArgumentException("Invalid superglobal name '{$name}'. Must be one of: server, get, post, cookie, files, request."),
         };
     }
-
     /**
      * Set a superglobal array by name.
      *
@@ -442,18 +374,16 @@ final class Superglobals
      *
      * @throws InvalidArgumentException If the superglobal name is invalid
      */
-    public function setGlobalArray(string $name, array $array): void
+    public function set_global_array(string $name, array $array): void
     {
         match ($name) {
-            'server'  => $this->setServerArray($array),
-            'get'     => $this->setGetArray($array),
-            'post'    => $this->setPostArray($array),
-            'cookie'  => $this->setCookieArray($array),
-            'files'   => $this->setFilesArray($array),
-            'request' => $this->setRequestArray($array),
-            default   => throw new InvalidArgumentException(
-                "Invalid superglobal name '{$name}'. Must be one of: server, get, post, cookie, files, request.",
-            ),
+            'server' => $this->set_server_array($array),
+            'get' => $this->set_get_array($array),
+            'post' => $this->set_post_array($array),
+            'cookie' => $this->set_cookie_array($array),
+            'files' => $this->set_files_array($array),
+            'request' => $this->set_request_array($array),
+            default => throw new InvalidArgumentException("Invalid superglobal name '{$name}'. Must be one of: server, get, post, cookie, files, request."),
         };
     }
 }

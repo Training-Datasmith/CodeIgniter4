@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Log\Handlers;
 
-namespace CodeIgniter\Log\Handlers;
-
-use CodeIgniter\Log\Exceptions\LogException;
-
+use Code_Igniter\Log\Exceptions\Log_Exception;
 /**
  * Log handler that writes to PHP's `error_log()`
  *
  * @see \CodeIgniter\Log\Handlers\ErrorlogHandlerTest
  */
-class ErrorlogHandler extends BaseHandler
+class Errorlog_Handler extends Base_Handler
 {
     /**
      * Message is sent to PHP's system logger, using the Operating System's
@@ -28,20 +25,17 @@ class ErrorlogHandler extends BaseHandler
      * configuration directive is set to.
      */
     public const TYPE_OS = 0;
-
     /**
      * Message is sent directly to the SAPI logging handler.
      */
     public const TYPE_SAPI = 4;
-
     /**
      * Says where the error should go. Currently supported are
      * 0 (`TYPE_OS`) and 4 (`TYPE_SAPI`).
      *
      * @var 0|4
      */
-    protected $messageType = 0;
-
+    protected $message_type = 0;
     /**
      * Constructor.
      *
@@ -50,16 +44,12 @@ class ErrorlogHandler extends BaseHandler
     public function __construct(array $config = [])
     {
         parent::__construct($config);
-
-        $messageType = $config['messageType'] ?? self::TYPE_OS;
-
-        if (! is_int($messageType) || ! in_array($messageType, [self::TYPE_OS, self::TYPE_SAPI], true)) {
-            throw LogException::forInvalidMessageType(print_r($messageType, true));
+        $message_type = $config['messageType'] ?? self::TYPE_OS;
+        if (!is_int($message_type) || !in_array($message_type, [self::TYPE_OS, self::TYPE_SAPI], true)) {
+            throw Log_Exception::for_invalid_message_type(print_r($message_type, true));
         }
-
-        $this->messageType = $messageType;
+        $this->message_type = $message_type;
     }
-
     /**
      * Handles logging the message.
      * If the handler returns false, then execution of handlers
@@ -72,10 +62,8 @@ class ErrorlogHandler extends BaseHandler
     public function handle($level, $message): bool
     {
         $message = strtoupper($level) . ' --> ' . $message . "\n";
-
-        return $this->errorLog($message, $this->messageType);
+        return $this->error_log($message, $this->message_type);
     }
-
     /**
      * Extracted call to `error_log()` in order to be tested.
      *
@@ -83,8 +71,8 @@ class ErrorlogHandler extends BaseHandler
      *
      * @codeCoverageIgnore
      */
-    protected function errorLog(string $message, int $messageType): bool
+    protected function error_log(string $message, int $message_type): bool
     {
-        return error_log($message, $messageType);
+        return error_log($message, $message_type);
     }
 }

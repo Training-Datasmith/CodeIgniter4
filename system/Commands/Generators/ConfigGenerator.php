@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,67 +9,52 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Generators;
 
-namespace CodeIgniter\Commands\Generators;
-
-use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\GeneratorTrait;
-
+use Code_Igniter\CLI\Base_Command;
+use Code_Igniter\CLI\Generator_Trait;
 /**
  * Generates a skeleton config file.
  */
-class ConfigGenerator extends BaseCommand
+class Config_Generator extends Base_Command
 {
-    use GeneratorTrait;
-
+    use Generator_Trait;
     /**
      * The Command's Group
      *
      * @var string
      */
     protected $group = 'Generators';
-
     /**
      * The Command's Name
      *
      * @var string
      */
     protected $name = 'make:config';
-
     /**
      * The Command's Description
      *
      * @var string
      */
     protected $description = 'Generates a new config file.';
-
     /**
      * The Command's Usage
      *
      * @var string
      */
     protected $usage = 'make:config <name> [options]';
-
     /**
      * The Command's Arguments
      *
      * @var array<string, string>
      */
-    protected $arguments = [
-        'name' => 'The config class name.',
-    ];
-
+    protected $arguments = ['name' => 'The config class name.'];
     /**
      * The Command's Options
      *
      * @var array<string, string>
      */
-    protected $options = [
-        '--namespace' => 'Set root namespace. Default: "APP_NAMESPACE".',
-        '--suffix'    => 'Append the component title to the class name (e.g. User => UserConfig).',
-        '--force'     => 'Force overwrite existing file.',
-    ];
-
+    protected $options = ['--namespace' => 'Set root namespace. Default: "APP_NAMESPACE".', '--suffix' => 'Append the component title to the class name (e.g. User => UserConfig).', '--force' => 'Force overwrite existing file.'];
     /**
      * Actually execute a command.
      */
@@ -78,23 +62,19 @@ class ConfigGenerator extends BaseCommand
     {
         $this->component = 'Config';
         $this->directory = 'Config';
-        $this->template  = 'config.tpl.php';
-
-        $this->classNameLang = 'CLI.generator.className.config';
-        $this->generateClass($params);
+        $this->template = 'config.tpl.php';
+        $this->class_name_lang = 'CLI.generator.className.config';
+        $this->generate_class($params);
     }
-
     /**
      * Prepare options and do the necessary replacements.
      */
     protected function prepare(string $class): string
     {
-        $namespace = $this->getOption('namespace') ?? APP_NAMESPACE;
-
+        $namespace = $this->get_option('namespace') ?? APP_NAMESPACE;
         if ($namespace === APP_NAMESPACE) {
             $class = substr($class, strlen($namespace . '\\'));
         }
-
-        return $this->parseTemplate($class);
+        return $this->parse_template($class);
     }
 }

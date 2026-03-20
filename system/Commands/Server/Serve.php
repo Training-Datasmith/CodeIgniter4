@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Server;
 
-namespace CodeIgniter\Commands\Server;
-
-use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-
+use Code_Igniter\CLI\Base_Command;
+use Code_Igniter\CLI\CLI;
 /**
  * Launch the PHP development server
  *
@@ -23,7 +20,7 @@ use CodeIgniter\CLI\CLI;
  *
  * @codeCoverageIgnore
  */
-class Serve extends BaseCommand
+class Serve extends Base_Command
 {
     /**
      * Group
@@ -31,88 +28,70 @@ class Serve extends BaseCommand
      * @var string
      */
     protected $group = 'CodeIgniter';
-
     /**
      * Name
      *
      * @var string
      */
     protected $name = 'serve';
-
     /**
      * Description
      *
      * @var string
      */
     protected $description = 'Launches the CodeIgniter PHP-Development Server.';
-
     /**
      * Usage
      *
      * @var string
      */
     protected $usage = 'serve';
-
     /**
      * Arguments
      *
      * @var array<string, string>
      */
     protected $arguments = [];
-
     /**
      * The current port offset.
      *
      * @var int
      */
-    protected $portOffset = 0;
-
+    protected $port_offset = 0;
     /**
      * The max number of ports to attempt to serve from
      *
      * @var int
      */
     protected $tries = 10;
-
     /**
      * Options
      *
      * @var array<string, string>
      */
-    protected $options = [
-        '--php'  => 'The PHP Binary [default: "PHP_BINARY"]',
-        '--host' => 'The HTTP Host [default: "localhost"]',
-        '--port' => 'The HTTP Host Port [default: "8080"]',
-    ];
-
+    protected $options = ['--php' => 'The PHP Binary [default: "PHP_BINARY"]', '--host' => 'The HTTP Host [default: "localhost"]', '--port' => 'The HTTP Host Port [default: "8080"]'];
     /**
      * Run the server
      */
     public function run(array $params)
     {
         // Collect any user-supplied options and apply them.
-        $php  = escapeshellarg(CLI::getOption('php') ?? PHP_BINARY);
-        $host = escapeshellarg(CLI::getOption('host') ?? 'localhost');
-        $port = (int) (CLI::getOption('port') ?? 8080) + $this->portOffset;
-
+        $php = escapeshellarg(CLI::get_option('php') ?? PHP_BINARY);
+        $host = escapeshellarg(CLI::get_option('host') ?? 'localhost');
+        $port = (int) (CLI::get_option('port') ?? 8080) + $this->port_offset;
         // Get the party started.
         CLI::write('CodeIgniter development server started on http://' . $host . ':' . $port, 'green');
         CLI::write('Press Control-C to stop.');
-
         // Set the Front Controller path as Document Root.
         $docroot = escapeshellarg(FCPATH);
-
         // Mimic Apache's mod_rewrite functionality with user settings.
         $rewrite = escapeshellarg(SYSTEMPATH . 'rewrite.php');
-
         // Call PHP's built-in webserver, making sure to set our
         // base path to the public folder, and to use the rewrite file
         // to ensure our environment is set and it simulates basic mod_rewrite.
         passthru($php . ' -S ' . $host . ':' . $port . ' -t ' . $docroot . ' ' . $rewrite, $status);
-
-        if ($status !== EXIT_SUCCESS && $this->portOffset < $this->tries) {
-            $this->portOffset++;
-
+        if ($status !== EXIT_SUCCESS && $this->port_offset < $this->tries) {
+            $this->port_offset++;
             $this->run($params);
         }
     }

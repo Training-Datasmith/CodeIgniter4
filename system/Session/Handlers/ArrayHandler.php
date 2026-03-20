@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,20 +9,18 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Session\Handlers;
+namespace Code_Igniter\Session\Handlers;
 
 /**
  * Session handler using static array for storage.
  * Intended only for use during testing.
  */
-class ArrayHandler extends BaseHandler
+class Array_Handler extends Base_Handler
 {
     /**
      * @var array<string, mixed>
      */
     protected static $cache = [];
-
     /**
      * Re-initialize existing session, or creates a new one.
      *
@@ -34,7 +31,6 @@ class ArrayHandler extends BaseHandler
     {
         return true;
     }
-
     /**
      * Reads the session data from the session storage, and returns the results.
      *
@@ -44,7 +40,6 @@ class ArrayHandler extends BaseHandler
     {
         return '';
     }
-
     /**
      * Writes the session data to the session storage.
      *
@@ -55,7 +50,6 @@ class ArrayHandler extends BaseHandler
     {
         return true;
     }
-
     /**
      * Closes the current session.
      */
@@ -63,7 +57,6 @@ class ArrayHandler extends BaseHandler
     {
         return true;
     }
-
     /**
      * Destroys a session.
      *
@@ -73,7 +66,6 @@ class ArrayHandler extends BaseHandler
     {
         return true;
     }
-
     /**
      * Cleans up expired sessions.
      *

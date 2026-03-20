@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Debug\Toolbar\Collectors;
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
 /**
  * Events collector
  */
-class Events extends BaseCollector
+class Events extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -24,24 +22,21 @@ class Events extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = true;
-
+    protected $has_timeline = true;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = true;
-
+    protected $has_tab_content = true;
     /**
      * Whether this collector has data that
      * should be shown in the Vars tab.
      *
      * @var bool
      */
-    protected $hasVarData = false;
-
+    protected $has_var_data = false;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -49,70 +44,46 @@ class Events extends BaseCollector
      * @var string
      */
     protected $title = 'Events';
-
     /**
      * Child classes should implement this to return the timeline data
      * formatted for correct usage.
      */
-    protected function formatTimelineData(): array
+    protected function format_timeline_data(): array
     {
         $data = [];
-
-        $rows = \CodeIgniter\Events\Events::getPerformanceLogs();
-
+        $rows = \Code_Igniter\Events\Events::get_performance_logs();
         foreach ($rows as $info) {
-            $data[] = [
-                'name'      => 'Event: ' . $info['event'],
-                'component' => 'Events',
-                'start'     => $info['start'],
-                'duration'  => $info['end'] - $info['start'],
-            ];
+            $data[] = ['name' => 'Event: ' . $info['event'], 'component' => 'Events', 'start' => $info['start'], 'duration' => $info['end'] - $info['start']];
         }
-
         return $data;
     }
-
     /**
      * Returns the data of this collector to be formatted in the toolbar
      */
     public function display(): array
     {
-        $data = [
-            'events' => [],
-        ];
-
-        foreach (\CodeIgniter\Events\Events::getPerformanceLogs() as $row) {
+        $data = ['events' => []];
+        foreach (\Code_Igniter\Events\Events::get_performance_logs() as $row) {
             $key = $row['event'];
-
-            if (! array_key_exists($key, $data['events'])) {
-                $data['events'][$key] = [
-                    'event'    => $key,
-                    'duration' => ($row['end'] - $row['start']) * 1000,
-                    'count'    => 1,
-                ];
-
+            if (!array_key_exists($key, $data['events'])) {
+                $data['events'][$key] = ['event' => $key, 'duration' => ($row['end'] - $row['start']) * 1000, 'count' => 1];
                 continue;
             }
-
             $data['events'][$key]['duration'] += ($row['end'] - $row['start']) * 1000;
             $data['events'][$key]['count']++;
         }
-
         foreach ($data['events'] as &$row) {
             $row['duration'] = number_format($row['duration'], 2);
         }
-
         return $data;
     }
-
     /**
      * Gets the "badge" value for the button.
      */
-    public function getBadgeValue(): int
+    public function get_badge_value(): int
     {
-        return count(\CodeIgniter\Events\Events::getPerformanceLogs());
+        return count(\Code_Igniter\Events\Events::get_performance_logs());
     }
-
     /**
      * Display the icon.
      *

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,99 +9,89 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Cookie\Exceptions;
 
-namespace CodeIgniter\Cookie\Exceptions;
-
-use CodeIgniter\Exceptions\FrameworkException;
-
+use Code_Igniter\Exceptions\Framework_Exception;
 /**
  * CookieException is thrown for invalid cookies initialization and management.
  */
-class CookieException extends FrameworkException
+class Cookie_Exception extends Framework_Exception
 {
     /**
      * Thrown for invalid type given for the "Expires" attribute.
      *
      * @return static
      */
-    public static function forInvalidExpiresTime(string $type)
+    public static function for_invalid_expires_time(string $type)
     {
         return new static(lang('Cookie.invalidExpiresTime', [$type]));
     }
-
     /**
      * Thrown when the value provided for "Expires" is invalid.
      *
      * @return static
      */
-    public static function forInvalidExpiresValue()
+    public static function for_invalid_expires_value()
     {
         return new static(lang('Cookie.invalidExpiresValue'));
     }
-
     /**
      * Thrown when the cookie name contains invalid characters per RFC 2616.
      *
      * @return static
      */
-    public static function forInvalidCookieName(string $name)
+    public static function for_invalid_cookie_name(string $name)
     {
         return new static(lang('Cookie.invalidCookieName', [$name]));
     }
-
     /**
      * Thrown when the cookie name is empty.
      *
      * @return static
      */
-    public static function forEmptyCookieName()
+    public static function for_empty_cookie_name()
     {
         return new static(lang('Cookie.emptyCookieName'));
     }
-
     /**
      * Thrown when using the `__Secure-` prefix but the `Secure` attribute
      * is not set to true.
      *
      * @return static
      */
-    public static function forInvalidSecurePrefix()
+    public static function for_invalid_secure_prefix()
     {
         return new static(lang('Cookie.invalidSecurePrefix'));
     }
-
     /**
      * Thrown when using the `__Host-` prefix but the `Secure` flag is not
      * set, the `Domain` is set, and the `Path` is not `/`.
      *
      * @return static
      */
-    public static function forInvalidHostPrefix()
+    public static function for_invalid_host_prefix()
     {
         return new static(lang('Cookie.invalidHostPrefix'));
     }
-
     /**
      * Thrown when the `SameSite` attribute given is not of the valid types.
      *
      * @return static
      */
-    public static function forInvalidSameSite(string $sameSite)
+    public static function for_invalid_same_site(string $same_site)
     {
-        return new static(lang('Cookie.invalidSameSite', [$sameSite]));
+        return new static(lang('Cookie.invalidSameSite', [$same_site]));
     }
-
     /**
      * Thrown when the `SameSite` attribute is set to `None` but the `Secure`
      * attribute is not set.
      *
      * @return static
      */
-    public static function forInvalidSameSiteNone()
+    public static function for_invalid_same_site_none()
     {
         return new static(lang('Cookie.invalidSameSiteNone'));
     }
-
     /**
      * Thrown when the `CookieStore` class is filled with invalid Cookie objects.
      *
@@ -110,11 +99,10 @@ class CookieException extends FrameworkException
      *
      * @return static
      */
-    public static function forInvalidCookieInstance(array $data)
+    public static function for_invalid_cookie_instance(array $data)
     {
         return new static(lang('Cookie.invalidCookieInstance', $data));
     }
-
     /**
      * Thrown when the queried Cookie object does not exist in the cookie collection.
      *
@@ -122,7 +110,7 @@ class CookieException extends FrameworkException
      *
      * @return static
      */
-    public static function forUnknownCookieInstance(array $data)
+    public static function for_unknown_cookie_instance(array $data)
     {
         return new static(lang('Cookie.unknownCookieInstance', $data));
     }

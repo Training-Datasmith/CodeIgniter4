@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Database;
 
-namespace CodeIgniter\Database;
-
-use CodeIgniter\Config\BaseConfig;
-use CodeIgniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Config\Base_Config;
+use Code_Igniter\Exceptions\InvalidArgumentException;
 use Config\Database as DbConfig;
-
 /**
  * @see \CodeIgniter\Database\ConfigTest
  */
-class Config extends BaseConfig
+class Config extends Base_Config
 {
     /**
      * Cache for instance of any connections that
@@ -29,7 +26,6 @@ class Config extends BaseConfig
      * @var array
      */
     protected static $instances = [];
-
     /**
      * The main instance used to manage all of
      * our open database connections.
@@ -37,7 +33,6 @@ class Config extends BaseConfig
      * @var Database|null
      */
     protected static $factory;
-
     /**
      * Returns the database connection
      *
@@ -47,55 +42,43 @@ class Config extends BaseConfig
      *
      * @return BaseConnection
      */
-    public static function connect($group = null, bool $getShared = true)
+    public static function connect($group = null, bool $get_shared = true)
     {
         // If a DB connection is passed in, just pass it back
-        if ($group instanceof BaseConnection) {
+        if ($group instanceof Base_Connection) {
             return $group;
         }
-
         if (is_array($group)) {
             $config = $group;
-            $group  = 'custom-' . md5(json_encode($config));
+            $group = 'custom-' . md5(json_encode($config));
         } else {
-            $dbConfig = config(DbConfig::class);
-
+            $db_config = config(Db_Config::class);
             if ($group === null) {
-                $group = (ENVIRONMENT === 'testing') ? 'tests' : $dbConfig->defaultGroup;
+                $group = ENVIRONMENT === 'testing' ? 'tests' : $db_config->default_group;
             }
-
             assert(is_string($group));
-
-            if (! isset($dbConfig->{$group})) {
+            if (!isset($db_config->{$group})) {
                 throw new InvalidArgumentException('"' . $group . '" is not a valid database connection group.');
             }
-
-            $config = $dbConfig->{$group};
+            $config = $db_config->{$group};
         }
-
-        if ($getShared && isset(static::$instances[$group])) {
+        if ($get_shared && isset(static::$instances[$group])) {
             return static::$instances[$group];
         }
-
-        static::ensureFactory();
-
+        static::ensure_factory();
         $connection = static::$factory->load($config, $group);
-
-        if ($getShared) {
+        if ($get_shared) {
             static::$instances[$group] = $connection;
         }
-
         return $connection;
     }
-
     /**
      * Returns an array of all db connections currently made.
      */
-    public static function getConnections(): array
+    public static function get_connections(): array
     {
         return static::$instances;
     }
-
     /**
      * Loads and returns an instance of the Forge for the specified
      * database group, and loads the group if it hasn't been loaded yet.
@@ -107,10 +90,8 @@ class Config extends BaseConfig
     public static function forge($group = null)
     {
         $db = static::connect($group);
-
-        return static::$factory->loadForge($db);
+        return static::$factory->load_forge($db);
     }
-
     /**
      * Returns a new instance of the Database Utilities class.
      *
@@ -121,10 +102,8 @@ class Config extends BaseConfig
     public static function utils($group = null)
     {
         $db = static::connect($group);
-
-        return static::$factory->loadUtils($db);
+        return static::$factory->load_utils($db);
     }
-
     /**
      * Returns a new instance of the Database Seeder.
      *
@@ -134,38 +113,33 @@ class Config extends BaseConfig
      */
     public static function seeder(?string $group = null)
     {
-        $config = config(DbConfig::class);
-
+        $config = config(Db_Config::class);
         return new Seeder($config, static::connect($group));
     }
-
     /**
      * Ensures the database Connection Manager/Factory is loaded and ready to use.
      *
      * @return void
      */
-    protected static function ensureFactory()
+    protected static function ensure_factory()
     {
         if (static::$factory instanceof Database) {
             return;
         }
-
         static::$factory = new Database();
     }
-
     /**
      * Reconnect database connections for worker mode at the start of a request.
      *
      * This should be called at the beginning of each request in worker mode,
      * before the application runs.
      */
-    public static function reconnectForWorkerMode(): void
+    public static function reconnect_for_worker_mode(): void
     {
         foreach (static::$instances as $connection) {
             $connection->reconnect();
         }
     }
-
     /**
      * Cleanup database connections for worker mode.
      *
@@ -177,18 +151,16 @@ class Config extends BaseConfig
      *
      * Called at the END of each request to clean up state.
      */
-    public static function cleanupForWorkerMode(): void
+    public static function cleanup_for_worker_mode(): void
     {
         foreach (static::$instances as $group => $connection) {
-            if ($connection->transDepth > 0) {
+            if ($connection->trans_depth > 0) {
                 log_message('error', "Uncommitted transaction detected in database group '{$group}'. Transactions must be completed before request ends.");
-
-                while ($connection->transDepth > 0) {
-                    $connection->transRollback();
+                while ($connection->trans_depth > 0) {
+                    $connection->trans_rollback();
                 }
             }
-
-            $connection->resetTransStatus();
+            $connection->reset_trans_status();
         }
     }
 }

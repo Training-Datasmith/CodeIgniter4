@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,14 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\CLI;
 
-namespace CodeIgniter\CLI;
-
-use CodeIgniter\CodeIgniter;
+use Code_Igniter\Code_Igniter;
 use Config\App;
 use Config\Services;
 use Exception;
-
 /**
  * Console
  *
@@ -35,37 +32,28 @@ class Console
     public function run()
     {
         // Create CLIRequest
-        $appConfig = config(App::class);
-        Services::createRequest($appConfig, true);
+        $app_config = config(App::class);
+        Services::create_request($app_config, true);
         // Load Routes
-        service('routes')->loadRoutes();
-
-        $params  = array_merge(CLI::getSegments(), CLI::getOptions());
-        $params  = $this->parseParamsForHelpOption($params);
+        service('routes')->load_routes();
+        $params = array_merge(CLI::get_segments(), CLI::get_options());
+        $params = $this->parse_params_for_help_option($params);
         $command = array_shift($params) ?? 'list';
-
         return service('commands')->run($command, $params);
     }
-
     /**
      * Displays basic information about the Console.
      *
      * @return void
      */
-    public function showHeader(bool $suppress = false)
+    public function show_header(bool $suppress = false)
     {
         if ($suppress) {
             return;
         }
-
-        CLI::write(sprintf(
-            'CodeIgniter v%s Command Line Tool - Server Time: %s',
-            CodeIgniter::CI_VERSION,
-            date('Y-m-d H:i:s \\U\\T\\CP'),
-        ), 'green');
-        CLI::newLine();
+        CLI::write(sprintf('CodeIgniter v%s Command Line Tool - Server Time: %s', Code_Igniter::CI_VERSION, date('Y-m-d H:i:s \U\T\CP')), 'green');
+        CLI::new_line();
     }
-
     /**
      * Introspects the `$params` passed for presence of the
      * `--help` option.
@@ -76,15 +64,13 @@ class Console
      *
      * @param array<int|string, string|null> $params
      */
-    private function parseParamsForHelpOption(array $params): array
+    private function parse_params_for_help_option(array $params): array
     {
         if (array_key_exists('help', $params)) {
             unset($params['help']);
-
             $params = $params === [] ? ['list'] : $params;
             array_unshift($params, 'help');
         }
-
         return $params;
     }
 }

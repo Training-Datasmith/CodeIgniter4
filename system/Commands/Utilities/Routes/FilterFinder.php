@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,39 +9,33 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Utilities\Routes;
 
-namespace CodeIgniter\Commands\Utilities\Routes;
-
-use CodeIgniter\Exceptions\PageNotFoundException;
-use CodeIgniter\Filters\Filters;
-use CodeIgniter\HTTP\Exceptions\BadRequestException;
-use CodeIgniter\HTTP\Exceptions\RedirectException;
-use CodeIgniter\Router\Router;
+use Code_Igniter\Exceptions\Page_Not_Found_Exception;
+use Code_Igniter\Filters\Filters;
+use Code_Igniter\HTTP\Exceptions\Bad_Request_Exception;
+use Code_Igniter\HTTP\Exceptions\Redirect_Exception;
+use Code_Igniter\Router\Router;
 use Config\Feature;
-
 /**
  * Finds filters.
  *
  * @see \CodeIgniter\Commands\Utilities\Routes\FilterFinderTest
  */
-final readonly class FilterFinder
+final readonly class Filter_Finder
 {
     private Router $router;
     private Filters $filters;
-
     public function __construct(?Router $router = null, ?Filters $filters = null)
     {
-        $this->router  = $router ?? service('router');
+        $this->router = $router ?? service('router');
         $this->filters = $filters ?? service('filters');
     }
-
-    private function getRouteFilters(string $uri): array
+    private function get_route_filters(string $uri): array
     {
         $this->router->handle($uri);
-
-        return $this->router->getFilters();
+        return $this->router->get_filters();
     }
-
     /**
      * @param string $uri URI path to find filters for
      *
@@ -51,129 +44,86 @@ final readonly class FilterFinder
     public function find(string $uri): array
     {
         $this->filters->reset();
-
         try {
             // Add route filters
-            $routeFilters = $this->getRouteFilters($uri);
-            $this->filters->enableFilters($routeFilters, 'before');
-            $oldFilterOrder = config(Feature::class)->oldFilterOrder ?? false;
-            if (! $oldFilterOrder) {
-                $routeFilters = array_reverse($routeFilters);
+            $route_filters = $this->get_route_filters($uri);
+            $this->filters->enable_filters($route_filters, 'before');
+            $old_filter_order = config(Feature::class)->old_filter_order ?? false;
+            if (!$old_filter_order) {
+                $route_filters = array_reverse($route_filters);
             }
-            $this->filters->enableFilters($routeFilters, 'after');
-
+            $this->filters->enable_filters($route_filters, 'after');
             $this->filters->initialize($uri);
-
-            return $this->filters->getFilters();
-        } catch (RedirectException) {
-            return [
-                'before' => [],
-                'after'  => [],
-            ];
-        } catch (BadRequestException|PageNotFoundException) {
-            return [
-                'before' => ['<unknown>'],
-                'after'  => ['<unknown>'],
-            ];
+            return $this->filters->get_filters();
+        } catch (Redirect_Exception) {
+            return ['before' => [], 'after' => []];
+        } catch (Bad_Request_Exception|Page_Not_Found_Exception) {
+            return ['before' => ['<unknown>'], 'after' => ['<unknown>']];
         }
     }
-
     /**
      * @param string $uri URI path to find filters for
      *
      * @return array{before: list<string>, after: list<string>} array of classname:args
      */
-    public function findClasses(string $uri): array
+    public function find_classes(string $uri): array
     {
         $this->filters->reset();
-
         try {
             // Add route filters
-            $routeFilters = $this->getRouteFilters($uri);
-            $this->filters->enableFilters($routeFilters, 'before');
-            $oldFilterOrder = config(Feature::class)->oldFilterOrder ?? false;
-            if (! $oldFilterOrder) {
-                $routeFilters = array_reverse($routeFilters);
+            $route_filters = $this->get_route_filters($uri);
+            $this->filters->enable_filters($route_filters, 'before');
+            $old_filter_order = config(Feature::class)->old_filter_order ?? false;
+            if (!$old_filter_order) {
+                $route_filters = array_reverse($route_filters);
             }
-            $this->filters->enableFilters($routeFilters, 'after');
-
+            $this->filters->enable_filters($route_filters, 'after');
             $this->filters->initialize($uri);
-
-            $filterClassList = $this->filters->getFiltersClass();
-
-            $filterClasses = [
-                'before' => [],
-                'after'  => [],
-            ];
-
-            foreach ($filterClassList['before'] as $classInfo) {
-                $classWithArguments = ($classInfo[1] === []) ? $classInfo[0]
-                    : $classInfo[0] . ':' . implode(',', $classInfo[1]);
-
-                $filterClasses['before'][] = $classWithArguments;
+            $filter_class_list = $this->filters->get_filters_class();
+            $filter_classes = ['before' => [], 'after' => []];
+            foreach ($filter_class_list['before'] as $class_info) {
+                $class_with_arguments = $class_info[1] === [] ? $class_info[0] : $class_info[0] . ':' . implode(',', $class_info[1]);
+                $filter_classes['before'][] = $class_with_arguments;
             }
-
-            foreach ($filterClassList['after'] as $classInfo) {
-                $classWithArguments = ($classInfo[1] === []) ? $classInfo[0]
-                    : $classInfo[0] . ':' . implode(',', $classInfo[1]);
-
-                $filterClasses['after'][] = $classWithArguments;
+            foreach ($filter_class_list['after'] as $class_info) {
+                $class_with_arguments = $class_info[1] === [] ? $class_info[0] : $class_info[0] . ':' . implode(',', $class_info[1]);
+                $filter_classes['after'][] = $class_with_arguments;
             }
-
-            return $filterClasses;
-        } catch (RedirectException) {
-            return [
-                'before' => [],
-                'after'  => [],
-            ];
-        } catch (BadRequestException|PageNotFoundException) {
-            return [
-                'before' => ['<unknown>'],
-                'after'  => ['<unknown>'],
-            ];
+            return $filter_classes;
+        } catch (Redirect_Exception) {
+            return ['before' => [], 'after' => []];
+        } catch (Bad_Request_Exception|Page_Not_Found_Exception) {
+            return ['before' => ['<unknown>'], 'after' => ['<unknown>']];
         }
     }
-
     /**
      * Returns Required Filters
      *
      * @return array{before: list<string>, after:list<string>} array of aliases
      */
-    public function getRequiredFilters(): array
+    public function get_required_filters(): array
     {
-        [$requiredBefore] = $this->filters->getRequiredFilters('before');
-        [$requiredAfter]  = $this->filters->getRequiredFilters('after');
-
-        return [
-            'before' => $requiredBefore,
-            'after'  => $requiredAfter,
-        ];
+        [$required_before] = $this->filters->get_required_filters('before');
+        [$required_after] = $this->filters->get_required_filters('after');
+        return ['before' => $required_before, 'after' => $required_after];
     }
-
     /**
      * Returns Required Filter classes
      *
      * @return array{before: list<string>, after:list<string>}
      */
-    public function getRequiredFilterClasses(): array
+    public function get_required_filter_classes(): array
     {
-        $before = $this->filters->getRequiredClasses('before');
-        $after  = $this->filters->getRequiredClasses('after');
-
-        $requiredBefore = [];
-        $requiredAfter  = [];
-
-        foreach ($before as $classInfo) {
-            $requiredBefore[] = $classInfo[0];
+        $before = $this->filters->get_required_classes('before');
+        $after = $this->filters->get_required_classes('after');
+        $required_before = [];
+        $required_after = [];
+        foreach ($before as $class_info) {
+            $required_before[] = $class_info[0];
         }
-
-        foreach ($after as $classInfo) {
-            $requiredAfter[] = $classInfo[0];
+        foreach ($after as $class_info) {
+            $required_after[] = $class_info[0];
         }
-
-        return [
-            'before' => $requiredBefore,
-            'after'  => $requiredAfter,
-        ];
+        return ['before' => $required_before, 'after' => $required_after];
     }
 }

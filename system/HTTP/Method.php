@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\HTTP;
+namespace Code_Igniter\HTTP;
 
 /**
  * HTTP Method List
@@ -26,7 +24,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT
      */
     public const CONNECT = 'CONNECT';
-
     /**
      * Safe: No
      * Idempotent: Yes
@@ -35,7 +32,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE
      */
     public const DELETE = 'DELETE';
-
     /**
      * Safe: Yes
      * Idempotent: Yes
@@ -44,7 +40,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET
      */
     public const GET = 'GET';
-
     /**
      * Safe: Yes
      * Idempotent: Yes
@@ -53,7 +48,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD
      */
     public const HEAD = 'HEAD';
-
     /**
      * Safe: Yes
      * Idempotent: Yes
@@ -62,7 +56,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
      */
     public const OPTIONS = 'OPTIONS';
-
     /**
      * Safe: No
      * Idempotent: No
@@ -71,7 +64,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH
      */
     public const PATCH = 'PATCH';
-
     /**
      * Safe: No
      * Idempotent: No
@@ -80,7 +72,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
      */
     public const POST = 'POST';
-
     /**
      * Safe: No
      * Idempotent: Yes
@@ -89,7 +80,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT
      */
     public const PUT = 'PUT';
-
     /**
      * Safe: Yes
      * Idempotent: Yes
@@ -98,7 +88,6 @@ class Method
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
      */
     public const TRACE = 'TRACE';
-
     /**
      * Returns all HTTP methods.
      *
@@ -106,16 +95,6 @@ class Method
      */
     public static function all(): array
     {
-        return [
-            self::CONNECT,
-            self::DELETE,
-            self::GET,
-            self::HEAD,
-            self::OPTIONS,
-            self::PATCH,
-            self::POST,
-            self::PUT,
-            self::TRACE,
-        ];
+        return [self::CONNECT, self::DELETE, self::GET, self::HEAD, self::OPTIONS, self::PATCH, self::POST, self::PUT, self::TRACE];
     }
 }

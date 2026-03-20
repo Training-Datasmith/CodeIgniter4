@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,16 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\HTTP\Exceptions\RedirectException;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
+use Code_Igniter\HTTP\Exceptions\Redirect_Exception;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 use Config\App;
-
 /**
  * Force HTTPS filter
  */
-class ForceHTTPS implements FilterInterface
+class Force_Https implements Filter_Interface
 {
     /**
      * Force Secure Site Access? If the config value 'forceGlobalSecureRequests'
@@ -34,31 +31,26 @@ class ForceHTTPS implements FilterInterface
      *
      * @return ResponseInterface|null
      */
-    public function before(RequestInterface $request, $arguments = null)
+    public function before(Request_Interface $request, $arguments = null)
     {
         $config = config(App::class);
-
-        if ($config->forceGlobalSecureRequests !== true) {
+        if ($config->force_global_secure_requests !== true) {
             return null;
         }
-
         $response = service('response');
-
         try {
             force_https(YEAR, $request, $response);
-        } catch (RedirectException $e) {
-            return $e->getResponse();
+        } catch (Redirect_Exception $e) {
+            return $e->get_response();
         }
-
         return null;
     }
-
     /**
      * We don't have anything to do here.
      *
      * @param array|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null)
     {
         return null;
     }

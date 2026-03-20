@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,96 +23,73 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Text;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\MethodValue;
-use Kint\Value\Representation\SourceRepresentation;
-use Kint\Value\TraceFrameValue;
-use Kint\Value\TraceValue;
-
-class TracePlugin extends AbstractPlugin
+use Kint\Value\Abstract_Value;
+use Kint\Value\Method_Value;
+use Kint\Value\Representation\Source_Representation;
+use Kint\Value\Trace_Frame_Value;
+use Kint\Value\Trace_Value;
+class Trace_Plugin extends Abstract_Plugin
 {
-    public function render(AbstractValue $v): ?string
+    public function render(Abstract_Value $v): ?string
     {
-        if (!$v instanceof TraceValue) {
+        if (!$v instanceof Trace_Value) {
             return null;
         }
-
-        $c = $v->getContext();
-
+        $c = $v->get_context();
         $out = '';
-
-        if (0 === $c->getDepth()) {
-            $out .= $this->renderer->colorTitle($this->renderer->renderTitle($v)).PHP_EOL;
+        if (0 === $c->get_depth()) {
+            $out .= $this->renderer->color_title($this->renderer->render_title($v)) . PHP_EOL;
         }
-
-        $out .= $this->renderer->renderHeader($v).':'.PHP_EOL;
-
-        $indent = \str_repeat(' ', ($c->getDepth() + 1) * $this->renderer->indent_width);
-
+        $out .= $this->renderer->render_header($v) . ':' . PHP_EOL;
+        $indent = \str_repeat(' ', ($c->get_depth() + 1) * $this->renderer->indent_width);
         $i = 1;
-        foreach ($v->getContents() as $frame) {
-            if (!$frame instanceof TraceFrameValue) {
+        foreach ($v->get_contents() as $frame) {
+            if (!$frame instanceof Trace_Frame_Value) {
                 continue;
             }
-
-            $framedesc = $indent.\str_pad($i.': ', 4, ' ');
-
-            if (null !== ($file = $frame->getFile()) && null !== ($line = $frame->getLine())) {
-                $framedesc .= $this->renderer->ideLink($file, $line).PHP_EOL;
+            $framedesc = $indent . \str_pad($i . ': ', 4, ' ');
+            if (null !== ($file = $frame->get_file()) && null !== $line = $frame->get_line()) {
+                $framedesc .= $this->renderer->ide_link($file, $line) . PHP_EOL;
             } else {
-                $framedesc .= 'PHP internal call'.PHP_EOL;
+                $framedesc .= 'PHP internal call' . PHP_EOL;
             }
-
-            if ($callable = $frame->getCallable()) {
-                $framedesc .= $indent.'    ';
-
-                if ($callable instanceof MethodValue) {
-                    $framedesc .= $this->renderer->escape($callable->getContext()->owner_class.$callable->getContext()->getOperator());
+            if ($callable = $frame->get_callable()) {
+                $framedesc .= $indent . '    ';
+                if ($callable instanceof Method_Value) {
+                    $framedesc .= $this->renderer->escape($callable->get_context()->owner_class . $callable->get_context()->get_operator());
                 }
-
-                $framedesc .= $this->renderer->escape($callable->getDisplayName());
+                $framedesc .= $this->renderer->escape($callable->get_display_name());
             }
-
-            $out .= $this->renderer->colorType($framedesc).PHP_EOL.PHP_EOL;
-
-            $source = $frame->getRepresentation('source');
-
-            if ($source instanceof SourceRepresentation) {
-                $line_wanted = $source->getLine();
-                $source = $source->getSourceLines();
-
+            $out .= $this->renderer->color_type($framedesc) . PHP_EOL . PHP_EOL;
+            $source = $frame->get_representation('source');
+            if ($source instanceof Source_Representation) {
+                $line_wanted = $source->get_line();
+                $source = $source->get_source_lines();
                 // Trim empty lines from the start and end of the source
                 foreach ($source as $linenum => $line) {
                     if (\trim($line) || $linenum === $line_wanted) {
                         break;
                     }
-
                     unset($source[$linenum]);
                 }
-
                 foreach (\array_reverse($source, true) as $linenum => $line) {
                     if (\trim($line) || $linenum === $line_wanted) {
                         break;
                     }
-
                     unset($source[$linenum]);
                 }
-
                 foreach ($source as $lineno => $line) {
                     if ($lineno === $line_wanted) {
-                        $out .= $indent.$this->renderer->colorValue($this->renderer->escape($line)).PHP_EOL;
+                        $out .= $indent . $this->renderer->color_value($this->renderer->escape($line)) . PHP_EOL;
                     } else {
-                        $out .= $indent.$this->renderer->escape($line).PHP_EOL;
+                        $out .= $indent . $this->renderer->escape($line) . PHP_EOL;
                     }
                 }
             }
-
             ++$i;
         }
-
         return $out;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Res_Tful;
 
-namespace CodeIgniter\RESTful;
-
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * An extendable controller to help provide a UI for a resource.
  *
  * @see \CodeIgniter\RESTful\ResourcePresenterTest
  */
-class ResourcePresenter extends BaseResource
+class Resource_Presenter extends Base_Resource
 {
     /**
      * Present a view of resource objects
@@ -31,7 +28,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['index']);
     }
-
     /**
      * Present a view to present a specific resource object
      *
@@ -43,7 +39,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['show']);
     }
-
     /**
      * Present a view to present a new single resource object
      *
@@ -53,7 +48,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['new']);
     }
-
     /**
      * Process the creation/insertion of a new resource object.
      * This should be a POST.
@@ -64,7 +58,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['create']);
     }
-
     /**
      * Present a view to edit the properties of a specific resource object
      *
@@ -76,7 +69,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['edit']);
     }
-
     /**
      * Process the updating, full or partial, of a specific resource object.
      * This should be a POST.
@@ -89,7 +81,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['update']);
     }
-
     /**
      * Present a view to confirm the deletion of a specific resource object
      *
@@ -101,7 +92,6 @@ class ResourcePresenter extends BaseResource
     {
         return lang('RESTful.notImplemented', ['remove']);
     }
-
     /**
      * Process the deletion of a specific resource object
      *

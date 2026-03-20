@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,21 +9,19 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\Cookie\Cookie;
-use CodeIgniter\Cookie\CookieStore;
-use CodeIgniter\Cookie\Exceptions\CookieException;
-use CodeIgniter\Exceptions\InvalidArgumentException;
-use CodeIgniter\HTTP\Exceptions\HTTPException;
-use CodeIgniter\I18n\Time;
-use CodeIgniter\Pager\PagerInterface;
-use CodeIgniter\Security\Exceptions\SecurityException;
+use Code_Igniter\Cookie\Cookie;
+use Code_Igniter\Cookie\Cookie_Store;
+use Code_Igniter\Cookie\Exceptions\Cookie_Exception;
+use Code_Igniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\HTTP\Exceptions\Http_Exception;
+use Code_Igniter\I18n\Time;
+use Code_Igniter\Pager\Pager_Interface;
+use Code_Igniter\Security\Exceptions\Security_Exception;
 use Config\Cookie as CookieConfig;
 use DateTime;
 use DateTimeZone;
-
 /**
  * Response Trait
  *
@@ -33,7 +30,7 @@ use DateTimeZone;
  *
  * @see https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
  */
-trait ResponseTrait
+trait Response_Trait
 {
     /**
      * Content security policy handler
@@ -41,22 +38,19 @@ trait ResponseTrait
      * @var ContentSecurityPolicy
      */
     protected $CSP;
-
     /**
      * CookieStore instance.
      *
      * @var CookieStore
      */
-    protected $cookieStore;
-
+    protected $cookie_store;
     /**
      * Type of format the body is in.
      * Valid: html, json, xml
      *
      * @var string
      */
-    protected $bodyFormat = 'html';
-
+    protected $body_format = 'html';
     /**
      * Return an instance with the specified status code and, optionally, reason phrase.
      *
@@ -75,43 +69,34 @@ trait ResponseTrait
      *
      * @throws HTTPException For invalid status code arguments.
      */
-    public function setStatusCode(int $code, string $reason = '')
+    public function set_status_code(int $code, string $reason = '')
     {
         // Valid range?
         if ($code < 100 || $code > 599) {
-            throw HTTPException::forInvalidStatusCode($code);
+            throw Http_Exception::for_invalid_status_code($code);
         }
-
         // Unknown and no message?
-        if (! array_key_exists($code, static::$statusCodes) && ($reason === '')) {
-            throw HTTPException::forUnkownStatusCode($code);
+        if (!array_key_exists($code, static::$status_codes) && $reason === '') {
+            throw Http_Exception::for_unkown_status_code($code);
         }
-
-        $this->statusCode = $code;
-
-        $this->reason = ($reason !== '') ? $reason : static::$statusCodes[$code];
-
+        $this->status_code = $code;
+        $this->reason = $reason !== '' ? $reason : static::$status_codes[$code];
         return $this;
     }
-
     // --------------------------------------------------------------------
     // Convenience Methods
     // --------------------------------------------------------------------
-
     /**
      * Sets the date header
      *
      * @return $this
      */
-    public function setDate(DateTime $date)
+    public function set_date(DateTime $date)
     {
-        $date->setTimezone(new DateTimeZone('UTC'));
-
-        $this->setHeader('Date', $date->format('D, d M Y H:i:s') . ' GMT');
-
+        $date->set_timezone(new DateTimeZone('UTC'));
+        $this->set_header('Date', $date->format('D, d M Y H:i:s') . ' GMT');
         return $this;
     }
-
     /**
      * Set the Link Header
      *
@@ -121,51 +106,42 @@ trait ResponseTrait
      *
      * @todo Recommend moving to Pager
      */
-    public function setLink(PagerInterface $pager)
+    public function set_link(Pager_Interface $pager)
     {
-        $links    = '';
-        $previous = $pager->getPreviousPageURI();
-
+        $links = '';
+        $previous = $pager->get_previous_page_uri();
         if (is_string($previous) && $previous !== '') {
-            $links .= '<' . $pager->getPageURI($pager->getFirstPage()) . '>; rel="first",';
+            $links .= '<' . $pager->get_page_uri($pager->get_first_page()) . '>; rel="first",';
             $links .= '<' . $previous . '>; rel="prev"';
         }
-
-        $next = $pager->getNextPageURI();
-
+        $next = $pager->get_next_page_uri();
         if (is_string($next) && $next !== '' && is_string($previous) && $previous !== '') {
             $links .= ',';
         }
-
         if (is_string($next) && $next !== '') {
             $links .= '<' . $next . '>; rel="next",';
-            $links .= '<' . $pager->getPageURI($pager->getLastPage()) . '>; rel="last"';
+            $links .= '<' . $pager->get_page_uri($pager->get_last_page()) . '>; rel="last"';
         }
-
-        $this->setHeader('Link', $links);
-
+        $this->set_header('Link', $links);
         return $this;
     }
-
     /**
      * Sets the Content Type header for this response with the mime type
      * and, optionally, the charset.
      *
      * @return $this
      */
-    public function setContentType(string $mime, string $charset = 'UTF-8')
+    public function set_content_type(string $mime, string $charset = 'UTF-8')
     {
         // add charset attribute if not already there and provided as parm
-        if ((strpos($mime, 'charset=') < 1) && ($charset !== '')) {
+        if (strpos($mime, 'charset=') < 1 && $charset !== '') {
             $mime .= '; charset=' . $charset;
         }
-
-        $this->removeHeader('Content-Type'); // replace existing content type
-        $this->setHeader('Content-Type', $mime);
-
+        $this->remove_header('Content-Type');
+        // replace existing content type
+        $this->set_header('Content-Type', $mime);
         return $this;
     }
-
     /**
      * Converts the $body into JSON and sets the Content Type header.
      *
@@ -173,13 +149,11 @@ trait ResponseTrait
      *
      * @return $this
      */
-    public function setJSON($body, bool $unencoded = false)
+    public function set_json($body, bool $unencoded = false)
     {
-        $this->body = $this->formatBody($body, 'json' . ($unencoded ? '-unencoded' : ''));
-
+        $this->body = $this->format_body($body, 'json' . ($unencoded ? '-unencoded' : ''));
         return $this;
     }
-
     /**
      * Returns the current body, converted to JSON is it isn't already.
      *
@@ -187,17 +161,14 @@ trait ResponseTrait
      *
      * @throws InvalidArgumentException If the body property is not array.
      */
-    public function getJSON()
+    public function get_json()
     {
         $body = $this->body;
-
-        if ($this->bodyFormat !== 'json') {
-            $body = service('format')->getFormatter('application/json')->format($body);
+        if ($this->body_format !== 'json') {
+            $body = service('format')->get_formatter('application/json')->format($body);
         }
-
         return $body ?: null;
     }
-
     /**
      * Converts $body into XML, and sets the correct Content-Type.
      *
@@ -205,13 +176,11 @@ trait ResponseTrait
      *
      * @return $this
      */
-    public function setXML($body)
+    public function set_xml($body)
     {
-        $this->body = $this->formatBody($body, 'xml');
-
+        $this->body = $this->format_body($body, 'xml');
         return $this;
     }
-
     /**
      * Retrieves the current body into XML and returns it.
      *
@@ -219,17 +188,14 @@ trait ResponseTrait
      *
      * @throws InvalidArgumentException If the body property is not array.
      */
-    public function getXML()
+    public function get_xml()
     {
         $body = $this->body;
-
-        if ($this->bodyFormat !== 'xml') {
-            $body = service('format')->getFormatter('application/xml')->format($body);
+        if ($this->body_format !== 'xml') {
+            $body = service('format')->get_formatter('application/xml')->format($body);
         }
-
         return $body;
     }
-
     /**
      * Handles conversion of the data into the appropriate format,
      * and sets the correct Content-Type header for our response.
@@ -241,26 +207,22 @@ trait ResponseTrait
      *
      * @throws InvalidArgumentException If the body property is not string or array.
      */
-    protected function formatBody($body, string $format)
+    protected function format_body($body, string $format)
     {
-        $this->bodyFormat = ($format === 'json-unencoded' ? 'json' : $format);
-        $mime             = "application/{$this->bodyFormat}";
-        $this->setContentType($mime);
-
+        $this->body_format = $format === 'json-unencoded' ? 'json' : $format;
+        $mime = "application/{$this->body_format}";
+        $this->set_content_type($mime);
         // Nothing much to do for a string...
-        if (! is_string($body) || $format === 'json-unencoded') {
-            $body = service('format')->getFormatter($mime)->format($body);
+        if (!is_string($body) || $format === 'json-unencoded') {
+            $body = service('format')->get_formatter($mime)->format($body);
         }
-
         return $body;
     }
-
     // --------------------------------------------------------------------
     // Cache Control Methods
     //
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
     // --------------------------------------------------------------------
-
     /**
      * Sets the appropriate headers to ensure this response
      * is not cached by the browsers.
@@ -271,14 +233,12 @@ trait ResponseTrait
      *
      * @see DownloadResponse::noCache()
      */
-    public function noCache()
+    public function no_cache()
     {
-        $this->removeHeader('Cache-Control');
-        $this->setHeader('Cache-Control', ['no-store', 'max-age=0', 'no-cache']);
-
+        $this->remove_header('Cache-Control');
+        $this->set_header('Cache-Control', ['no-store', 'max-age=0', 'no-cache']);
         return $this;
     }
-
     /**
      * A shortcut method that allows the developer to set all of the
      * cache-control headers in one method call.
@@ -305,33 +265,26 @@ trait ResponseTrait
      *
      * @return $this
      */
-    public function setCache(array $options = [])
+    public function set_cache(array $options = [])
     {
         if ($options === []) {
             return $this;
         }
-
-        $this->removeHeader('Cache-Control');
-        $this->removeHeader('ETag');
-
+        $this->remove_header('Cache-Control');
+        $this->remove_header('ETag');
         // ETag
         if (isset($options['etag'])) {
-            $this->setHeader('ETag', $options['etag']);
+            $this->set_header('ETag', $options['etag']);
             unset($options['etag']);
         }
-
         // Last Modified
         if (isset($options['last-modified'])) {
-            $this->setLastModified($options['last-modified']);
-
+            $this->set_last_modified($options['last-modified']);
             unset($options['last-modified']);
         }
-
-        $this->setHeader('Cache-Control', $options);
-
+        $this->set_header('Cache-Control', $options);
         return $this;
     }
-
     /**
      * Sets the Last-Modified date header.
      *
@@ -342,22 +295,19 @@ trait ResponseTrait
      *
      * @return $this
      */
-    public function setLastModified($date)
+    public function set_last_modified($date)
     {
         if ($date instanceof DateTime) {
-            $date->setTimezone(new DateTimeZone('UTC'));
-            $this->setHeader('Last-Modified', $date->format('D, d M Y H:i:s') . ' GMT');
+            $date->set_timezone(new DateTimeZone('UTC'));
+            $this->set_header('Last-Modified', $date->format('D, d M Y H:i:s') . ' GMT');
         } elseif (is_string($date)) {
-            $this->setHeader('Last-Modified', $date);
+            $this->set_header('Last-Modified', $date);
         }
-
         return $this;
     }
-
     // --------------------------------------------------------------------
     // Output Methods
     // --------------------------------------------------------------------
-
     /**
      * Sends the output to the browser.
      *
@@ -368,72 +318,53 @@ trait ResponseTrait
         // If we're enforcing a Content Security Policy,
         // we need to give it a chance to build out it's headers.
         $this->CSP->finalize($this);
-
-        $this->sendHeaders();
-        $this->sendCookies();
-        $this->sendBody();
-
+        $this->send_headers();
+        $this->send_cookies();
+        $this->send_body();
         return $this;
     }
-
     /**
      * Sends the headers of this HTTP response to the browser.
      *
      * @return $this
      */
-    public function sendHeaders()
+    public function send_headers()
     {
         // Have the headers already been sent?
         if ($this->pretend || headers_sent()) {
             return $this;
         }
-
         // Per spec, MUST be sent with each request, if possible.
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
-        if (! isset($this->headers['Date']) && PHP_SAPI !== 'cli-server') {
-            $this->setDate(DateTime::createFromFormat('U', (string) Time::now()->getTimestamp()));
+        if (!isset($this->headers['Date']) && PHP_SAPI !== 'cli-server') {
+            $this->set_date(DateTime::create_from_format('U', (string) Time::now()->get_timestamp()));
         }
-
         // HTTP Status
-        header(sprintf('HTTP/%s %s %s', $this->getProtocolVersion(), $this->getStatusCode(), $this->getReasonPhrase()), true, $this->getStatusCode());
-
+        header(sprintf('HTTP/%s %s %s', $this->get_protocol_version(), $this->get_status_code(), $this->get_reason_phrase()), true, $this->get_status_code());
         // Send all of our headers
         foreach ($this->headers() as $name => $value) {
             if ($value instanceof Header) {
-                header(
-                    $name . ': ' . $value->getValueLine(),
-                    true,
-                    $this->getStatusCode(),
-                );
+                header($name . ': ' . $value->get_value_line(), true, $this->get_status_code());
             } else {
                 $replace = true;
-
                 foreach ($value as $header) {
-                    header(
-                        $name . ': ' . $header->getValueLine(),
-                        $replace,
-                        $this->getStatusCode(),
-                    );
+                    header($name . ': ' . $header->get_value_line(), $replace, $this->get_status_code());
                     $replace = false;
                 }
             }
         }
-
         return $this;
     }
-
     /**
      * Sends the Body of the message to the browser.
      *
      * @return $this
      */
-    public function sendBody()
+    public function send_body()
     {
         echo $this->body;
-
         return $this;
     }
-
     /**
      * Perform a redirect to a new URL, in two flavors: header or location.
      *
@@ -447,26 +378,18 @@ trait ResponseTrait
     public function redirect(string $uri, string $method = 'auto', ?int $code = null)
     {
         // IIS environment likely? Use 'refresh' for better compatibility
-        $superglobals   = service('superglobals');
-        $serverSoftware = $superglobals->server('SERVER_SOFTWARE');
-        if (
-            $method === 'auto'
-            && $serverSoftware !== null
-            && str_contains($serverSoftware, 'Microsoft-IIS')
-        ) {
+        $superglobals = service('superglobals');
+        $server_software = $superglobals->server('SERVER_SOFTWARE');
+        if ($method === 'auto' && $server_software !== null && str_contains($server_software, 'Microsoft-IIS')) {
             $method = 'refresh';
         } elseif ($method !== 'refresh' && $code === null) {
             // override status code for HTTP/1.1 & higher
-            $serverProtocol = $superglobals->server('SERVER_PROTOCOL');
-            $requestMethod  = $superglobals->server('REQUEST_METHOD');
-            if (
-                $serverProtocol !== null
-                && $requestMethod !== null
-                && $this->getProtocolVersion() >= 1.1
-            ) {
-                if ($requestMethod === Method::GET) {
+            $server_protocol = $superglobals->server('SERVER_PROTOCOL');
+            $request_method = $superglobals->server('REQUEST_METHOD');
+            if ($server_protocol !== null && $request_method !== null && $this->get_protocol_version() >= 1.1) {
+                if ($request_method === Method::GET) {
                     $code = 302;
-                } elseif (in_array($requestMethod, [Method::POST, Method::PUT, Method::DELETE], true)) {
+                } elseif (in_array($request_method, [Method::POST, Method::PUT, Method::DELETE], true)) {
                     // reference: https://en.wikipedia.org/wiki/Post/Redirect/Get
                     $code = 303;
                 } else {
@@ -474,21 +397,16 @@ trait ResponseTrait
                 }
             }
         }
-
         if ($code === null) {
             $code = 302;
         }
-
         match ($method) {
-            'refresh' => $this->setHeader('Refresh', '0;url=' . $uri),
-            default   => $this->setHeader('Location', $uri),
+            'refresh' => $this->set_header('Refresh', '0;url=' . $uri),
+            default => $this->set_header('Location', $uri),
         };
-
-        $this->setStatusCode($code);
-
+        $this->set_status_code($code);
         return $this;
     }
-
     /**
      * Set a cookie
      *
@@ -507,29 +425,16 @@ trait ResponseTrait
      *
      * @return $this
      */
-    public function setCookie(
-        $name,
-        $value = '',
-        $expire = 0,
-        $domain = '',
-        $path = '/',
-        $prefix = '',
-        $secure = null,
-        $httponly = null,
-        $samesite = null,
-    ) {
+    public function set_cookie($name, $value = '', $expire = 0, $domain = '', $path = '/', $prefix = '', $secure = null, $httponly = null, $samesite = null)
+    {
         if ($name instanceof Cookie) {
-            $this->cookieStore = $this->cookieStore->put($name);
-
+            $this->cookie_store = $this->cookie_store->put($name);
             return $this;
         }
-
-        $cookieConfig = config(CookieConfig::class);
-
-        $secure ??= $cookieConfig->secure;
-        $httponly ??= $cookieConfig->httponly;
-        $samesite ??= $cookieConfig->samesite;
-
+        $cookie_config = config(Cookie_Config::class);
+        $secure ??= $cookie_config->secure;
+        $httponly ??= $cookie_config->httponly;
+        $samesite ??= $cookie_config->samesite;
         if (is_array($name)) {
             // always leave 'name' in last place, as the loop will break otherwise, due to ${$item}
             foreach (['samesite', 'value', 'expire', 'domain', 'path', 'prefix', 'secure', 'httponly', 'name'] as $item) {
@@ -538,46 +443,31 @@ trait ResponseTrait
                 }
             }
         }
-
         if (is_numeric($expire)) {
-            $expire = $expire > 0 ? Time::now()->getTimestamp() + $expire : 0;
+            $expire = $expire > 0 ? Time::now()->get_timestamp() + $expire : 0;
         }
-
-        $cookie = new Cookie($name, $value, [
-            'expires'  => $expire ?: 0,
-            'domain'   => $domain,
-            'path'     => $path,
-            'prefix'   => $prefix,
-            'secure'   => $secure,
-            'httponly' => $httponly,
-            'samesite' => $samesite ?? '',
-        ]);
-
-        $this->cookieStore = $this->cookieStore->put($cookie);
-
+        $cookie = new Cookie($name, $value, ['expires' => $expire ?: 0, 'domain' => $domain, 'path' => $path, 'prefix' => $prefix, 'secure' => $secure, 'httponly' => $httponly, 'samesite' => $samesite ?? '']);
+        $this->cookie_store = $this->cookie_store->put($cookie);
         return $this;
     }
-
     /**
      * Returns the `CookieStore` instance.
      *
      * @return CookieStore
      */
-    public function getCookieStore()
+    public function get_cookie_store()
     {
-        return $this->cookieStore;
+        return $this->cookie_store;
     }
-
     /**
      * Checks to see if the Response has a specified cookie or not.
      */
-    public function hasCookie(string $name, ?string $value = null, string $prefix = ''): bool
+    public function has_cookie(string $name, ?string $value = null, string $prefix = ''): bool
     {
-        $prefix = $prefix !== '' ? $prefix : Cookie::setDefaults()['prefix']; // to retain BC
-
-        return $this->cookieStore->has($name, $prefix, $value);
+        $prefix = $prefix !== '' ? $prefix : Cookie::set_defaults()['prefix'];
+        // to retain BC
+        return $this->cookie_store->has($name, $prefix, $value);
     }
-
     /**
      * Returns the cookie
      *
@@ -586,134 +476,113 @@ trait ResponseTrait
      *
      * @return array<string, Cookie>|Cookie|null
      */
-    public function getCookie(?string $name = null, string $prefix = '')
+    public function get_cookie(?string $name = null, string $prefix = '')
     {
         if ((string) $name === '') {
-            return $this->cookieStore->display();
+            return $this->cookie_store->display();
         }
-
         try {
-            $prefix = $prefix !== '' ? $prefix : Cookie::setDefaults()['prefix']; // to retain BC
-
-            return $this->cookieStore->get($name, $prefix);
-        } catch (CookieException $e) {
+            $prefix = $prefix !== '' ? $prefix : Cookie::set_defaults()['prefix'];
+            // to retain BC
+            return $this->cookie_store->get($name, $prefix);
+        } catch (Cookie_Exception $e) {
             log_message('error', (string) $e);
-
             return null;
         }
     }
-
     /**
      * Sets a cookie to be deleted when the response is sent.
      *
      * @return $this
      */
-    public function deleteCookie(string $name = '', string $domain = '', string $path = '/', string $prefix = '')
+    public function delete_cookie(string $name = '', string $domain = '', string $path = '/', string $prefix = '')
     {
         if ($name === '') {
             return $this;
         }
-
-        $prefix = $prefix !== '' ? $prefix : Cookie::setDefaults()['prefix']; // to retain BC
-
+        $prefix = $prefix !== '' ? $prefix : Cookie::set_defaults()['prefix'];
+        // to retain BC
         $prefixed = $prefix . $name;
-        $store    = $this->cookieStore;
-        $found    = false;
-
+        $store = $this->cookie_store;
+        $found = false;
         /** @var Cookie $cookie */
         foreach ($store as $cookie) {
-            if ($cookie->getPrefixedName() === $prefixed) {
-                if ($domain !== $cookie->getDomain()) {
+            if ($cookie->get_prefixed_name() === $prefixed) {
+                if ($domain !== $cookie->get_domain()) {
                     continue;
                 }
-
-                if ($path !== $cookie->getPath()) {
+                if ($path !== $cookie->get_path()) {
                     continue;
                 }
-
-                $cookie = $cookie->withValue('')->withExpired();
-                $found  = true;
-
-                $this->cookieStore = $store->put($cookie);
+                $cookie = $cookie->with_value('')->with_expired();
+                $found = true;
+                $this->cookie_store = $store->put($cookie);
                 break;
             }
         }
-
-        if (! $found) {
-            $this->setCookie($name, '', 0, $domain, $path, $prefix);
+        if (!$found) {
+            $this->set_cookie($name, '', 0, $domain, $path, $prefix);
         }
-
         return $this;
     }
-
     /**
      * Returns all cookies currently set.
      *
      * @return array<string, Cookie>
      */
-    public function getCookies()
+    public function get_cookies()
     {
-        return $this->cookieStore->display();
+        return $this->cookie_store->display();
     }
-
     /**
      * Actually sets the cookies.
      *
      * @return void
      */
-    protected function sendCookies()
+    protected function send_cookies()
     {
         if ($this->pretend) {
             return;
         }
-
-        $this->dispatchCookies();
+        $this->dispatch_cookies();
     }
-
-    private function dispatchCookies(): void
+    private function dispatch_cookies(): void
     {
         /** @var IncomingRequest $request */
         $request = service('request');
-
-        foreach ($this->cookieStore->display() as $cookie) {
-            if ($cookie->isSecure() && ! $request->isSecure()) {
-                throw SecurityException::forInsecureCookie();
+        foreach ($this->cookie_store->display() as $cookie) {
+            if ($cookie->is_secure() && !$request->is_secure()) {
+                throw Security_Exception::for_insecure_cookie();
             }
-
-            $name    = $cookie->getPrefixedName();
-            $value   = $cookie->getValue();
-            $options = $cookie->getOptions();
-
-            if ($cookie->isRaw()) {
-                $this->doSetRawCookie($name, $value, $options);
+            $name = $cookie->get_prefixed_name();
+            $value = $cookie->get_value();
+            $options = $cookie->get_options();
+            if ($cookie->is_raw()) {
+                $this->do_set_raw_cookie($name, $value, $options);
             } else {
-                $this->doSetCookie($name, $value, $options);
+                $this->do_set_cookie($name, $value, $options);
             }
         }
-
-        $this->cookieStore->clear();
+        $this->cookie_store->clear();
     }
-
     /**
      * Extracted call to `setrawcookie()` in order to run unit tests on it.
      *
      * @codeCoverageIgnore
      */
-    private function doSetRawCookie(string $name, string $value, array $options): void
+    private function do_set_raw_cookie(string $name, string $value, array $options): void
     {
         setrawcookie($name, $value, $options);
     }
-
     /**
      * Extracted call to `setcookie()` in order to run unit tests on it.
      *
      * @codeCoverageIgnore
      */
-    private function doSetCookie(string $name, string $value, array $options): void
+    private function do_set_cookie(string $name, string $value, array $options): void
     {
         setcookie($name, $value, $options);
     }
-
     /**
      * Force a download.
      *
@@ -727,31 +596,26 @@ trait ResponseTrait
      *
      * @return DownloadResponse|null
      */
-    public function download(string $filename = '', $data = '', bool $setMime = false)
+    public function download(string $filename = '', $data = '', bool $set_mime = false)
     {
         if ($filename === '' || $data === '') {
             return null;
         }
-
         $filepath = '';
         if ($data === null) {
             $filepath = $filename;
             $filename = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filename));
             $filename = end($filename);
         }
-
-        $response = new DownloadResponse($filename, $setMime);
-
+        $response = new Download_Response($filename, $set_mime);
         if ($filepath !== '') {
-            $response->setFilePath($filepath);
+            $response->set_file_path($filepath);
         } elseif ($data !== null) {
-            $response->setBinary($data);
+            $response->set_binary($data);
         }
-
         return $response;
     }
-
-    public function getCSP(): ContentSecurityPolicy
+    public function get_csp(): Content_Security_Policy
     {
         return $this->CSP;
     }

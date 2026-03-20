@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,19 +23,17 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Value;
 
-use Kint\Value\Context\ContextInterface;
-use Kint\Value\Representation\RepresentationInterface;
+use Kint\Value\Context\Context_Interface;
+use Kint\Value\Representation\Representation_Interface;
 use OutOfRangeException;
-
 /**
  * @psalm-import-type ValueName from ContextInterface
  *
  * @psalm-type ValueFlags int-mask-of<AbstractValue::FLAG_*>
  */
-abstract class AbstractValue
+abstract class Abstract_Value
 {
     public const FLAG_NONE = 0;
     public const FLAG_GENERATED = 1 << 0;
@@ -44,35 +41,28 @@ abstract class AbstractValue
     public const FLAG_RECURSION = 1 << 2;
     public const FLAG_DEPTH_LIMIT = 1 << 3;
     public const FLAG_ARRAY_LIMIT = 1 << 4;
-
     /** @psalm-var ValueFlags */
     public int $flags = self::FLAG_NONE;
-
     /** @psalm-readonly */
-    protected ContextInterface $context;
+    protected Context_Interface $context;
     /** @psalm-readonly string */
     protected string $type;
-
     /** @psalm-var RepresentationInterface[] */
     protected array $representations = [];
-
-    public function __construct(ContextInterface $context, string $type)
+    public function __construct(Context_Interface $context, string $type)
     {
         $this->context = $context;
         $this->type = $type;
     }
-
     public function __clone()
     {
         $this->context = clone $this->context;
     }
-
-    public function getContext(): ContextInterface
+    public function get_context(): Context_Interface
     {
         return $this->context;
     }
-
-    public function getHint(): ?string
+    public function get_hint(): ?string
     {
         if (self::FLAG_NONE === $this->flags) {
             return null;
@@ -89,101 +79,83 @@ abstract class AbstractValue
         if ($this->flags & self::FLAG_ARRAY_LIMIT) {
             return 'array_limit';
         }
-
         return null;
     }
-
-    public function getType(): string
+    public function get_type(): string
     {
         return $this->type;
     }
-
-    public function addRepresentation(RepresentationInterface $rep, ?int $pos = null): void
+    public function add_representation(Representation_Interface $rep, ?int $pos = null): void
     {
-        if (isset($this->representations[$rep->getName()])) {
+        if (isset($this->representations[$rep->get_name()])) {
             throw new OutOfRangeException('Representation already exists');
         }
-
         if (null === $pos) {
-            $this->representations[$rep->getName()] = $rep;
+            $this->representations[$rep->get_name()] = $rep;
         } else {
-            $this->representations = \array_merge(
-                \array_slice($this->representations, 0, $pos),
-                [$rep->getName() => $rep],
-                \array_slice($this->representations, $pos)
-            );
+            $this->representations = \array_merge(\array_slice($this->representations, 0, $pos), [$rep->get_name() => $rep], \array_slice($this->representations, $pos));
         }
     }
-
-    public function replaceRepresentation(RepresentationInterface $rep, ?int $pos = null): void
+    public function replace_representation(Representation_Interface $rep, ?int $pos = null): void
     {
         if (null === $pos) {
-            $this->representations[$rep->getName()] = $rep;
+            $this->representations[$rep->get_name()] = $rep;
         } else {
-            $this->removeRepresentation($rep);
-            $this->addRepresentation($rep, $pos);
+            $this->remove_representation($rep);
+            $this->add_representation($rep, $pos);
         }
     }
-
     /**
      * @param RepresentationInterface|string $rep
      */
-    public function removeRepresentation($rep): void
+    public function remove_representation($rep): void
     {
-        if ($rep instanceof RepresentationInterface) {
-            unset($this->representations[$rep->getName()]);
-        } else { // String
+        if ($rep instanceof Representation_Interface) {
+            unset($this->representations[$rep->get_name()]);
+        } else {
+            // String
             unset($this->representations[$rep]);
         }
     }
-
-    public function getRepresentation(string $name): ?RepresentationInterface
+    public function get_representation(string $name): ?Representation_Interface
     {
         return $this->representations[$name] ?? null;
     }
-
     /** @psalm-return RepresentationInterface[] */
-    public function getRepresentations(): array
+    public function get_representations(): array
     {
         return $this->representations;
     }
-
     /** @psalm-param RepresentationInterface[] $reps */
-    public function appendRepresentations(array $reps): void
+    public function append_representations(array $reps): void
     {
         foreach ($reps as $rep) {
-            $this->addRepresentation($rep);
+            $this->add_representation($rep);
         }
     }
-
     /** @psalm-api */
-    public function clearRepresentations(): void
+    public function clear_representations(): void
     {
         $this->representations = [];
     }
-
-    public function getDisplayType(): string
+    public function get_display_type(): string
     {
         return $this->type;
     }
-
-    public function getDisplayName(): string
+    public function get_display_name(): string
     {
-        return (string) $this->context->getName();
+        return (string) $this->context->get_name();
     }
-
-    public function getDisplaySize(): ?string
+    public function get_display_size(): ?string
     {
         return null;
     }
-
-    public function getDisplayValue(): ?string
+    public function get_display_value(): ?string
     {
         return null;
     }
-
     /** @psalm-return AbstractValue[] */
-    public function getDisplayChildren(): array
+    public function get_display_children(): array
     {
         return [];
     }

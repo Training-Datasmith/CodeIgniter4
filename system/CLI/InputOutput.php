@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,27 +9,24 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\CLI;
+namespace Code_Igniter\CLI;
 
 /**
  * Input and Output for CLI.
  */
-class InputOutput
+class Input_Output
 {
     /**
      * Is the readline library on the system?
      */
-    private readonly bool $readlineSupport;
-
+    private readonly bool $readline_support;
     public function __construct()
     {
         // Readline is an extension for PHP that makes interactivity with PHP
         // much more bash-like.
         // http://www.php.net/manual/en/readline.installation.php
-        $this->readlineSupport = extension_loaded('readline');
+        $this->readline_support = extension_loaded('readline');
     }
-
     /**
      * Get input from the shell, using readline or the standard STDIN
      *
@@ -42,21 +38,17 @@ class InputOutput
     public function input(?string $prefix = null): string
     {
         // readline() can't be tested.
-        if ($this->readlineSupport && ENVIRONMENT !== 'testing') {
-            return readline($prefix); // @codeCoverageIgnore
+        if ($this->readline_support && ENVIRONMENT !== 'testing') {
+            return readline($prefix);
+            // @codeCoverageIgnore
         }
-
         echo $prefix;
-
         $input = fgets(fopen('php://stdin', 'rb'));
-
         if ($input === false) {
             $input = '';
         }
-
         return $input;
     }
-
     /**
      * While the library is intended for use on CLI commands,
      * commands can be called from controllers and elsewhere
@@ -69,12 +61,10 @@ class InputOutput
      */
     public function fwrite($handle, string $string): void
     {
-        if (! is_cli()) {
+        if (!is_cli()) {
             echo $string;
-
             return;
         }
-
         fwrite($handle, $string);
     }
 }

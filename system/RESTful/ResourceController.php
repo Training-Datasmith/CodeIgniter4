@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,21 +9,18 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Res_Tful;
 
-namespace CodeIgniter\RESTful;
-
-use CodeIgniter\API\ResponseTrait;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\API\Response_Trait;
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * An extendable controller to provide a RESTful API for a resource.
  *
  * @see \CodeIgniter\RESTful\ResourceControllerTest
  */
-class ResourceController extends BaseResource
+class Resource_Controller extends Base_Resource
 {
-    use ResponseTrait;
-
+    use Response_Trait;
     /**
      * Return an array of resource objects, themselves in array format
      *
@@ -34,7 +30,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['index']), 501);
     }
-
     /**
      * Return the properties of a resource object
      *
@@ -46,7 +41,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['show']), 501);
     }
-
     /**
      * Return a new resource object, with default properties
      *
@@ -56,7 +50,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['new']), 501);
     }
-
     /**
      * Create a new resource object, from "posted" parameters
      *
@@ -66,7 +59,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['create']), 501);
     }
-
     /**
      * Return the editable properties of a resource object
      *
@@ -78,7 +70,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['edit']), 501);
     }
-
     /**
      * Add or update a model resource, from "posted" properties
      *
@@ -90,7 +81,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['update']), 501);
     }
-
     /**
      * Delete the designated resource object from the model
      *
@@ -102,7 +92,6 @@ class ResourceController extends BaseResource
     {
         return $this->fail(lang('RESTful.notImplemented', ['delete']), 501);
     }
-
     /**
      * Set/change the expected response representation for returned objects
      *
@@ -110,7 +99,7 @@ class ResourceController extends BaseResource
      *
      * @return void
      */
-    public function setFormat(string $format = 'json')
+    public function set_format(string $format = 'json')
     {
         if (in_array($format, ['json', 'xml'], true)) {
             $this->format = $format;

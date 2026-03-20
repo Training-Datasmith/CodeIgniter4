@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Cookie;
+namespace Code_Igniter\Cookie;
 
 /**
  * Interface for a value object representation of an HTTP cookie.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
  */
-interface CookieInterface
+interface Cookie_Interface
 {
     /**
      * Cookies will be sent in all contexts, i.e in responses to both
@@ -26,31 +24,23 @@ interface CookieInterface
      * the cookie `Secure` attribute must also be set (or the cookie will be blocked).
      */
     public const SAMESITE_NONE = 'None';
-
     /**
      * Cookies are not sent on normal cross-site subrequests (for example to
      * load images or frames into a third party site), but are sent when a
      * user is navigating to the origin site (i.e. when following a link).
      */
     public const SAMESITE_LAX = 'Lax';
-
     /**
      * Cookies will only be sent in a first-party context and not be sent
      * along with requests initiated by third party websites.
      */
     public const SAMESITE_STRICT = 'Strict';
-
     /**
      * RFC 6265 allowed values for the "SameSite" attribute.
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
      */
-    public const ALLOWED_SAMESITE_VALUES = [
-        self::SAMESITE_NONE,
-        self::SAMESITE_LAX,
-        self::SAMESITE_STRICT,
-    ];
-
+    public const ALLOWED_SAMESITE_VALUES = [self::SAMESITE_NONE, self::SAMESITE_LAX, self::SAMESITE_STRICT];
     /**
      * Expires date format.
      *
@@ -58,63 +48,51 @@ interface CookieInterface
      * @see https://tools.ietf.org/html/rfc7231#section-7.1.1.2
      */
     public const EXPIRES_FORMAT = 'D, d M Y H:i:s T';
-
     /**
      * Returns a unique identifier for the cookie consisting
      * of its prefixed name, path, and domain.
      */
-    public function getId(): string;
-
+    public function get_id(): string;
     /**
      * Gets the cookie prefix.
      */
-    public function getPrefix(): string;
-
+    public function get_prefix(): string;
     /**
      * Gets the cookie name.
      */
-    public function getName(): string;
-
+    public function get_name(): string;
     /**
      * Gets the cookie name prepended with the prefix, if any.
      */
-    public function getPrefixedName(): string;
-
+    public function get_prefixed_name(): string;
     /**
      * Gets the cookie value.
      */
-    public function getValue(): string;
-
+    public function get_value(): string;
     /**
      * Gets the time in Unix timestamp the cookie expires.
      */
-    public function getExpiresTimestamp(): int;
-
+    public function get_expires_timestamp(): int;
     /**
      * Gets the formatted expires time.
      */
-    public function getExpiresString(): string;
-
+    public function get_expires_string(): string;
     /**
      * Checks if the cookie is expired.
      */
-    public function isExpired(): bool;
-
+    public function is_expired(): bool;
     /**
      * Gets the "Max-Age" cookie attribute.
      */
-    public function getMaxAge(): int;
-
+    public function get_max_age(): int;
     /**
      * Gets the "Path" cookie attribute.
      */
-    public function getPath(): string;
-
+    public function get_path(): string;
     /**
      * Gets the "Domain" cookie attribute.
      */
-    public function getDomain(): string;
-
+    public function get_domain(): string;
     /**
      * Gets the "Secure" cookie attribute.
      *
@@ -122,25 +100,21 @@ interface CookieInterface
      * with the `https:` scheme (except on `localhost`), and therefore is more
      * resistent to man-in-the-middle attacks.
      */
-    public function isSecure(): bool;
-
+    public function is_secure(): bool;
     /**
      * Gets the "HttpOnly" cookie attribute.
      *
      * Checks if JavaScript is forbidden from accessing the cookie.
      */
-    public function isHTTPOnly(): bool;
-
+    public function is_http_only(): bool;
     /**
      * Gets the "SameSite" cookie attribute.
      */
-    public function getSameSite(): string;
-
+    public function get_same_site(): string;
     /**
      * Checks if the cookie should be sent with no URL encoding.
      */
-    public function isRaw(): bool;
-
+    public function is_raw(): bool;
     /**
      * Gets the options that are passable to the `setcookie` variant
      * available on PHP 7.3+
@@ -154,20 +128,17 @@ interface CookieInterface
      *  samesite: string,
      * }
      */
-    public function getOptions(): array;
-
+    public function get_options(): array;
     /**
      * Returns the Cookie as a header value.
      */
-    public function toHeaderString(): string;
-
+    public function to_header_string(): string;
     /**
      * Returns the string representation of the Cookie object.
      *
      * @return string
      */
     public function __toString();
-
     /**
      * Returns the array representation of the Cookie object.
      *
@@ -184,5 +155,5 @@ interface CookieInterface
      *  samesite: string,
      * }
      */
-    public function toArray(): array;
+    public function to_array(): array;
 }

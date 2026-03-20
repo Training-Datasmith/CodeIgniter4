@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Exceptions;
+namespace Code_Igniter\Exceptions;
 
 /**
  * Interface for Exceptions that has exception code as exit code.
  */
-interface HasExitCodeInterface extends ExceptionInterface
+interface Has_Exit_Code_Interface extends Exception_Interface
 {
     /**
      * Returns exit status code.
      */
-    public function getExitCode(): int;
+    public function get_exit_code(): int;
 }

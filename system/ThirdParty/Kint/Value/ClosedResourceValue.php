@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,19 +23,16 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Value;
 
-use Kint\Value\Context\ContextInterface;
-
-class ClosedResourceValue extends AbstractValue
+use Kint\Value\Context\Context_Interface;
+class Closed_Resource_Value extends Abstract_Value
 {
-    public function __construct(ContextInterface $context)
+    public function __construct(Context_Interface $context)
     {
         parent::__construct($context, 'resource (closed)');
     }
-
-    public function getDisplayType(): string
+    public function get_display_type(): string
     {
         return 'closed resource';
     }

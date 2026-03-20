@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,36 +23,28 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Text;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\SplFileInfoRepresentation;
-
-class SplFileInfoPlugin extends AbstractPlugin
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Spl_File_Info_Representation;
+class Spl_File_Info_Plugin extends Abstract_Plugin
 {
-    public function render(AbstractValue $v): ?string
+    public function render(Abstract_Value $v): ?string
     {
-        $r = $v->getRepresentation('splfileinfo');
-
-        if (!$r instanceof SplFileInfoRepresentation) {
+        $r = $v->get_representation('splfileinfo');
+        if (!$r instanceof Spl_File_Info_Representation) {
             return null;
         }
-
         $out = '';
-
-        $c = $v->getContext();
-
-        if (0 === $c->getDepth()) {
-            $out .= $this->renderer->colorTitle($this->renderer->renderTitle($v)).PHP_EOL;
+        $c = $v->get_context();
+        if (0 === $c->get_depth()) {
+            $out .= $this->renderer->color_title($this->renderer->render_title($v)) . PHP_EOL;
         }
-
-        $out .= $this->renderer->renderHeader($v);
-        if (null !== $v->getDisplayValue()) {
+        $out .= $this->renderer->render_header($v);
+        if (null !== $v->get_display_value()) {
             $out .= ' =>';
         }
-        $out .= ' '.$this->renderer->colorValue($this->renderer->escape($r->getValue())).PHP_EOL;
-
+        $out .= ' ' . $this->renderer->color_value($this->renderer->escape($r->get_value())) . PHP_EOL;
         return $out;
     }
 }

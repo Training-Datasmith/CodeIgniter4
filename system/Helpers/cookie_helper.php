@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-use CodeIgniter\Cookie\Cookie;
+use Code_Igniter\Cookie\Cookie;
 use Config\Cookie as CookieConfig;
-
 // =============================================================================
 // CodeIgniter Cookie Helpers
 // =============================================================================
-
-if (! function_exists('set_cookie')) {
+if (!function_exists('set_cookie')) {
     /**
      * Set cookie
      *
@@ -50,23 +46,13 @@ if (! function_exists('set_cookie')) {
      *
      * @see \CodeIgniter\HTTP\Response::setCookie()
      */
-    function set_cookie(
-        $name,
-        string $value = '',
-        int $expire = 0,
-        string $domain = '',
-        string $path = '/',
-        string $prefix = '',
-        ?bool $secure = null,
-        ?bool $httpOnly = null,
-        ?string $sameSite = null,
-    ): void {
+    function set_cookie($name, string $value = '', int $expire = 0, string $domain = '', string $path = '/', string $prefix = '', ?bool $secure = null, ?bool $http_only = null, ?string $same_site = null): void
+    {
         $response = service('response');
-        $response->setCookie($name, $value, $expire, $domain, $path, $prefix, $secure, $httpOnly, $sameSite);
+        $response->set_cookie($name, $value, $expire, $domain, $path, $prefix, $secure, $http_only, $same_site);
     }
 }
-
-if (! function_exists('get_cookie')) {
+if (!function_exists('get_cookie')) {
     /**
      * Fetch an item from the $_COOKIE array
      *
@@ -79,22 +65,18 @@ if (! function_exists('get_cookie')) {
      *
      * @see \CodeIgniter\HTTP\IncomingRequest::getCookie()
      */
-    function get_cookie($index, bool $xssClean = false, ?string $prefix = '')
+    function get_cookie($index, bool $xss_clean = false, ?string $prefix = '')
     {
         if ($prefix === '') {
-            $cookie = config(CookieConfig::class);
-
+            $cookie = config(Cookie_Config::class);
             $prefix = $cookie->prefix;
         }
-
         $request = service('request');
-        $filter  = $xssClean ? FILTER_SANITIZE_FULL_SPECIAL_CHARS : FILTER_UNSAFE_RAW;
-
-        return $request->getCookie($prefix . $index, $filter);
+        $filter = $xss_clean ? FILTER_SANITIZE_FULL_SPECIAL_CHARS : FILTER_UNSAFE_RAW;
+        return $request->get_cookie($prefix . $index, $filter);
     }
 }
-
-if (! function_exists('delete_cookie')) {
+if (!function_exists('delete_cookie')) {
     /**
      * Delete a cookie
      *
@@ -107,16 +89,15 @@ if (! function_exists('delete_cookie')) {
      */
     function delete_cookie($name, string $domain = '', string $path = '/', string $prefix = ''): void
     {
-        service('response')->deleteCookie($name, $domain, $path, $prefix);
+        service('response')->delete_cookie($name, $domain, $path, $prefix);
     }
 }
-
-if (! function_exists('has_cookie')) {
+if (!function_exists('has_cookie')) {
     /**
      * Checks if a cookie exists by name.
      */
     function has_cookie(string $name, ?string $value = null, string $prefix = ''): bool
     {
-        return service('response')->hasCookie($name, $value, $prefix);
+        return service('response')->has_cookie($name, $value, $prefix);
     }
 }

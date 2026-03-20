@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,14 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP\Files;
 
-namespace CodeIgniter\HTTP\Files;
-
-use CodeIgniter\Files\File;
-use CodeIgniter\HTTP\Exceptions\HTTPException;
+use Code_Igniter\Files\File;
+use Code_Igniter\HTTP\Exceptions\Http_Exception;
 use Config\Mimes;
 use Exception;
-
 /**
  * Value object representing a single file uploaded through an
  * HTTP request. Used by the IncomingRequest class to
@@ -25,7 +22,7 @@ use Exception;
  *
  * Typically, implementors will extend the SplFileInfo class.
  */
-class UploadedFile extends File implements UploadedFileInterface
+class Uploaded_File extends File implements Uploaded_File_Interface
 {
     /**
      * The path to the temporary file.
@@ -33,35 +30,30 @@ class UploadedFile extends File implements UploadedFileInterface
      * @var string
      */
     protected $path;
-
     /**
      * The webkit relative path of the file.
      *
      * @var string
      */
-    protected $clientPath;
-
+    protected $client_path;
     /**
      * The original filename as provided by the client.
      *
      * @var string
      */
-    protected $originalName;
-
+    protected $original_name;
     /**
      * The filename given to a file during a move.
      *
      * @var string
      */
     protected $name;
-
     /**
      * The type of file as provided by PHP
      *
      * @var string
      */
-    protected $originalMimeType;
-
+    protected $original_mime_type;
     /**
      * The error constant of the upload
      * (one of PHP's UPLOADERRXXX constants)
@@ -69,14 +61,12 @@ class UploadedFile extends File implements UploadedFileInterface
      * @var int
      */
     protected $error;
-
     /**
      * Whether the file has been moved already or not.
      *
      * @var bool
      */
-    protected $hasMoved = false;
-
+    protected $has_moved = false;
     /**
      * Accepts the file information as would be filled in from the $_FILES array.
      *
@@ -87,19 +77,17 @@ class UploadedFile extends File implements UploadedFileInterface
      * @param int|null    $error        The error constant of the upload (one of PHP's UPLOADERRXXX constants)
      * @param string|null $clientPath   The webkit relative path of the uploaded file.
      */
-    public function __construct(string $path, string $originalName, ?string $mimeType = null, ?int $size = null, ?int $error = null, ?string $clientPath = null)
+    public function __construct(string $path, string $original_name, ?string $mime_type = null, ?int $size = null, ?int $error = null, ?string $client_path = null)
     {
-        $this->path             = $path;
-        $this->name             = $originalName;
-        $this->originalName     = $originalName;
-        $this->originalMimeType = $mimeType;
-        $this->size             = $size;
-        $this->error            = $error;
-        $this->clientPath       = $clientPath;
-
+        $this->path = $path;
+        $this->name = $original_name;
+        $this->original_name = $original_name;
+        $this->original_mime_type = $mime_type;
+        $this->size = $size;
+        $this->error = $error;
+        $this->client_path = $client_path;
         parent::__construct($path, false);
     }
-
     /**
      * Move the uploaded file to a new location.
      *
@@ -129,76 +117,63 @@ class UploadedFile extends File implements UploadedFileInterface
      *
      * @return bool
      */
-    public function move(string $targetPath, ?string $name = null, bool $overwrite = false)
+    public function move(string $target_path, ?string $name = null, bool $overwrite = false)
     {
-        $targetPath = rtrim($targetPath, '/') . '/';
-        $targetPath = $this->setPath($targetPath); // set the target path
-
-        if ($this->hasMoved) {
-            throw HTTPException::forAlreadyMoved();
+        $target_path = rtrim($target_path, '/') . '/';
+        $target_path = $this->set_path($target_path);
+        // set the target path
+        if ($this->has_moved) {
+            throw Http_Exception::for_already_moved();
         }
-
-        if (! $this->isValid()) {
-            throw HTTPException::forInvalidFile();
+        if (!$this->is_valid()) {
+            throw Http_Exception::for_invalid_file();
         }
-
-        $name ??= $this->getName();
-        $destination = $overwrite ? $targetPath . $name : $this->getDestination($targetPath . $name);
-
+        $name ??= $this->get_name();
+        $destination = $overwrite ? $target_path . $name : $this->get_destination($target_path . $name);
         try {
-            $this->hasMoved = move_uploaded_file($this->path, $destination);
+            $this->has_moved = move_uploaded_file($this->path, $destination);
         } catch (Exception) {
-            $error   = error_get_last();
+            $error = error_get_last();
             $message = strip_tags($error['message'] ?? '');
-
-            throw HTTPException::forMoveFailed(basename($this->path), $targetPath, $message);
+            throw Http_Exception::for_move_failed(basename($this->path), $target_path, $message);
         }
-
-        if ($this->hasMoved === false) {
+        if ($this->has_moved === false) {
             $message = 'move_uploaded_file() returned false';
-
-            throw HTTPException::forMoveFailed(basename($this->path), $targetPath, $message);
+            throw Http_Exception::for_move_failed(basename($this->path), $target_path, $message);
         }
-
-        @chmod($targetPath, 0777 & ~umask());
-
+        @chmod($target_path, 0777 & ~umask());
         // Success, so store our new information
-        $this->path = $targetPath;
+        $this->path = $target_path;
         $this->name = basename($destination);
-
         return true;
     }
-
     /**
      * create file target path if
      * the set path does not exist
      *
      * @return string The path set or created.
      */
-    protected function setPath(string $path): string
+    protected function set_path(string $path): string
     {
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             mkdir($path, 0777, true);
             // create the index.html file
-            if (! is_file($path . 'index.html')) {
+            if (!is_file($path . 'index.html')) {
                 $file = fopen($path . 'index.html', 'x+b');
                 fclose($file);
             }
         }
-
         return $path;
     }
-
     /**
      * Returns whether the file has been moved or not. If it has,
      * the move() method will not work and certain properties, like
      * the tempName, will no longer be available.
      */
-    public function hasMoved(): bool
+    public function has_moved(): bool
     {
-        return $this->hasMoved;
+        return $this->has_moved;
     }
-
     /**
      * Retrieve the error associated with the uploaded file.
      *
@@ -214,32 +189,19 @@ class UploadedFile extends File implements UploadedFileInterface
      *
      * @return int One of PHP's UPLOAD_ERR_XXX constants.
      */
-    public function getError(): int
+    public function get_error(): int
     {
         return $this->error ?? UPLOAD_ERR_OK;
     }
-
     /**
      * Get error string
      */
-    public function getErrorString(): string
+    public function get_error_string(): string
     {
-        $errors = [
-            UPLOAD_ERR_OK         => lang('HTTP.uploadErrOk'),
-            UPLOAD_ERR_INI_SIZE   => lang('HTTP.uploadErrIniSize'),
-            UPLOAD_ERR_FORM_SIZE  => lang('HTTP.uploadErrFormSize'),
-            UPLOAD_ERR_PARTIAL    => lang('HTTP.uploadErrPartial'),
-            UPLOAD_ERR_NO_FILE    => lang('HTTP.uploadErrNoFile'),
-            UPLOAD_ERR_CANT_WRITE => lang('HTTP.uploadErrCantWrite'),
-            UPLOAD_ERR_NO_TMP_DIR => lang('HTTP.uploadErrNoTmpDir'),
-            UPLOAD_ERR_EXTENSION  => lang('HTTP.uploadErrExtension'),
-        ];
-
+        $errors = [UPLOAD_ERR_OK => lang('HTTP.uploadErrOk'), UPLOAD_ERR_INI_SIZE => lang('HTTP.uploadErrIniSize'), UPLOAD_ERR_FORM_SIZE => lang('HTTP.uploadErrFormSize'), UPLOAD_ERR_PARTIAL => lang('HTTP.uploadErrPartial'), UPLOAD_ERR_NO_FILE => lang('HTTP.uploadErrNoFile'), UPLOAD_ERR_CANT_WRITE => lang('HTTP.uploadErrCantWrite'), UPLOAD_ERR_NO_TMP_DIR => lang('HTTP.uploadErrNoTmpDir'), UPLOAD_ERR_EXTENSION => lang('HTTP.uploadErrExtension')];
         $error = $this->error ?? UPLOAD_ERR_OK;
-
-        return sprintf($errors[$error] ?? lang('HTTP.uploadErrUnknown'), $this->getName());
+        return sprintf($errors[$error] ?? lang('HTTP.uploadErrUnknown'), $this->get_name());
     }
-
     /**
      * Returns the mime type as provided by the client.
      * This is NOT a trusted value.
@@ -247,11 +209,10 @@ class UploadedFile extends File implements UploadedFileInterface
      *
      * @return string The media type sent by the client or null if none was provided.
      */
-    public function getClientMimeType(): string
+    public function get_client_mime_type(): string
     {
-        return $this->originalMimeType;
+        return $this->original_mime_type;
     }
-
     /**
      * Retrieve the filename. This will typically be the filename sent
      * by the client, and should not be trusted. If the file has been
@@ -259,36 +220,32 @@ class UploadedFile extends File implements UploadedFileInterface
      *
      * @return string The filename sent by the client or null if none was provided.
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * Returns the name of the file as provided by the client during upload.
      */
-    public function getClientName(): string
+    public function get_client_name(): string
     {
-        return $this->originalName;
+        return $this->original_name;
     }
-
     /**
      * (PHP 8.1+)
      * Returns the webkit relative path of the uploaded file on directory uploads.
      */
-    public function getClientPath(): ?string
+    public function get_client_path(): ?string
     {
-        return $this->clientPath;
+        return $this->client_path;
     }
-
     /**
      * Gets the temporary filename where the file was uploaded to.
      */
-    public function getTempName(): string
+    public function get_temp_name(): string
     {
         return $this->path;
     }
-
     /**
      * Overrides SPLFileInfo's to work with uploaded files, since
      * the temp file that's been uploaded doesn't have an extension.
@@ -300,43 +257,38 @@ class UploadedFile extends File implements UploadedFileInterface
      * but might be insecure if the mime type is not matched. Consider
      * using guessExtension for a more safe version.
      */
-    public function getExtension(): string
+    public function get_extension(): string
     {
-        $guessExtension = $this->guessExtension();
-
-        return $guessExtension !== '' ? $guessExtension : $this->getClientExtension();
+        $guess_extension = $this->guess_extension();
+        return $guess_extension !== '' ? $guess_extension : $this->get_client_extension();
     }
-
     /**
      * Attempts to determine the best file extension from the file's
      * mime type. In contrast to getExtension, this method will return
      * an empty string if it fails to determine an extension instead of
      * falling back to the unsecure clientExtension.
      */
-    public function guessExtension(): string
+    public function guess_extension(): string
     {
-        return Mimes::guessExtensionFromType($this->getMimeType(), $this->getClientExtension()) ?? '';
+        return Mimes::guess_extension_from_type($this->get_mime_type(), $this->get_client_extension()) ?? '';
     }
-
     /**
      * Returns the original file extension, based on the file name that
      * was uploaded. This is NOT a trusted source.
      * For a trusted version, use guessExtension() instead.
      */
-    public function getClientExtension(): string
+    public function get_client_extension(): string
     {
-        return pathinfo($this->originalName, PATHINFO_EXTENSION);
+        return pathinfo($this->original_name, PATHINFO_EXTENSION);
     }
-
     /**
      * Returns whether the file was uploaded successfully, based on whether
      * it was uploaded via HTTP and has no errors.
      */
-    public function isValid(): bool
+    public function is_valid(): bool
     {
         return is_uploaded_file($this->path) && $this->error === UPLOAD_ERR_OK;
     }
-
     /**
      * Save the uploaded file to a new location.
      *
@@ -348,14 +300,12 @@ class UploadedFile extends File implements UploadedFileInterface
      *
      * @return string file full path
      */
-    public function store(?string $folderName = null, ?string $fileName = null): string
+    public function store(?string $folder_name = null, ?string $file_name = null): string
     {
-        $folderName = rtrim($folderName ?? date('Ymd'), '/') . '/';
-        $fileName ??= $this->getRandomName();
-
+        $folder_name = rtrim($folder_name ?? date('Ymd'), '/') . '/';
+        $file_name ??= $this->get_random_name();
         // Move the uploaded file to a new location.
-        $this->move(WRITEPATH . 'uploads/' . $folderName, $fileName);
-
-        return $folderName . $this->name;
+        $this->move(WRITEPATH . 'uploads/' . $folder_name, $file_name);
+        return $folder_name . $this->name;
     }
 }

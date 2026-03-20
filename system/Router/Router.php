@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,56 +9,41 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Router;
+namespace Code_Igniter\Router;
 
 use Closure;
-use CodeIgniter\Exceptions\PageNotFoundException;
-use CodeIgniter\HTTP\Exceptions\BadRequestException;
-use CodeIgniter\HTTP\Exceptions\RedirectException;
-use CodeIgniter\HTTP\Method;
-use CodeIgniter\HTTP\Request;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Router\Attributes\Filter;
-use CodeIgniter\Router\Attributes\RouteAttributeInterface;
-use CodeIgniter\Router\Exceptions\RouterException;
+use Code_Igniter\Exceptions\Page_Not_Found_Exception;
+use Code_Igniter\HTTP\Exceptions\Bad_Request_Exception;
+use Code_Igniter\HTTP\Exceptions\Redirect_Exception;
+use Code_Igniter\HTTP\Method;
+use Code_Igniter\HTTP\Request;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
+use Code_Igniter\Router\Attributes\Filter;
+use Code_Igniter\Router\Attributes\Route_Attribute_Interface;
+use Code_Igniter\Router\Exceptions\Router_Exception;
 use Config\App;
 use Config\Feature;
 use Config\Routing;
 use ReflectionClass;
 use Throwable;
-
 /**
  * Request router.
  *
  * @see \CodeIgniter\Router\RouterTest
  */
-class Router implements RouterInterface
+class Router implements Router_Interface
 {
     /**
      * List of allowed HTTP methods (and CLI for command line use).
      */
-    public const HTTP_METHODS = [
-        Method::GET,
-        Method::HEAD,
-        Method::POST,
-        Method::PATCH,
-        Method::PUT,
-        Method::DELETE,
-        Method::OPTIONS,
-        Method::TRACE,
-        Method::CONNECT,
-        'CLI',
-    ];
-
+    public const HTTP_METHODS = [Method::GET, Method::HEAD, Method::POST, Method::PATCH, Method::PUT, Method::DELETE, Method::OPTIONS, Method::TRACE, Method::CONNECT, 'CLI'];
     /**
      * A RouteCollection instance.
      *
      * @var RouteCollectionInterface
      */
     protected $collection;
-
     /**
      * Sub-directory that contains the requested controller class.
      * Primarily used by 'autoRoute'.
@@ -67,21 +51,18 @@ class Router implements RouterInterface
      * @var string|null
      */
     protected $directory;
-
     /**
      * The name of the controller class.
      *
      * @var (Closure(mixed...): (ResponseInterface|string|void))|string
      */
     protected $controller;
-
     /**
      * The name of the method to use.
      *
      * @var string
      */
     protected $method;
-
     /**
      * An array of binds that were collected
      * so they can be sent to closure routes.
@@ -89,112 +70,82 @@ class Router implements RouterInterface
      * @var array
      */
     protected $params = [];
-
     /**
      * The name of the front controller.
      *
      * @var string
      */
-    protected $indexPage = 'index.php';
-
+    protected $index_page = 'index.php';
     /**
      * Whether dashes in URI's should be converted
      * to underscores when determining method names.
      *
      * @var bool
      */
-    protected $translateURIDashes = false;
-
+    protected $translate_uri_dashes = false;
     /**
      * The route that was matched for this request.
      *
      * @var array|null
      */
-    protected $matchedRoute;
-
+    protected $matched_route;
     /**
      * The options set for the matched route.
      *
      * @var array|null
      */
-    protected $matchedRouteOptions;
-
+    protected $matched_route_options;
     /**
      * The locale that was detected in a route.
      *
      * @var string
      */
-    protected $detectedLocale;
-
+    protected $detected_locale;
     /**
      * The filter info from Route Collection
      * if the matched route should be filtered.
      *
      * @var list<string>
      */
-    protected $filtersInfo = [];
-
-    protected ?AutoRouterInterface $autoRouter = null;
-
+    protected $filters_info = [];
+    protected ?Auto_Router_Interface $auto_router = null;
     /**
      * Route attributes collected during routing for the current route.
      *
      * @var array{class: list<RouteAttributeInterface>, method: list<RouteAttributeInterface>}
      */
-    protected array $routeAttributes = ['class' => [], 'method' => []];
-
+    protected array $route_attributes = ['class' => [], 'method' => []];
     /**
      * Permitted URI chars
      *
      * The default value is `''` (do not check) for backward compatibility.
      */
-    protected string $permittedURIChars = '';
-
+    protected string $permitted_uri_chars = '';
     /**
      * Stores a reference to the RouteCollection object.
      */
-    public function __construct(RouteCollectionInterface $routes, ?Request $request = null)
+    public function __construct(Route_Collection_Interface $routes, ?Request $request = null)
     {
         $config = config(App::class);
-
-        if (isset($config->permittedURIChars)) {
-            $this->permittedURIChars = $config->permittedURIChars;
+        if (isset($config->permitted_uri_chars)) {
+            $this->permitted_uri_chars = $config->permitted_uri_chars;
         }
-
         $this->collection = $routes;
-
         // These are only for auto-routing
-        $this->controller = $this->collection->getDefaultController();
-        $this->method     = $this->collection->getDefaultMethod();
-
-        $this->collection->setHTTPVerb($request->getMethod() === '' ? service('superglobals')->server('REQUEST_METHOD') : $request->getMethod());
-
-        $this->translateURIDashes = $this->collection->shouldTranslateURIDashes();
-
-        if ($this->collection->shouldAutoRoute()) {
-            $autoRoutesImproved = config(Feature::class)->autoRoutesImproved ?? false;
-            if ($autoRoutesImproved) {
-                assert($this->collection instanceof RouteCollection);
-
-                $this->autoRouter = new AutoRouterImproved(
-                    $this->collection->getRegisteredControllers('*'),
-                    $this->collection->getDefaultNamespace(),
-                    $this->collection->getDefaultController(),
-                    $this->collection->getDefaultMethod(),
-                    $this->translateURIDashes,
-                );
+        $this->controller = $this->collection->get_default_controller();
+        $this->method = $this->collection->get_default_method();
+        $this->collection->set_http_verb($request->get_method() === '' ? service('superglobals')->server('REQUEST_METHOD') : $request->get_method());
+        $this->translate_uri_dashes = $this->collection->should_translate_uri_dashes();
+        if ($this->collection->should_auto_route()) {
+            $auto_routes_improved = config(Feature::class)->auto_routes_improved ?? false;
+            if ($auto_routes_improved) {
+                assert($this->collection instanceof Route_Collection);
+                $this->auto_router = new Auto_Router_Improved($this->collection->get_registered_controllers('*'), $this->collection->get_default_namespace(), $this->collection->get_default_controller(), $this->collection->get_default_method(), $this->translate_uri_dashes);
             } else {
-                $this->autoRouter = new AutoRouter(
-                    $this->collection->getRoutes('CLI', false),
-                    $this->collection->getDefaultNamespace(),
-                    $this->collection->getDefaultController(),
-                    $this->collection->getDefaultMethod(),
-                    $this->translateURIDashes,
-                );
+                $this->auto_router = new Auto_Router($this->collection->get_routes('CLI', false), $this->collection->get_default_namespace(), $this->collection->get_default_controller(), $this->collection->get_default_method(), $this->translate_uri_dashes);
             }
         }
     }
-
     /**
      * Finds the controller corresponding to the URI.
      *
@@ -212,87 +163,65 @@ class Router implements RouterInterface
         if ($uri === null || $uri === '') {
             $uri = '/';
         }
-
         // Decode URL-encoded string
         $uri = urldecode($uri);
-
-        $this->checkDisallowedChars($uri);
-
+        $this->check_disallowed_chars($uri);
         // Restart filterInfo
-        $this->filtersInfo = [];
-
+        $this->filters_info = [];
         // Checks defined routes
-        if ($this->checkRoutes($uri)) {
-            if ($this->collection->isFiltered($this->matchedRoute[0])) {
-                $this->filtersInfo = $this->collection->getFiltersForRoute($this->matchedRoute[0]);
+        if ($this->check_routes($uri)) {
+            if ($this->collection->is_filtered($this->matched_route[0])) {
+                $this->filters_info = $this->collection->get_filters_for_route($this->matched_route[0]);
             }
-
-            $this->processRouteAttributes();
-
+            $this->process_route_attributes();
             return $this->controller;
         }
-
         // Still here? Then we can try to match the URI against
         // Controllers/directories, but the application may not
         // want this, like in the case of API's.
-        if (! $this->collection->shouldAutoRoute()) {
-            throw new PageNotFoundException(
-                "Can't find a route for '{$this->collection->getHTTPVerb()}: {$uri}'.",
-            );
+        if (!$this->collection->should_auto_route()) {
+            throw new Page_Not_Found_Exception("Can't find a route for '{$this->collection->get_http_verb()}: {$uri}'.");
         }
-
         // Checks auto routes
-        $this->autoRoute($uri);
-
-        $this->processRouteAttributes();
-
-        return $this->controllerName();
+        $this->auto_route($uri);
+        $this->process_route_attributes();
+        return $this->controller_name();
     }
-
     /**
      * Returns the filter info for the matched route, if any.
      *
      * @return list<string>
      */
-    public function getFilters(): array
+    public function get_filters(): array
     {
-        $filters = $this->filtersInfo;
-
+        $filters = $this->filters_info;
         // Check for attribute-based filters
-        foreach ($this->routeAttributes as $attributes) {
+        foreach ($this->route_attributes as $attributes) {
             foreach ($attributes as $attribute) {
                 if ($attribute instanceof Filter) {
-                    $filters = array_merge($filters, $attribute->getFilters());
+                    $filters = array_merge($filters, $attribute->get_filters());
                 }
             }
         }
-
         return $filters;
     }
-
     /**
      * Returns the name of the matched controller or closure.
      *
      * @return (Closure(mixed...): (ResponseInterface|string|void))|string Controller classname or Closure
      */
-    public function controllerName()
+    public function controller_name()
     {
-        return $this->translateURIDashes && ! $this->controller instanceof Closure
-            ? str_replace('-', '_', $this->controller)
-            : $this->controller;
+        return $this->translate_uri_dashes && !$this->controller instanceof Closure ? str_replace('-', '_', $this->controller) : $this->controller;
     }
-
     /**
      * Returns the name of the method to run in the
      * chosen controller.
      */
-    public function methodName(): string
+    public function method_name(): string
     {
-        return $this->translateURIDashes
-            ? str_replace('-', '_', $this->method)
-            : $this->method;
+        return $this->translate_uri_dashes ? str_replace('-', '_', $this->method) : $this->method;
     }
-
     /**
      * Returns the 404 Override settings from the Collection.
      * If the override is a string, will split to controller/index array.
@@ -302,23 +231,19 @@ class Router implements RouterInterface
     public function get404Override()
     {
         $route = $this->collection->get404Override();
-
         if (is_string($route)) {
-            $routeArray = explode('::', $route);
-
+            $route_array = explode('::', $route);
             return [
-                $routeArray[0], // Controller
-                $routeArray[1] ?? 'index',   // Method
+                $route_array[0],
+                // Controller
+                $route_array[1] ?? 'index',
             ];
         }
-
         if (is_callable($route)) {
             return $route;
         }
-
         return null;
     }
-
     /**
      * Returns the binds that have been matched and collected
      * during the parsing process as an array, ready to send to
@@ -328,7 +253,6 @@ class Router implements RouterInterface
     {
         return $this->params;
     }
-
     /**
      * Returns the name of the sub-directory the controller is in,
      * if any. Relative to APPPATH.'Controllers'.
@@ -337,34 +261,30 @@ class Router implements RouterInterface
      */
     public function directory(): string
     {
-        if ($this->autoRouter instanceof AutoRouter) {
-            return $this->autoRouter->directory();
+        if ($this->auto_router instanceof Auto_Router) {
+            return $this->auto_router->directory();
         }
-
         return '';
     }
-
     /**
      * Returns the routing information that was matched for this
      * request, if a route was defined.
      *
      * @return array|null
      */
-    public function getMatchedRoute()
+    public function get_matched_route()
     {
-        return $this->matchedRoute;
+        return $this->matched_route;
     }
-
     /**
      * Returns all options set for the matched route
      *
      * @return array|null
      */
-    public function getMatchedRouteOptions()
+    public function get_matched_route_options()
     {
-        return $this->matchedRouteOptions;
+        return $this->matched_route_options;
     }
-
     /**
      * Sets the value that should be used to match the index.php file. Defaults
      * to index.php but this allows you to modify it in case you are using
@@ -373,51 +293,44 @@ class Router implements RouterInterface
      *
      * @param string $page
      */
-    public function setIndexPage($page): self
+    public function set_index_page($page): self
     {
-        $this->indexPage = $page;
-
+        $this->index_page = $page;
         return $this;
     }
-
     /**
      * Tells the system whether we should translate URI dashes or not
      * in the URI from a dash to an underscore.
      *
      * @deprecated This method should be removed.
      */
-    public function setTranslateURIDashes(bool $val = false): self
+    public function set_translate_uri_dashes(bool $val = false): self
     {
-        if ($this->autoRouter instanceof AutoRouter) {
-            $this->autoRouter->setTranslateURIDashes($val);
-
+        if ($this->auto_router instanceof Auto_Router) {
+            $this->auto_router->set_translate_uri_dashes($val);
             return $this;
         }
-
         return $this;
     }
-
     /**
      * Returns true/false based on whether the current route contained
      * a {locale} placeholder.
      *
      * @return bool
      */
-    public function hasLocale()
+    public function has_locale()
     {
-        return (bool) $this->detectedLocale;
+        return (bool) $this->detected_locale;
     }
-
     /**
      * Returns the detected locale, if any, or null.
      *
      * @return string
      */
-    public function getLocale()
+    public function get_locale()
     {
-        return $this->detectedLocale;
+        return $this->detected_locale;
     }
-
     /**
      * Checks Defined Routes.
      *
@@ -431,155 +344,108 @@ class Router implements RouterInterface
      *
      * @throws RedirectException
      */
-    protected function checkRoutes(string $uri): bool
+    protected function check_routes(string $uri): bool
     {
-        $routes = $this->collection->getRoutes($this->collection->getHTTPVerb());
-
+        $routes = $this->collection->get_routes($this->collection->get_http_verb());
         // Don't waste any time
         if ($routes === []) {
             return false;
         }
-
-        $uri = $uri === '/'
-            ? $uri
-            : trim($uri, '/ ');
-
+        $uri = $uri === '/' ? $uri : trim($uri, '/ ');
         // Loop through the route array looking for wildcards
-        foreach ($routes as $routeKey => $handler) {
-            $routeKey = $routeKey === '/'
-                ? $routeKey
-                // $routeKey may be int, because it is an array key,
-                // and the URI `/1` is valid. The leading `/` is removed.
-                : ltrim((string) $routeKey, '/ ');
-
-            $matchedKey = $routeKey;
-
+        foreach ($routes as $route_key => $handler) {
+            $route_key = $route_key === '/' ? $route_key : ltrim((string) $route_key, '/ ');
+            $matched_key = $route_key;
             // Are we dealing with a locale?
-            if (str_contains($routeKey, '{locale}')) {
-                $routeKey = str_replace('{locale}', '[^/]+', $routeKey);
+            if (str_contains($route_key, '{locale}')) {
+                $route_key = str_replace('{locale}', '[^/]+', $route_key);
             }
-
             // Does the RegEx match?
-            if (preg_match('#^' . $routeKey . '$#u', $uri, $matches)) {
+            if (preg_match('#^' . $route_key . '$#u', $uri, $matches)) {
                 // Is this route supposed to redirect to another?
-                if ($this->collection->isRedirect($routeKey)) {
+                if ($this->collection->is_redirect($route_key)) {
                     // replacing matched route groups with references: post/([0-9]+) -> post/$1
-                    $redirectTo = preg_replace_callback('/(\([^\(]+\))/', static function (): string {
+                    $redirect_to = preg_replace_callback('/(\([^\(]+\))/', static function (): string {
                         static $i = 1;
-
                         return '$' . $i++;
                     }, is_array($handler) ? key($handler) : $handler);
-
-                    throw new RedirectException(
-                        preg_replace('#\A' . $routeKey . '\z#u', $redirectTo, $uri),
-                        $this->collection->getRedirectCode($routeKey),
-                    );
+                    throw new Redirect_Exception(preg_replace('#\A' . $route_key . '\z#u', $redirect_to, $uri), $this->collection->get_redirect_code($route_key));
                 }
                 // Store our locale so CodeIgniter object can
                 // assign it to the Request.
-                if (str_contains($matchedKey, '{locale}')) {
-                    preg_match(
-                        '#^' . str_replace('{locale}', '(?<locale>[^/]+)', $matchedKey) . '$#u',
-                        $uri,
-                        $matched,
-                    );
-
-                    if ($this->collection->shouldUseSupportedLocalesOnly()
-                        && ! in_array($matched['locale'], config(App::class)->supportedLocales, true)) {
+                if (str_contains($matched_key, '{locale}')) {
+                    preg_match('#^' . str_replace('{locale}', '(?<locale>[^/]+)', $matched_key) . '$#u', $uri, $matched);
+                    if ($this->collection->should_use_supported_locales_only() && !in_array($matched['locale'], config(App::class)->supported_locales, true)) {
                         // Throw exception to prevent the autorouter, if enabled,
                         // from trying to find a route
-                        throw PageNotFoundException::forLocaleNotSupported($matched['locale']);
+                        throw Page_Not_Found_Exception::for_locale_not_supported($matched['locale']);
                     }
-
-                    $this->detectedLocale = $matched['locale'];
+                    $this->detected_locale = $matched['locale'];
                     unset($matched);
                 }
-
                 // Are we using Closures? If so, then we need
                 // to collect the params into an array
                 // so it can be passed to the controller method later.
-                if (! is_string($handler) && is_callable($handler)) {
+                if (!is_string($handler) && is_callable($handler)) {
                     $this->controller = $handler;
-
                     // Remove the original string from the matches array
                     array_shift($matches);
-
                     $this->params = $matches;
-
-                    $this->setMatchedRoute($matchedKey, $handler);
-
+                    $this->set_matched_route($matched_key, $handler);
                     return true;
                 }
-
                 if (str_contains($handler, '::')) {
-                    [$controller, $methodAndParams] = explode('::', $handler);
+                    [$controller, $method_and_params] = explode('::', $handler);
                 } else {
-                    $controller      = $handler;
-                    $methodAndParams = '';
+                    $controller = $handler;
+                    $method_and_params = '';
                 }
-
                 // Checks `/` in controller name
                 if (str_contains($controller, '/')) {
-                    throw RouterException::forInvalidControllerName($handler);
+                    throw Router_Exception::for_invalid_controller_name($handler);
                 }
-
-                if (str_contains($handler, '$') && str_contains($routeKey, '(')) {
+                if (str_contains($handler, '$') && str_contains($route_key, '(')) {
                     // Checks dynamic controller
                     if (str_contains($controller, '$')) {
-                        throw RouterException::forDynamicController($handler);
+                        throw Router_Exception::for_dynamic_controller($handler);
                     }
-
-                    if (config(Routing::class)->multipleSegmentsOneParam === false) {
+                    if (config(Routing::class)->multiple_segments_one_param === false) {
                         // Using back-references
-                        $segments = explode('/', preg_replace('#\A' . $routeKey . '\z#u', $handler, $uri));
+                        $segments = explode('/', preg_replace('#\A' . $route_key . '\z#u', $handler, $uri));
                     } else {
-                        if (str_contains($methodAndParams, '/')) {
-                            [$method, $handlerParams] = explode('/', $methodAndParams, 2);
-                            $params                   = explode('/', $handlerParams);
-                            $handlerSegments          = array_merge([$controller . '::' . $method], $params);
+                        if (str_contains($method_and_params, '/')) {
+                            [$method, $handler_params] = explode('/', $method_and_params, 2);
+                            $params = explode('/', $handler_params);
+                            $handler_segments = array_merge([$controller . '::' . $method], $params);
                         } else {
-                            $handlerSegments = [$handler];
+                            $handler_segments = [$handler];
                         }
-
                         $segments = [];
-
-                        foreach ($handlerSegments as $segment) {
-                            $segments[] = $this->replaceBackReferences($segment, $matches);
+                        foreach ($handler_segments as $segment) {
+                            $segments[] = $this->replace_back_references($segment, $matches);
                         }
                     }
                 } else {
                     $segments = explode('/', $handler);
                 }
-
-                $this->setRequest($segments);
-
-                $this->setMatchedRoute($matchedKey, $handler);
-
+                $this->set_request($segments);
+                $this->set_matched_route($matched_key, $handler);
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * Replace string `$n` with `$matches[n]` value.
      */
-    private function replaceBackReferences(string $input, array $matches): string
+    private function replace_back_references(string $input, array $matches): string
     {
         $pattern = '/\$([1-' . count($matches) . '])/u';
-
-        return preg_replace_callback(
-            $pattern,
-            static function ($match) use ($matches) {
-                $index = (int) $match[1];
-
-                return $matches[$index] ?? '';
-            },
-            $input,
-        );
+        return preg_replace_callback($pattern, static function ($match) use ($matches) {
+            $index = (int) $match[1];
+            return $matches[$index] ?? '';
+        }, $input);
     }
-
     /**
      * Checks Auto Routes.
      *
@@ -588,12 +454,10 @@ class Router implements RouterInterface
      *
      * @return void
      */
-    public function autoRoute(string $uri)
+    public function auto_route(string $uri)
     {
-        [$this->directory, $this->controller, $this->method, $this->params]
-            = $this->autoRouter->getRoute($uri, $this->collection->getHTTPVerb());
+        [$this->directory, $this->controller, $this->method, $this->params] = $this->auto_router->get_route($uri, $this->collection->get_http_verb());
     }
-
     /**
      * Scans the controller directory, attempting to locate a controller matching the supplied uri $segments
      *
@@ -605,11 +469,10 @@ class Router implements RouterInterface
      *
      * @codeCoverageIgnore
      */
-    protected function validateRequest(array $segments): array
+    protected function validate_request(array $segments): array
     {
-        return $this->scanControllers($segments);
+        return $this->scan_controllers($segments);
     }
-
     /**
      * Scans the controller directory, attempting to locate a controller matching the supplied uri $segments
      *
@@ -619,45 +482,36 @@ class Router implements RouterInterface
      *
      * @deprecated Not used. Moved to AutoRouter class.
      */
-    protected function scanControllers(array $segments): array
+    protected function scan_controllers(array $segments): array
     {
-        $segments = array_filter($segments, static fn ($segment): bool => $segment !== '');
+        $segments = array_filter($segments, static fn($segment): bool => $segment !== '');
         // numerically reindex the array, removing gaps
         $segments = array_values($segments);
-
         // if a prior directory value has been set, just return segments and get out of here
         if (isset($this->directory)) {
             return $segments;
         }
-
         // Loop through our segments and return as soon as a controller
         // is found or when such a directory doesn't exist
         $c = count($segments);
-
         while ($c-- > 0) {
-            $segmentConvert = ucfirst($this->translateURIDashes === true ? str_replace('-', '_', $segments[0]) : $segments[0]);
+            $segment_convert = ucfirst($this->translate_uri_dashes === true ? str_replace('-', '_', $segments[0]) : $segments[0]);
             // as soon as we encounter any segment that is not PSR-4 compliant, stop searching
-            if (! $this->isValidSegment($segmentConvert)) {
+            if (!$this->is_valid_segment($segment_convert)) {
                 return $segments;
             }
-
-            $test = APPPATH . 'Controllers/' . $this->directory . $segmentConvert;
-
+            $test = APPPATH . 'Controllers/' . $this->directory . $segment_convert;
             // as long as each segment is *not* a controller file but does match a directory, add it to $this->directory
-            if (! is_file($test . '.php') && is_dir($test)) {
-                $this->setDirectory($segmentConvert, true, false);
+            if (!is_file($test . '.php') && is_dir($test)) {
+                $this->set_directory($segment_convert, true, false);
                 array_shift($segments);
-
                 continue;
             }
-
             return $segments;
         }
-
         // This means that all segments were actually directories
         return $segments;
     }
-
     /**
      * Sets the sub-directory that the controller is in.
      *
@@ -667,17 +521,15 @@ class Router implements RouterInterface
      *
      * @deprecated This method should be removed.
      */
-    public function setDirectory(?string $dir = null, bool $append = false, bool $validate = true)
+    public function set_directory(?string $dir = null, bool $append = false, bool $validate = true)
     {
         if ($dir === null || $dir === '') {
             $this->directory = null;
         }
-
-        if ($this->autoRouter instanceof AutoRouter) {
-            $this->autoRouter->setDirectory($dir, $append, $validate);
+        if ($this->auto_router instanceof Auto_Router) {
+            $this->auto_router->set_directory($dir, $append, $validate);
         }
     }
-
     /**
      * Returns true if the supplied $segment string represents a valid PSR-4 compliant namespace/directory segment
      *
@@ -685,11 +537,10 @@ class Router implements RouterInterface
      *
      * @deprecated Moved to AutoRouter class.
      */
-    private function isValidSegment(string $segment): bool
+    private function is_valid_segment(string $segment): bool
     {
         return (bool) preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', $segment);
     }
-
     /**
      * Set request route
      *
@@ -700,28 +551,22 @@ class Router implements RouterInterface
      *
      * @return void
      */
-    protected function setRequest(array $segments = [])
+    protected function set_request(array $segments = [])
     {
         // If we don't have any segments - use the default controller;
         if ($segments === []) {
             return;
         }
-
         [$controller, $method] = array_pad(explode('::', $segments[0]), 2, null);
-
         $this->controller = $controller;
-
         // $this->method already contains the default method name,
         // so don't overwrite it with emptiness.
-        if (! empty($method)) {
+        if (!empty($method)) {
             $this->method = $method;
         }
-
         array_shift($segments);
-
         $this->params = $segments;
     }
-
     /**
      * Sets the default controller based on the info set in the RouteCollection.
      *
@@ -729,168 +574,137 @@ class Router implements RouterInterface
      *
      * @return void
      */
-    protected function setDefaultController()
+    protected function set_default_controller()
     {
         if (empty($this->controller)) {
-            throw RouterException::forMissingDefaultRoute();
+            throw Router_Exception::for_missing_default_route();
         }
-
         sscanf($this->controller, '%[^/]/%s', $class, $this->method);
-
-        if (! is_file(APPPATH . 'Controllers/' . $this->directory . ucfirst($class) . '.php')) {
+        if (!is_file(APPPATH . 'Controllers/' . $this->directory . ucfirst($class) . '.php')) {
             return;
         }
-
         $this->controller = ucfirst($class);
-
         log_message('info', 'Used the default controller.');
     }
-
     /**
      * @param callable|string $handler
      */
-    protected function setMatchedRoute(string $route, $handler): void
+    protected function set_matched_route(string $route, $handler): void
     {
-        $this->matchedRoute = [$route, $handler];
-
-        $this->matchedRouteOptions = $this->collection->getRoutesOptions($route);
+        $this->matched_route = [$route, $handler];
+        $this->matched_route_options = $this->collection->get_routes_options($route);
     }
-
     /**
      * Checks disallowed characters
      */
-    private function checkDisallowedChars(string $uri): void
+    private function check_disallowed_chars(string $uri): void
     {
         foreach (explode('/', $uri) as $segment) {
-            if ($segment !== '' && $this->permittedURIChars !== ''
-                && preg_match('/\A[' . $this->permittedURIChars . ']+\z/iu', $segment) !== 1
-            ) {
-                throw new BadRequestException(
-                    'The URI you submitted has disallowed characters: "' . $segment . '"',
-                );
+            if ($segment !== '' && $this->permitted_uri_chars !== '' && preg_match('/\A[' . $this->permitted_uri_chars . ']+\z/iu', $segment) !== 1) {
+                throw new Bad_Request_Exception('The URI you submitted has disallowed characters: "' . $segment . '"');
             }
         }
     }
-
     /**
      * Extracts PHP attributes from the resolved controller and method.
      */
-    private function processRouteAttributes(): void
+    private function process_route_attributes(): void
     {
-        $this->routeAttributes = ['class' => [], 'method' => []];
-
+        $this->route_attributes = ['class' => [], 'method' => []];
         // Skip if controller attributes are disabled in config
-        if (config('routing')->useControllerAttributes === false) {
+        if (config('routing')->use_controller_attributes === false) {
             return;
         }
-
         // Skip if controller is a Closure
         if ($this->controller instanceof Closure) {
             return;
         }
-
-        if (! class_exists($this->controller)) {
+        if (!class_exists($this->controller)) {
             return;
         }
-
-        $reflectionClass = new ReflectionClass($this->controller);
-
+        $reflection_class = new ReflectionClass($this->controller);
         // Process class-level attributes
-        foreach ($reflectionClass->getAttributes() as $attribute) {
+        foreach ($reflection_class->get_attributes() as $attribute) {
             try {
-                $instance = $attribute->newInstance();
-
-                if ($instance instanceof RouteAttributeInterface) {
-                    $this->routeAttributes['class'][] = $instance;
+                $instance = $attribute->new_instance();
+                if ($instance instanceof Route_Attribute_Interface) {
+                    $this->route_attributes['class'][] = $instance;
                 }
             } catch (Throwable) {
-                log_message('error', 'Failed to instantiate attribute: ' . $attribute->getName());
+                log_message('error', 'Failed to instantiate attribute: ' . $attribute->get_name());
             }
         }
-
         if ($this->method === '' || $this->method === null) {
             return;
         }
-
         // Process method-level attributes
-        if ($reflectionClass->hasMethod($this->method)) {
-            $reflectionMethod = $reflectionClass->getMethod($this->method);
-
-            foreach ($reflectionMethod->getAttributes() as $attribute) {
+        if ($reflection_class->has_method($this->method)) {
+            $reflection_method = $reflection_class->get_method($this->method);
+            foreach ($reflection_method->get_attributes() as $attribute) {
                 try {
-                    $instance = $attribute->newInstance();
-
-                    if ($instance instanceof RouteAttributeInterface) {
-                        $this->routeAttributes['method'][] = $instance;
+                    $instance = $attribute->new_instance();
+                    if ($instance instanceof Route_Attribute_Interface) {
+                        $this->route_attributes['method'][] = $instance;
                     }
                 } catch (Throwable) {
                     // Skip attributes that fail to instantiate
-                    log_message('error', 'Failed to instantiate attribute: ' . $attribute->getName());
+                    log_message('error', 'Failed to instantiate attribute: ' . $attribute->get_name());
                 }
             }
         }
     }
-
     /**
      * Execute beforeController() on all route attributes.
      * Called by CodeIgniter before controller execution.
      */
-    public function executeBeforeAttributes(RequestInterface $request): RequestInterface|ResponseInterface|null
+    public function execute_before_attributes(Request_Interface $request): Request_Interface|Response_Interface|null
     {
         // Process class-level attributes first, then method-level
         foreach (['class', 'method'] as $level) {
-            foreach ($this->routeAttributes[$level] as $attribute) {
-                if (! $attribute instanceof RouteAttributeInterface) {
+            foreach ($this->route_attributes[$level] as $attribute) {
+                if (!$attribute instanceof Route_Attribute_Interface) {
                     continue;
                 }
-
                 $result = $attribute->before($request);
-
                 // If attribute returns a Response, short-circuit
-                if ($result instanceof ResponseInterface) {
+                if ($result instanceof Response_Interface) {
                     return $result;
                 }
-
                 // If attribute returns a Request, use it
-                if ($result instanceof RequestInterface) {
+                if ($result instanceof Request_Interface) {
                     $request = $result;
                 }
             }
         }
-
         return $request;
     }
-
     /**
      * Execute afterController() on all route attributes.
      * Called by CodeIgniter after controller execution.
      */
-    public function executeAfterAttributes(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function execute_after_attributes(Request_Interface $request, Response_Interface $response): Response_Interface
     {
         // Process in reverse order: method-level first, then class-level
         foreach (array_reverse(['class', 'method']) as $level) {
-            foreach ($this->routeAttributes[$level] as $attribute) {
-                if ($attribute instanceof RouteAttributeInterface) {
+            foreach ($this->route_attributes[$level] as $attribute) {
+                if ($attribute instanceof Route_Attribute_Interface) {
                     $result = $attribute->after($request, $response);
-
-                    if ($result instanceof ResponseInterface) {
+                    if ($result instanceof Response_Interface) {
                         $response = $result;
                     }
                 }
             }
         }
-
         return $response;
     }
-
     /**
      * Returns the route attributes collected during routing
      * for the current route.
      *
      * @return array{class: list<string>, method: list<string>}
      */
-    public function getRouteAttributes(): array
+    public function get_route_attributes(): array
     {
-        return $this->routeAttributes;
+        return $this->route_attributes;
     }
 }

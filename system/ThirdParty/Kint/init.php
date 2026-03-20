@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,19 +23,15 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 use Kint\Kint;
-use Kint\Renderer\AbstractRenderer;
+use Kint\Renderer\Abstract_Renderer;
 use Kint\Utils;
-
 if (\defined('KINT_DIR')) {
     return;
 }
-
 if (\version_compare(PHP_VERSION, '7.4') < 0) {
     throw new Exception('Kint 6 requires PHP 7.4 or higher');
 }
-
 \define('KINT_DIR', __DIR__);
 \define('KINT_WIN', DIRECTORY_SEPARATOR !== '/');
 \define('KINT_PHP80', \version_compare(PHP_VERSION, '8.0') >= 0);
@@ -46,30 +41,23 @@ if (\version_compare(PHP_VERSION, '7.4') < 0) {
 \define('KINT_PHP84', \version_compare(PHP_VERSION, '8.4') >= 0);
 \define('KINT_PHP8412', \version_compare(PHP_VERSION, '8.4.12') >= 0);
 \define('KINT_PHP85', \version_compare(PHP_VERSION, '8.5') >= 0);
-
 // Dynamic default settings
 if (\strlen((string) \ini_get('xdebug.file_link_format')) > 0) {
     /** @psalm-var non-empty-string ini_get('xdebug.file_link_format') */
-    AbstractRenderer::$file_link_format = \ini_get('xdebug.file_link_format');
+    Abstract_Renderer::$file_link_format = \ini_get('xdebug.file_link_format');
 }
-if (isset($_SERVER['DOCUMENT_ROOT']) && false === \strpos($_SERVER['DOCUMENT_ROOT'], "\0")) {
-    Utils::$path_aliases = [
-        $_SERVER['DOCUMENT_ROOT'] => '<ROOT>',
-    ];
-
+if (isset($_SERVER['DOCUMENT_ROOT']) && false === \strpos($_SERVER['DOCUMENT_ROOT'], "\x00")) {
+    Utils::$path_aliases = [$_SERVER['DOCUMENT_ROOT'] => '<ROOT>'];
     // Suppressed for unreadable document roots (related to open_basedir)
     if (false !== @\realpath($_SERVER['DOCUMENT_ROOT'])) {
         /** @psalm-suppress InvalidPropertyAssignmentValue */
         Utils::$path_aliases[\realpath($_SERVER['DOCUMENT_ROOT'])] = '<ROOT>';
     }
 }
-
-Utils::composerSkipFlags();
-
+Utils::composer_skip_flags();
 if ((!\defined('KINT_SKIP_FACADE') || !KINT_SKIP_FACADE) && !\class_exists('Kint')) {
     \class_alias(Kint::class, 'Kint');
 }
-
 if (!\defined('KINT_SKIP_HELPERS') || !KINT_SKIP_HELPERS) {
-    require_once __DIR__.'/init_helpers.php';
+    require_once __DIR__ . '/init_helpers.php';
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,65 +23,50 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\Representation\ValueRepresentation;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Representation\Value_Representation;
 use ReflectionClass;
-use SimpleXMLElement;
-use SplFileInfo;
+use Simple_Xml_Element;
+use Spl_File_Info;
 use Throwable;
-
-class ToStringPlugin extends AbstractPlugin implements PluginCompleteInterface
+class To_String_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public static array $blacklist = [
-        SimpleXMLElement::class,
-        SplFileInfo::class,
-    ];
-
-    public function getTypes(): array
+    public static array $blacklist = [Simple_Xml_Element::class, Spl_File_Info::class];
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         $reflection = new ReflectionClass($var);
-        if (!$reflection->hasMethod('__toString')) {
+        if (!$reflection->has_method('__toString')) {
             return $v;
         }
-
         foreach (self::$blacklist as $class) {
             if ($var instanceof $class) {
                 return $v;
             }
         }
-
         try {
             $string = (string) $var;
         } catch (Throwable $t) {
             return $v;
         }
-
-        $c = $v->getContext();
-
-        $base = new BaseContext($c->getName());
-        $base->depth = $c->getDepth() + 1;
-        if (null !== ($ap = $c->getAccessPath())) {
-            $base->access_path = '(string) '.$ap;
+        $c = $v->get_context();
+        $base = new Base_Context($c->get_name());
+        $base->depth = $c->get_depth() + 1;
+        if (null !== $ap = $c->get_access_path()) {
+            $base->access_path = '(string) ' . $ap;
         }
-
-        $string = $this->getParser()->parse($string, $base);
-
-        $v->addRepresentation(new ValueRepresentation('toString', $string));
-
+        $string = $this->get_parser()->parse($string, $base);
+        $v->add_representation(new Value_Representation('toString', $string));
         return $v;
     }
 }

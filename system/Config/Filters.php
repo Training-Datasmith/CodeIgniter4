@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,23 +9,21 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Config;
 
-namespace CodeIgniter\Config;
-
-use CodeIgniter\Filters\Cors;
-use CodeIgniter\Filters\CSRF;
-use CodeIgniter\Filters\DebugToolbar;
-use CodeIgniter\Filters\ForceHTTPS;
-use CodeIgniter\Filters\Honeypot;
-use CodeIgniter\Filters\InvalidChars;
-use CodeIgniter\Filters\PageCache;
-use CodeIgniter\Filters\PerformanceMetrics;
-use CodeIgniter\Filters\SecureHeaders;
-
+use Code_Igniter\Filters\Cors;
+use Code_Igniter\Filters\CSRF;
+use Code_Igniter\Filters\Debug_Toolbar;
+use Code_Igniter\Filters\Force_Https;
+use Code_Igniter\Filters\Honeypot;
+use Code_Igniter\Filters\Invalid_Chars;
+use Code_Igniter\Filters\Page_Cache;
+use Code_Igniter\Filters\Performance_Metrics;
+use Code_Igniter\Filters\Secure_Headers;
 /**
  * Filters configuration
  */
-class Filters extends BaseConfig
+class Filters extends Base_Config
 {
     /**
      * Configures aliases for Filter classes to
@@ -37,18 +34,7 @@ class Filters extends BaseConfig
      * [filter_name => classname]
      * or [filter_name => [classname1, classname2, ...]]
      */
-    public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
-    ];
-
+    public array $aliases = ['csrf' => CSRF::class, 'toolbar' => Debug_Toolbar::class, 'honeypot' => Honeypot::class, 'invalidchars' => Invalid_Chars::class, 'secureheaders' => Secure_Headers::class, 'cors' => Cors::class, 'forcehttps' => Force_Https::class, 'pagecache' => Page_Cache::class, 'performance' => Performance_Metrics::class];
     /**
      * List of special required filters.
      *
@@ -62,18 +48,17 @@ class Filters extends BaseConfig
      *
      * @var array{before: list<string>, after: list<string>}
      */
-    public array $required = [
-        'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
-        ],
-        'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
-        ],
-    ];
-
+    public array $required = ['before' => [
+        'forcehttps',
+        // Force Global Secure Requests
+        'pagecache',
+    ], 'after' => [
+        'pagecache',
+        // Web Page Caching
+        'performance',
+        // Performance Metrics
+        'toolbar',
+    ]];
     /**
      * List of filter aliases that are always
      * applied before and after every request.
@@ -83,18 +68,7 @@ class Filters extends BaseConfig
      *    after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-    public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
-    ];
-
+    public array $globals = ['before' => [], 'after' => []];
     /**
      * List of filter aliases that works on a
      * particular HTTP method (GET, POST, etc.).
@@ -109,7 +83,6 @@ class Filters extends BaseConfig
      * @var array<string, list<string>>
      */
     public array $methods = [];
-
     /**
      * List of filter aliases that should run on any
      * before or after URI patterns.

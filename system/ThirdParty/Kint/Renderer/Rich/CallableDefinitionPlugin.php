@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,41 +23,32 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
 use Kint\Utils;
-use Kint\Value\AbstractValue;
-use Kint\Value\MethodValue;
-use Kint\Value\Representation\CallableDefinitionRepresentation;
-use Kint\Value\Representation\RepresentationInterface;
-
-class CallableDefinitionPlugin extends AbstractPlugin implements TabPluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Method_Value;
+use Kint\Value\Representation\Callable_Definition_Representation;
+use Kint\Value\Representation\Representation_Interface;
+class Callable_Definition_Plugin extends Abstract_Plugin implements Tab_Plugin_Interface
 {
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string
     {
-        if (!$r instanceof CallableDefinitionRepresentation) {
+        if (!$r instanceof Callable_Definition_Representation) {
             return null;
         }
-
         $docstring = [];
-
-        if ($v instanceof MethodValue) {
-            $c = $v->getContext();
-
+        if ($v instanceof Method_Value) {
+            $c = $v->get_context();
             if ($c->inherited) {
-                $docstring[] = 'Inherited from '.$this->renderer->escape($c->owner_class);
+                $docstring[] = 'Inherited from ' . $this->renderer->escape($c->owner_class);
             }
         }
-
-        $docstring[] = 'Defined in '.$this->renderer->escape(Utils::shortenPath($r->getFileName())).':'.$r->getLine();
-
-        $docstring = '<small>'.\implode("\n", $docstring).'</small>';
-
-        if (null !== ($trimmed = $r->getDocstringTrimmed())) {
-            $docstring = $this->renderer->escape($trimmed)."\n\n".$docstring;
+        $docstring[] = 'Defined in ' . $this->renderer->escape(Utils::shorten_path($r->get_file_name())) . ':' . $r->get_line();
+        $docstring = '<small>' . \implode("\n", $docstring) . '</small>';
+        if (null !== $trimmed = $r->get_docstring_trimmed()) {
+            $docstring = $this->renderer->escape($trimmed) . "\n\n" . $docstring;
         }
-
-        return '<pre>'.$docstring.'</pre>';
+        return '<pre>' . $docstring . '</pre>';
     }
 }

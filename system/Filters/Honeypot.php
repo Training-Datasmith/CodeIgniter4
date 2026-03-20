@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,20 +9,18 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\Honeypot\Exceptions\HoneypotException;
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\Honeypot\Exceptions\Honeypot_Exception;
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * Honeypot filter
  *
  * @see \CodeIgniter\Filters\HoneypotTest
  */
-class Honeypot implements FilterInterface
+class Honeypot implements Filter_Interface
 {
     /**
      * Checks if Honeypot field is empty, if not then the
@@ -33,28 +30,24 @@ class Honeypot implements FilterInterface
      *
      * @throws HoneypotException
      */
-    public function before(RequestInterface $request, $arguments = null)
+    public function before(Request_Interface $request, $arguments = null)
     {
-        if (! $request instanceof IncomingRequest) {
+        if (!$request instanceof Incoming_Request) {
             return null;
         }
-
-        if (service('honeypot')->hasContent($request)) {
-            throw HoneypotException::isBot();
+        if (service('honeypot')->has_content($request)) {
+            throw Honeypot_Exception::is_bot();
         }
-
         return null;
     }
-
     /**
      * Attach a honeypot to the current response.
      *
      * @param list<string>|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null)
     {
-        service('honeypot')->attachHoneypot($response);
-
+        service('honeypot')->attach_honeypot($response);
         return null;
     }
 }

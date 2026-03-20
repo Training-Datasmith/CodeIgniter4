@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,11 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\DataConverter;
+namespace Code_Igniter\Data_Converter;
 
 use Closure;
-use CodeIgniter\DataCaster\DataCaster;
-use CodeIgniter\Entity\Entity;
-
+use Code_Igniter\Data_Caster\Data_Caster;
+use Code_Igniter\Entity\Entity;
 /**
  * PHP data <==> DataSource data converter
  *
@@ -24,13 +21,12 @@ use CodeIgniter\Entity\Entity;
  *
  * @see \CodeIgniter\DataConverter\DataConverterTest
  */
-final readonly class DataConverter
+final readonly class Data_Converter
 {
     /**
      * The data caster.
      */
-    private DataCaster $dataCaster;
-
+    private Data_Caster $data_caster;
     /**
      * @param array<string, class-string> $castHandlers Custom convert handlers
      *
@@ -43,7 +39,7 @@ final readonly class DataConverter
          * @var array<string, string> [column => type]
          */
         private array $types,
-        array $castHandlers = [],
+        array $cast_handlers = [],
         /**
          * Helper object.
          */
@@ -61,11 +57,11 @@ final readonly class DataConverter
          *
          * @var (Closure(TEntity, bool, bool): array<string, mixed>)|string|null
          */
-        private Closure|string|null $extractor = null,
-    ) {
-        $this->dataCaster = new DataCaster($castHandlers, $types, $this->helper);
+        private Closure|string|null $extractor = null
+    )
+    {
+        $this->data_caster = new Data_Caster($cast_handlers, $types, $this->helper);
     }
-
     /**
      * Converts data from DataSource to PHP array with specified type values.
      *
@@ -73,17 +69,15 @@ final readonly class DataConverter
      *
      * @internal
      */
-    public function fromDataSource(array $data): array
+    public function from_data_source(array $data): array
     {
         foreach (array_keys($this->types) as $field) {
             if (array_key_exists($field, $data)) {
-                $data[$field] = $this->dataCaster->castAs($data[$field], $field, 'get');
+                $data[$field] = $this->data_caster->cast_as($data[$field], $field, 'get');
             }
         }
-
         return $data;
     }
-
     /**
      * Converts PHP array to data for DataSource field types.
      *
@@ -91,17 +85,15 @@ final readonly class DataConverter
      *
      * @internal
      */
-    public function toDataSource(array $phpData): array
+    public function to_data_source(array $php_data): array
     {
         foreach (array_keys($this->types) as $field) {
-            if (array_key_exists($field, $phpData)) {
-                $phpData[$field] = $this->dataCaster->castAs($phpData[$field], $field, 'set');
+            if (array_key_exists($field, $php_data)) {
+                $php_data[$field] = $this->data_caster->cast_as($php_data[$field], $field, 'set');
             }
         }
-
-        return $phpData;
+        return $php_data;
     }
-
     /**
      * Takes database data array and creates a specified type object.
      *
@@ -114,42 +106,31 @@ final readonly class DataConverter
      */
     public function reconstruct(string $classname, array $row): object
     {
-        $phpData = $this->fromDataSource($row);
-
+        $php_data = $this->from_data_source($row);
         // Use static reconstruct method.
         if (is_string($this->reconstructor) && method_exists($classname, $this->reconstructor)) {
             $method = $this->reconstructor;
-
-            return $classname::$method($phpData);
+            return $classname::$method($php_data);
         }
-
         // Use closure to reconstruct.
         if ($this->reconstructor instanceof Closure) {
             $closure = $this->reconstructor;
-
-            return $closure($phpData);
+            return $closure($php_data);
         }
-
-        $classObj = new $classname();
-
-        if ($classObj instanceof Entity) {
-            $classObj->injectRawData($phpData);
-            $classObj->syncOriginal();
-
-            return $classObj;
+        $class_obj = new $classname();
+        if ($class_obj instanceof Entity) {
+            $class_obj->inject_raw_data($php_data);
+            $class_obj->sync_original();
+            return $class_obj;
         }
-
-        $classSet = Closure::bind(function ($key, $value): void {
+        $class_set = Closure::bind(function ($key, $value): void {
             $this->{$key} = $value;
-        }, $classObj, $classname);
-
-        foreach ($phpData as $key => $value) {
-            $classSet($key, $value);
+        }, $class_obj, $classname);
+        foreach ($php_data as $key => $value) {
+            $class_set($key, $value);
         }
-
-        return $classObj;
+        return $class_obj;
     }
-
     /**
      * Takes an object and extract properties as an array.
      *
@@ -162,40 +143,30 @@ final readonly class DataConverter
      *
      * @internal
      */
-    public function extract(object $object, bool $onlyChanged = false, bool $recursive = false): array
+    public function extract(object $object, bool $only_changed = false, bool $recursive = false): array
     {
         // Use extractor method.
         if (is_string($this->extractor) && method_exists($object, $this->extractor)) {
             $method = $this->extractor;
-            $row    = $object->{$method}($onlyChanged, $recursive);
-
-            return $this->toDataSource($row);
+            $row = $object->{$method}($only_changed, $recursive);
+            return $this->to_data_source($row);
         }
-
         // Use closure to extract.
         if ($this->extractor instanceof Closure) {
             $closure = $this->extractor;
-            $row     = $closure($object, $onlyChanged, $recursive);
-
-            return $this->toDataSource($row);
+            $row = $closure($object, $only_changed, $recursive);
+            return $this->to_data_source($row);
         }
-
         if ($object instanceof Entity) {
-            $row = $object->toRawArray($onlyChanged, $recursive);
-
-            return $this->toDataSource($row);
+            $row = $object->to_raw_array($only_changed, $recursive);
+            return $this->to_data_source($row);
         }
-
         $array = (array) $object;
-
         $row = [];
-
         foreach ($array as $key => $value) {
             $key = preg_replace('/\000.*\000/', '', $key);
-
             $row[$key] = $value;
         }
-
-        return $this->toDataSource($row);
+        return $this->to_data_source($row);
     }
 }

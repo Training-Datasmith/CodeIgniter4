@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,66 +23,48 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
 use DateTimeImmutable;
-use Kint\Value\AbstractValue;
-use Kint\Value\FixedWidthValue;
-use Kint\Value\Representation\StringRepresentation;
-use Kint\Value\StringValue;
-
-class TimestampPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Fixed_Width_Value;
+use Kint\Value\Representation\String_Representation;
+use Kint\Value\String_Value;
+class Timestamp_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public static array $blacklist = [
-        2147483648,
-        2147483647,
-        1073741824,
-        1073741823,
-    ];
-
-    public function getTypes(): array
+    public static array $blacklist = [2147483648, 2147483647, 1073741824, 1073741823];
+    public function get_types(): array
     {
         return ['string', 'integer'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         if (\is_string($var) && !\ctype_digit($var)) {
             return $v;
         }
-
         if ($var < 0) {
             return $v;
         }
-
         if (\in_array($var, self::$blacklist, true)) {
             return $v;
         }
-
         $len = \strlen((string) $var);
-
         // Guess for anything between March 1973 and November 2286
         if ($len < 9 || $len > 10) {
             return $v;
         }
-
-        if (!$v instanceof StringValue && !$v instanceof FixedWidthValue) {
+        if (!$v instanceof String_Value && !$v instanceof Fixed_Width_Value) {
             return $v;
         }
-
-        if (!$dt = DateTimeImmutable::createFromFormat('U', (string) $var)) {
+        if (!$dt = DateTimeImmutable::create_from_format('U', (string) $var)) {
             return $v;
         }
-
-        $v->removeRepresentation('contents');
-        $v->addRepresentation(new StringRepresentation('Timestamp', $dt->format('c'), null, true));
-
+        $v->remove_representation('contents');
+        $v->add_representation(new String_Representation('Timestamp', $dt->format('c'), null, true));
         return $v;
     }
 }

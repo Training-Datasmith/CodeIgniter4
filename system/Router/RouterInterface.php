@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,23 +9,20 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Router;
+namespace Code_Igniter\Router;
 
 use Closure;
-use CodeIgniter\HTTP\Request;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\HTTP\Request;
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * Expected behavior of a Router.
  */
-interface RouterInterface
+interface Router_Interface
 {
     /**
      * Stores a reference to the RouteCollection object.
      */
-    public function __construct(RouteCollectionInterface $routes, ?Request $request = null);
-
+    public function __construct(Route_Collection_Interface $routes, ?Request $request = null);
     /**
      * Finds the controller method corresponding to the URI.
      *
@@ -35,21 +31,18 @@ interface RouterInterface
      * @return (Closure(mixed...): (ResponseInterface|string|void))|string Controller classname or Closure
      */
     public function handle(?string $uri = null);
-
     /**
      * Returns the name of the matched controller.
      *
      * @return (Closure(mixed...): (ResponseInterface|string|void))|string Controller classname or Closure
      */
-    public function controllerName();
-
+    public function controller_name();
     /**
      * Returns the name of the method in the controller to run.
      *
      * @return string
      */
-    public function methodName();
-
+    public function method_name();
     /**
      * Returns the binds that have been matched and collected
      * during the parsing process as an array, ready to send to
@@ -58,7 +51,6 @@ interface RouterInterface
      * @return array
      */
     public function params();
-
     /**
      * Sets the value that should be used to match the index.php file. Defaults
      * to index.php but this allows you to modify it in case you are using
@@ -69,5 +61,5 @@ interface RouterInterface
      *
      * @return RouterInterface
      */
-    public function setIndexPage($page);
+    public function set_index_page($page);
 }

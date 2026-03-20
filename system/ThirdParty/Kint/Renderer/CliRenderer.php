@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,36 +23,30 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer;
 
-use Kint\Value\AbstractValue;
+use Kint\Value\Abstract_Value;
 use Throwable;
-
-class CliRenderer extends TextRenderer
+class Cli_Renderer extends Text_Renderer
 {
     /**
      * @var bool enable colors
      */
     public static bool $cli_colors = true;
-
     /**
      * Detects the terminal width on startup.
      */
     public static bool $detect_width = true;
-
     /**
      * The minimum width to detect terminal size as.
      *
      * Less than this is ignored and falls back to default width.
      */
     public static int $min_terminal_width = 40;
-
     /**
      * Forces utf8 output on windows.
      */
     public static bool $force_utf8 = false;
-
     /**
      * Which stream to check for VT100 support on windows.
      *
@@ -62,27 +55,20 @@ class CliRenderer extends TextRenderer
      * @psalm-var ?resource
      */
     public static $windows_stream = null;
-
     protected static ?int $terminal_width = null;
-
     protected bool $windows_output = false;
-
     protected bool $colors = false;
-
     public function __construct()
     {
         parent::__construct();
-
         if (!self::$force_utf8 && KINT_WIN) {
             if (!\function_exists('sapi_windows_vt100_support')) {
                 $this->windows_output = true;
             } else {
                 $stream = self::$windows_stream;
-
                 if (!$stream && \defined('STDOUT')) {
                     $stream = STDOUT;
                 }
-
                 if (!$stream) {
                     $this->windows_output = true;
                 } else {
@@ -90,7 +76,6 @@ class CliRenderer extends TextRenderer
                 }
             }
         }
-
         if (null === self::$terminal_width) {
             if (self::$detect_width) {
                 try {
@@ -106,78 +91,58 @@ class CliRenderer extends TextRenderer
                     self::$terminal_width = self::$default_width;
                 }
             }
-
             if (!isset(self::$terminal_width) || self::$terminal_width < self::$min_terminal_width) {
                 self::$terminal_width = self::$default_width;
             }
         }
-
         $this->colors = $this->windows_output ? false : self::$cli_colors;
-
         $this->header_width = self::$terminal_width;
     }
-
-    public function colorValue(string $string): string
+    public function color_value(string $string): string
     {
         if (!$this->colors) {
             return $string;
         }
-
-        return "\x1b[32m".\str_replace("\n", "\x1b[0m\n\x1b[32m", $string)."\x1b[0m";
+        return "\x1b[32m" . \str_replace("\n", "\x1b[0m\n\x1b[32m", $string) . "\x1b[0m";
     }
-
-    public function colorType(string $string): string
+    public function color_type(string $string): string
     {
         if (!$this->colors) {
             return $string;
         }
-
-        return "\x1b[35;1m".\str_replace("\n", "\x1b[0m\n\x1b[35;1m", $string)."\x1b[0m";
+        return "\x1b[35;1m" . \str_replace("\n", "\x1b[0m\n\x1b[35;1m", $string) . "\x1b[0m";
     }
-
-    public function colorTitle(string $string): string
+    public function color_title(string $string): string
     {
         if (!$this->colors) {
             return $string;
         }
-
-        return "\x1b[36m".\str_replace("\n", "\x1b[0m\n\x1b[36m", $string)."\x1b[0m";
+        return "\x1b[36m" . \str_replace("\n", "\x1b[0m\n\x1b[36m", $string) . "\x1b[0m";
     }
-
-    public function renderTitle(AbstractValue $v): string
+    public function render_title(Abstract_Value $v): string
     {
         if ($this->windows_output) {
-            return $this->utf8ToWindows(parent::renderTitle($v));
+            return $this->utf8to_windows(parent::render_title($v));
         }
-
-        return parent::renderTitle($v);
+        return parent::render_title($v);
     }
-
-    public function preRender(): string
+    public function pre_render(): string
     {
         return PHP_EOL;
     }
-
-    public function postRender(): string
+    public function post_render(): string
     {
         if ($this->windows_output) {
-            return $this->utf8ToWindows(parent::postRender());
+            return $this->utf8to_windows(parent::post_render());
         }
-
-        return parent::postRender();
+        return parent::post_render();
     }
-
     public function escape(string $string, $encoding = false): string
     {
-        return \str_replace("\x1b", '\\x1b', $string);
+        return \str_replace("\x1b", '\x1b', $string);
     }
-
-    protected function utf8ToWindows(string $string): string
+    protected function utf8to_windows(string $string): string
     {
-        return \str_replace(
-            ['┌', '═', '┐', '│', '└', '─', '┘'],
-            [' ', '=', ' ', '|', ' ', '-', ' '],
-            $string
-        );
+        return \str_replace(['┌', '═', '┐', '│', '└', '─', '┘'], [' ', '=', ' ', '|', ' ', '-', ' '], $string);
     }
 }

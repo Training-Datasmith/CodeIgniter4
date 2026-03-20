@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,60 +9,52 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Exceptions;
 
-namespace CodeIgniter\Exceptions;
-
-class PageNotFoundException extends RuntimeException implements HTTPExceptionInterface
+class Page_Not_Found_Exception extends RuntimeException implements Http_Exception_Interface
 {
-    use DebugTraceableTrait;
-
+    use Debug_Traceable_Trait;
     /**
      * HTTP status code
      *
      * @var int
      */
     protected $code = 404;
-
     /**
      * @return static
      */
-    public static function forPageNotFound(?string $message = null)
+    public static function for_page_not_found(?string $message = null)
     {
         return new static($message ?? self::lang('HTTP.pageNotFound'));
     }
-
     /**
      * @return static
      */
-    public static function forEmptyController()
+    public static function for_empty_controller()
     {
         return new static(self::lang('HTTP.emptyController'));
     }
-
     /**
      * @return static
      */
-    public static function forControllerNotFound(string $controller, string $method)
+    public static function for_controller_not_found(string $controller, string $method)
     {
         return new static(self::lang('HTTP.controllerNotFound', [$controller, $method]));
     }
-
     /**
      * @return static
      */
-    public static function forMethodNotFound(string $method)
+    public static function for_method_not_found(string $method)
     {
         return new static(self::lang('HTTP.methodNotFound', [$method]));
     }
-
     /**
      * @return static
      */
-    public static function forLocaleNotSupported(string $locale)
+    public static function for_locale_not_supported(string $locale)
     {
         return new static(self::lang('HTTP.localeNotSupported', [$locale]));
     }
-
     /**
      * Get translated system message
      *
@@ -76,7 +67,6 @@ class PageNotFoundException extends RuntimeException implements HTTPExceptionInt
     private static function lang(string $line, array $args = []): string
     {
         $lang = service('language', null, false);
-
-        return $lang->getLine($line, $args);
+        return $lang->get_line($line, $args);
     }
 }

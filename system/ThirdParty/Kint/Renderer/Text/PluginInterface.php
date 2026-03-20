@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,15 +23,12 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Text;
 
-use Kint\Renderer\TextRenderer;
-use Kint\Value\AbstractValue;
-
-interface PluginInterface
+use Kint\Renderer\Text_Renderer;
+use Kint\Value\Abstract_Value;
+interface Plugin_Interface
 {
-    public function __construct(TextRenderer $r);
-
-    public function render(AbstractValue $v): ?string;
+    public function __construct(Text_Renderer $r);
+    public function render(Abstract_Value $v): ?string;
 }

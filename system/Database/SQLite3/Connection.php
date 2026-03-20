@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,44 +9,39 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Database\Sq_Lite3;
 
-namespace CodeIgniter\Database\SQLite3;
-
-use CodeIgniter\Database\BaseConnection;
-use CodeIgniter\Database\Exceptions\DatabaseException;
-use CodeIgniter\Database\TableName;
-use CodeIgniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Database\Base_Connection;
+use Code_Igniter\Database\Exceptions\Database_Exception;
+use Code_Igniter\Database\Table_Name;
+use Code_Igniter\Exceptions\InvalidArgumentException;
 use Exception;
-use SQLite3;
-use SQLite3Result;
+use Sq_Lite3;
+use Sq_Lite3result;
 use stdClass;
-
 /**
  * Connection for SQLite3
  *
  * @extends BaseConnection<SQLite3, SQLite3Result>
  */
-class Connection extends BaseConnection
+class Connection extends Base_Connection
 {
     /**
      * Database driver
      *
      * @var string
      */
-    public $DBDriver = 'SQLite3';
-
+    public $db_driver = 'SQLite3';
     /**
      * Identifier escape character
      *
      * @var string
      */
-    public $escapeChar = '`';
-
+    public $escape_char = '`';
     /**
      * @var bool Enable Foreign Key constraint or not
      */
-    protected $foreignKeys = false;
-
+    protected $foreign_keys = false;
     /**
      * The milliseconds to sleep
      *
@@ -55,8 +49,7 @@ class Connection extends BaseConnection
      *
      * @see https://www.php.net/manual/en/sqlite3.busytimeout
      */
-    protected $busyTimeout;
-
+    protected $busy_timeout;
     /**
      * The setting of the "synchronous" flag
      *
@@ -65,30 +58,25 @@ class Connection extends BaseConnection
      * @see https://www.sqlite.org/pragma.html#pragma_synchronous
      */
     protected ?int $synchronous = null;
-
     /**
      * @return void
      */
     public function initialize()
     {
         parent::initialize();
-
-        if ($this->foreignKeys) {
-            $this->enableForeignKeyChecks();
+        if ($this->foreign_keys) {
+            $this->enable_foreign_key_checks();
         }
-
-        if (is_int($this->busyTimeout)) {
-            $this->connID->busyTimeout($this->busyTimeout);
+        if (is_int($this->busy_timeout)) {
+            $this->conn_id->busy_timeout($this->busy_timeout);
         }
-
         if (is_int($this->synchronous)) {
-            if (! in_array($this->synchronous, [0, 1, 2, 3], true)) {
+            if (!in_array($this->synchronous, [0, 1, 2, 3], true)) {
                 throw new InvalidArgumentException('Invalid synchronous value.');
             }
-            $this->connID->exec('PRAGMA synchronous = ' . $this->synchronous);
+            $this->conn_id->exec('PRAGMA synchronous = ' . $this->synchronous);
         }
     }
-
     /**
      * Connect to the database.
      *
@@ -98,27 +86,20 @@ class Connection extends BaseConnection
      */
     public function connect(bool $persistent = false)
     {
-        if ($persistent && $this->DBDebug) {
-            throw new DatabaseException('SQLite3 doesn\'t support persistent connections.');
+        if ($persistent && $this->db_debug) {
+            throw new Database_Exception('SQLite3 doesn\'t support persistent connections.');
         }
-
         try {
-            if ($this->database !== ':memory:' && ! str_contains($this->database, DIRECTORY_SEPARATOR)) {
+            if ($this->database !== ':memory:' && !str_contains($this->database, DIRECTORY_SEPARATOR)) {
                 $this->database = WRITEPATH . $this->database;
             }
-
-            $sqlite = ($this->password === null || $this->password === '')
-                ? new SQLite3($this->database)
-                : new SQLite3($this->database, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE, $this->password);
-
-            $sqlite->enableExceptions(true);
-
+            $sqlite = $this->password === null || $this->password === '' ? new Sq_Lite3($this->database) : new Sq_Lite3($this->database, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE, $this->password);
+            $sqlite->enable_exceptions(true);
             return $sqlite;
         } catch (Exception $e) {
-            throw new DatabaseException('SQLite3 error: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new Database_Exception('SQLite3 error: ' . $e->get_message(), $e->get_code(), $e);
         }
     }
-
     /**
      * Close the database connection.
      *
@@ -126,31 +107,26 @@ class Connection extends BaseConnection
      */
     protected function _close()
     {
-        $this->connID->close();
+        $this->conn_id->close();
     }
-
     /**
      * Select a specific database table to use.
      */
-    public function setDatabase(string $databaseName): bool
+    public function set_database(string $database_name): bool
     {
         return false;
     }
-
     /**
      * Returns a string containing the version of the database being used.
      */
-    public function getVersion(): string
+    public function get_version(): string
     {
-        if (isset($this->dataCache['version'])) {
-            return $this->dataCache['version'];
+        if (isset($this->data_cache['version'])) {
+            return $this->data_cache['version'];
         }
-
-        $version = SQLite3::version();
-
-        return $this->dataCache['version'] = $version['versionString'];
+        $version = Sq_Lite3::version();
+        return $this->data_cache['version'] = $version['versionString'];
     }
-
     /**
      * Execute the query
      *
@@ -159,81 +135,58 @@ class Connection extends BaseConnection
     protected function execute(string $sql)
     {
         try {
-            return $this->isWriteType($sql)
-                ? $this->connID->exec($sql)
-                : $this->connID->query($sql);
+            return $this->is_write_type($sql) ? $this->conn_id->exec($sql) : $this->conn_id->query($sql);
         } catch (Exception $e) {
-            log_message('error', "{message}\nin {exFile} on line {exLine}.\n{trace}", [
-                'message' => $e->getMessage(),
-                'exFile'  => clean_path($e->getFile()),
-                'exLine'  => $e->getLine(),
-                'trace'   => render_backtrace($e->getTrace()),
-            ]);
-
-            if ($this->DBDebug) {
-                throw new DatabaseException($e->getMessage(), $e->getCode(), $e);
+            log_message('error', "{message}\nin {exFile} on line {exLine}.\n{trace}", ['message' => $e->get_message(), 'exFile' => clean_path($e->get_file()), 'exLine' => $e->get_line(), 'trace' => render_backtrace($e->get_trace())]);
+            if ($this->db_debug) {
+                throw new Database_Exception($e->get_message(), $e->get_code(), $e);
             }
         }
-
         return false;
     }
-
     /**
      * Returns the total number of rows affected by this query.
      */
-    public function affectedRows(): int
+    public function affected_rows(): int
     {
-        return $this->connID->changes();
+        return $this->conn_id->changes();
     }
-
     /**
      * Platform-dependant string escape
      */
-    protected function _escapeString(string $str): string
+    protected function _escape_string(string $str): string
     {
-        if (! $this->connID instanceof SQLite3) {
+        if (!$this->conn_id instanceof Sq_Lite3) {
             $this->initialize();
         }
-
-        return $this->connID->escapeString($str);
+        return $this->conn_id->escape_string($str);
     }
-
     /**
      * Generates the SQL for listing tables in a platform-dependent manner.
      *
      * @param string|null $tableName If $tableName is provided will return only this table if exists.
      */
-    protected function _listTables(bool $prefixLimit = false, ?string $tableName = null): string
+    protected function _list_tables(bool $prefix_limit = false, ?string $table_name = null): string
     {
-        if ((string) $tableName !== '') {
-            return 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\''
-                   . ' AND "NAME" NOT LIKE \'sqlite!_%\' ESCAPE \'!\''
-                   . ' AND "NAME" LIKE ' . $this->escape($tableName);
+        if ((string) $table_name !== '') {
+            return 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\'' . ' AND "NAME" NOT LIKE \'sqlite!_%\' ESCAPE \'!\'' . ' AND "NAME" LIKE ' . $this->escape($table_name);
         }
-
-        return 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\''
-               . ' AND "NAME" NOT LIKE \'sqlite!_%\' ESCAPE \'!\''
-               . (($prefixLimit && $this->DBPrefix !== '')
-                    ? ' AND "NAME" LIKE \'' . $this->escapeLikeString($this->DBPrefix) . '%\' ' . sprintf($this->likeEscapeStr, $this->likeEscapeChar)
-                    : '');
+        return 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\'' . ' AND "NAME" NOT LIKE \'sqlite!_%\' ESCAPE \'!\'' . ($prefix_limit && $this->db_prefix !== '' ? ' AND "NAME" LIKE \'' . $this->escape_like_string($this->db_prefix) . '%\' ' . sprintf($this->like_escape_str, $this->like_escape_char) : '');
     }
-
     /**
      * Generates a platform-specific query string so that the column names can be fetched.
      *
      * @param string|TableName $table
      */
-    protected function _listColumns($table = ''): string
+    protected function _list_columns($table = ''): string
     {
-        if ($table instanceof TableName) {
-            $tableName = $this->escapeIdentifier($table);
+        if ($table instanceof Table_Name) {
+            $table_name = $this->escape_identifier($table);
         } else {
-            $tableName = $this->protectIdentifiers($table, true, null, false);
+            $table_name = $this->protect_identifiers($table, true, null, false);
         }
-
-        return 'PRAGMA TABLE_INFO(' . $tableName . ')';
+        return 'PRAGMA TABLE_INFO(' . $table_name . ')';
     }
-
     /**
      * @param string|TableName $tableName
      *
@@ -241,27 +194,22 @@ class Connection extends BaseConnection
      *
      * @throws DatabaseException
      */
-    public function getFieldNames($tableName)
+    public function get_field_names($table_name)
     {
-        $table = ($tableName instanceof TableName) ? $tableName->getTableName() : $tableName;
-
+        $table = $table_name instanceof Table_Name ? $table_name->get_table_name() : $table_name;
         // Is there a cached result?
-        if (isset($this->dataCache['field_names'][$table])) {
-            return $this->dataCache['field_names'][$table];
+        if (isset($this->data_cache['field_names'][$table])) {
+            return $this->data_cache['field_names'][$table];
         }
-
-        if (! $this->connID instanceof SQLite3) {
+        if (!$this->conn_id instanceof Sq_Lite3) {
             $this->initialize();
         }
-
-        $sql = $this->_listColumns($tableName);
-
-        $query                                  = $this->query($sql);
-        $this->dataCache['field_names'][$table] = [];
-
-        foreach ($query->getResultArray() as $row) {
+        $sql = $this->_list_columns($table_name);
+        $query = $this->query($sql);
+        $this->data_cache['field_names'][$table] = [];
+        foreach ($query->get_result_array() as $row) {
             // Do we know from where to get the column's name?
-            if (! isset($key)) {
+            if (!isset($key)) {
                 if (isset($row['column_name'])) {
                     $key = 'column_name';
                 } elseif (isset($row['COLUMN_NAME'])) {
@@ -273,13 +221,10 @@ class Connection extends BaseConnection
                     $key = key($row);
                 }
             }
-
-            $this->dataCache['field_names'][$table][] = $row[$key];
+            $this->data_cache['field_names'][$table][] = $row[$key];
         }
-
-        return $this->dataCache['field_names'][$table];
+        return $this->data_cache['field_names'][$table];
     }
-
     /**
      * Returns an array of objects with field data
      *
@@ -287,37 +232,30 @@ class Connection extends BaseConnection
      *
      * @throws DatabaseException
      */
-    protected function _fieldData(string $table): array
+    protected function _field_data(string $table): array
     {
-        if (false === $query = $this->query('PRAGMA TABLE_INFO(' . $this->protectIdentifiers($table, true, null, false) . ')')) {
-            throw new DatabaseException(lang('Database.failGetFieldData'));
+        if (false === $query = $this->query('PRAGMA TABLE_INFO(' . $this->protect_identifiers($table, true, null, false) . ')')) {
+            throw new Database_Exception(lang('Database.failGetFieldData'));
         }
-
-        $query = $query->getResultObject();
-
+        $query = $query->get_result_object();
         if (empty($query)) {
             return [];
         }
-
-        $retVal = [];
-
+        $ret_val = [];
         for ($i = 0, $c = count($query); $i < $c; $i++) {
-            $retVal[$i] = new stdClass();
-
-            $retVal[$i]->name       = $query[$i]->name;
-            $retVal[$i]->type       = $query[$i]->type;
-            $retVal[$i]->max_length = null;
-            $retVal[$i]->nullable   = isset($query[$i]->notnull) && ! (bool) $query[$i]->notnull;
-            $retVal[$i]->default    = $query[$i]->dflt_value;
+            $ret_val[$i] = new stdClass();
+            $ret_val[$i]->name = $query[$i]->name;
+            $ret_val[$i]->type = $query[$i]->type;
+            $ret_val[$i]->max_length = null;
+            $ret_val[$i]->nullable = isset($query[$i]->notnull) && !(bool) $query[$i]->notnull;
+            $ret_val[$i]->default = $query[$i]->dflt_value;
             // "pk" (either zero for columns that are not part of the primary key,
             // or the 1-based index of the column within the primary key).
             // https://www.sqlite.org/pragma.html#pragma_table_info
-            $retVal[$i]->primary_key = ($query[$i]->pk === 0) ? 0 : 1;
+            $ret_val[$i]->primary_key = $query[$i]->pk === 0 ? 0 : 1;
         }
-
-        return $retVal;
+        return $ret_val;
     }
-
     /**
      * Returns an array of objects with index data
      *
@@ -325,104 +263,77 @@ class Connection extends BaseConnection
      *
      * @throws DatabaseException
      */
-    protected function _indexData(string $table): array
+    protected function _index_data(string $table): array
     {
-        $sql = "SELECT 'PRIMARY' as indexname, l.name as fieldname, 'PRIMARY' as indextype
-                FROM pragma_table_info(" . $this->escape(strtolower($table)) . ") as l
-                WHERE l.pk <> 0
-                UNION ALL
-                SELECT sqlite_master.name as indexname, ii.name as fieldname,
-                CASE
-                WHEN ti.pk <> 0 AND sqlite_master.name LIKE 'sqlite_autoindex_%' THEN 'PRIMARY'
-                WHEN sqlite_master.name LIKE 'sqlite_autoindex_%' THEN 'UNIQUE'
-                WHEN sqlite_master.sql LIKE '% UNIQUE %' THEN 'UNIQUE'
-                ELSE 'INDEX'
-                END as indextype
-                FROM sqlite_master
-                INNER JOIN pragma_index_xinfo(sqlite_master.name) ii ON ii.name IS NOT NULL
-                LEFT JOIN pragma_table_info(" . $this->escape(strtolower($table)) . ") ti ON ti.name = ii.name
-                WHERE sqlite_master.type='index' AND sqlite_master.tbl_name = " . $this->escape(strtolower($table)) . ' COLLATE NOCASE';
-
+        $sql = "SELECT 'PRIMARY' as indexname, l.name as fieldname, 'PRIMARY' as indextype\n                FROM pragma_table_info(" . $this->escape(strtolower($table)) . ") as l\n                WHERE l.pk <> 0\n                UNION ALL\n                SELECT sqlite_master.name as indexname, ii.name as fieldname,\n                CASE\n                WHEN ti.pk <> 0 AND sqlite_master.name LIKE 'sqlite_autoindex_%' THEN 'PRIMARY'\n                WHEN sqlite_master.name LIKE 'sqlite_autoindex_%' THEN 'UNIQUE'\n                WHEN sqlite_master.sql LIKE '% UNIQUE %' THEN 'UNIQUE'\n                ELSE 'INDEX'\n                END as indextype\n                FROM sqlite_master\n                INNER JOIN pragma_index_xinfo(sqlite_master.name) ii ON ii.name IS NOT NULL\n                LEFT JOIN pragma_table_info(" . $this->escape(strtolower($table)) . ") ti ON ti.name = ii.name\n                WHERE sqlite_master.type='index' AND sqlite_master.tbl_name = " . $this->escape(strtolower($table)) . ' COLLATE NOCASE';
         if (($query = $this->query($sql)) === false) {
-            throw new DatabaseException(lang('Database.failGetIndexData'));
+            throw new Database_Exception(lang('Database.failGetIndexData'));
         }
-        $query = $query->getResultObject();
-
-        $tempVal = [];
-
+        $query = $query->get_result_object();
+        $temp_val = [];
         foreach ($query as $row) {
             if ($row->indextype === 'PRIMARY') {
-                $tempVal['PRIMARY']['indextype']               = $row->indextype;
-                $tempVal['PRIMARY']['indexname']               = $row->indexname;
-                $tempVal['PRIMARY']['fields'][$row->fieldname] = $row->fieldname;
+                $temp_val['PRIMARY']['indextype'] = $row->indextype;
+                $temp_val['PRIMARY']['indexname'] = $row->indexname;
+                $temp_val['PRIMARY']['fields'][$row->fieldname] = $row->fieldname;
             } else {
-                $tempVal[$row->indexname]['indextype']               = $row->indextype;
-                $tempVal[$row->indexname]['indexname']               = $row->indexname;
-                $tempVal[$row->indexname]['fields'][$row->fieldname] = $row->fieldname;
+                $temp_val[$row->indexname]['indextype'] = $row->indextype;
+                $temp_val[$row->indexname]['indexname'] = $row->indexname;
+                $temp_val[$row->indexname]['fields'][$row->fieldname] = $row->fieldname;
             }
         }
-
-        $retVal = [];
-
-        foreach ($tempVal as $val) {
-            $obj                = new stdClass();
-            $obj->name          = $val['indexname'];
-            $obj->fields        = array_values($val['fields']);
-            $obj->type          = $val['indextype'];
-            $retVal[$obj->name] = $obj;
+        $ret_val = [];
+        foreach ($temp_val as $val) {
+            $obj = new stdClass();
+            $obj->name = $val['indexname'];
+            $obj->fields = array_values($val['fields']);
+            $obj->type = $val['indextype'];
+            $ret_val[$obj->name] = $obj;
         }
-
-        return $retVal;
+        return $ret_val;
     }
-
     /**
      * Returns an array of objects with Foreign key data
      *
      * @return array<string, stdClass>
      */
-    protected function _foreignKeyData(string $table): array
+    protected function _foreign_key_data(string $table): array
     {
-        if (! $this->supportsForeignKeys()) {
+        if (!$this->supports_foreign_keys()) {
             return [];
         }
-
-        $query   = $this->query("PRAGMA foreign_key_list({$table})")->getResult();
+        $query = $this->query("PRAGMA foreign_key_list({$table})")->get_result();
         $indexes = [];
-
         foreach ($query as $row) {
-            $indexes[$row->id]['constraint_name']       = null;
-            $indexes[$row->id]['table_name']            = $table;
-            $indexes[$row->id]['foreign_table_name']    = $row->table;
-            $indexes[$row->id]['column_name'][]         = $row->from;
+            $indexes[$row->id]['constraint_name'] = null;
+            $indexes[$row->id]['table_name'] = $table;
+            $indexes[$row->id]['foreign_table_name'] = $row->table;
+            $indexes[$row->id]['column_name'][] = $row->from;
             $indexes[$row->id]['foreign_column_name'][] = $row->to;
-            $indexes[$row->id]['on_delete']             = $row->on_delete;
-            $indexes[$row->id]['on_update']             = $row->on_update;
-            $indexes[$row->id]['match']                 = $row->match;
+            $indexes[$row->id]['on_delete'] = $row->on_delete;
+            $indexes[$row->id]['on_update'] = $row->on_update;
+            $indexes[$row->id]['match'] = $row->match;
         }
-
-        return $this->foreignKeyDataToObjects($indexes);
+        return $this->foreign_key_data_to_objects($indexes);
     }
-
     /**
      * Returns platform-specific SQL to disable foreign key checks.
      *
      * @return string
      */
-    protected function _disableForeignKeyChecks()
+    protected function _disable_foreign_key_checks()
     {
         return 'PRAGMA foreign_keys = OFF';
     }
-
     /**
      * Returns platform-specific SQL to enable foreign key checks.
      *
      * @return string
      */
-    protected function _enableForeignKeyChecks()
+    protected function _enable_foreign_key_checks()
     {
         return 'PRAGMA foreign_keys = ON';
     }
-
     /**
      * Returns the last error code and message.
      * Must return this format: ['code' => string|int, 'message' => string]
@@ -432,52 +343,43 @@ class Connection extends BaseConnection
      */
     public function error(): array
     {
-        return [
-            'code'    => $this->connID->lastErrorCode(),
-            'message' => $this->connID->lastErrorMsg(),
-        ];
+        return ['code' => $this->conn_id->last_error_code(), 'message' => $this->conn_id->last_error_msg()];
     }
-
     /**
      * Insert ID
      */
-    public function insertID(): int
+    public function insert_id(): int
     {
-        return $this->connID->lastInsertRowID();
+        return $this->conn_id->last_insert_row_id();
     }
-
     /**
      * Begin Transaction
      */
-    protected function _transBegin(): bool
+    protected function _trans_begin(): bool
     {
-        return $this->connID->exec('BEGIN TRANSACTION');
+        return $this->conn_id->exec('BEGIN TRANSACTION');
     }
-
     /**
      * Commit Transaction
      */
-    protected function _transCommit(): bool
+    protected function _trans_commit(): bool
     {
-        return $this->connID->exec('END TRANSACTION');
+        return $this->conn_id->exec('END TRANSACTION');
     }
-
     /**
      * Rollback Transaction
      */
-    protected function _transRollback(): bool
+    protected function _trans_rollback(): bool
     {
-        return $this->connID->exec('ROLLBACK');
+        return $this->conn_id->exec('ROLLBACK');
     }
-
     /**
      * Checks to see if the current install supports Foreign Keys
      * and has them enabled.
      */
-    public function supportsForeignKeys(): bool
+    public function supports_foreign_keys(): bool
     {
-        $result = $this->simpleQuery('PRAGMA foreign_keys');
-
+        $result = $this->simple_query('PRAGMA foreign_keys');
         return (bool) $result;
     }
 }

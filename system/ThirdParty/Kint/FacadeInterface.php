@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,26 +23,21 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint;
 
 use Kint\Parser\Parser;
-use Kint\Renderer\RendererInterface;
-use Kint\Value\Context\ContextInterface;
-
-interface FacadeInterface
+use Kint\Renderer\Renderer_Interface;
+use Kint\Value\Context\Context_Interface;
+interface Facade_Interface
 {
-    public function __construct(Parser $p, RendererInterface $r);
-
-    public function setStatesFromStatics(array $statics): void;
-
-    public function setStatesFromCallInfo(array $info): void;
-
+    public function __construct(Parser $p, Renderer_Interface $r);
+    public function set_states_from_statics(array $statics): void;
+    public function set_states_from_call_info(array $info): void;
     /**
      * Renders a list of vars including the pre and post renders.
      *
      * @param array              $vars Data to dump
      * @param ContextInterface[] $base The base contexts
      */
-    public function dumpAll(array $vars, array $base): string;
+    public function dump_all(array $vars, array $base): string;
 }

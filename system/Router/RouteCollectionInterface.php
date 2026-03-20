@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Router;
+namespace Code_Igniter\Router;
 
 use Closure;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * Interface RouteCollectionInterface
  *
@@ -23,7 +20,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * number of methods is kept very small on purpose, but implementors may
  * add a number of additional methods to customize how the routes are defined.
  */
-interface RouteCollectionInterface
+interface Route_Collection_Interface
 {
     /**
      * Adds a single route to the collection.
@@ -35,7 +32,6 @@ interface RouteCollectionInterface
      * @return RouteCollectionInterface
      */
     public function add(string $from, $to, ?array $options = null);
-
     /**
      * Registers a new constraint with the system. Constraints are used
      * by the routes as placeholders for regular expressions to make defining
@@ -49,21 +45,18 @@ interface RouteCollectionInterface
      *
      * @return RouteCollectionInterface
      */
-    public function addPlaceholder($placeholder, ?string $pattern = null);
-
+    public function add_placeholder($placeholder, ?string $pattern = null);
     /**
      * Sets the default namespace to use for Controllers when no other
      * namespace has been specified.
      *
      * @return RouteCollectionInterface
      */
-    public function setDefaultNamespace(string $value);
-
+    public function set_default_namespace(string $value);
     /**
      * Returns the default namespace.
      */
-    public function getDefaultNamespace(): string;
-
+    public function get_default_namespace(): string;
     /**
      * Sets the default controller to use when no other controller has been
      * specified.
@@ -73,16 +66,14 @@ interface RouteCollectionInterface
      * @TODO The default controller is only for auto-routing. So this should be
      *      removed in the future.
      */
-    public function setDefaultController(string $value);
-
+    public function set_default_controller(string $value);
     /**
      * Sets the default method to call on the controller when no other
      * method has been set in the route.
      *
      * @return RouteCollectionInterface
      */
-    public function setDefaultMethod(string $value);
-
+    public function set_default_method(string $value);
     /**
      * Tells the system whether to convert dashes in URI strings into
      * underscores. In some search engines, including Google, dashes
@@ -95,8 +86,7 @@ interface RouteCollectionInterface
      * @TODO This method is only for auto-routing. So this should be removed in
      *      the future.
      */
-    public function setTranslateURIDashes(bool $value);
-
+    public function set_translate_uri_dashes(bool $value);
     /**
      * If TRUE, the system will attempt to match the URI against
      * Controllers by matching each segment against folders/files
@@ -108,8 +98,7 @@ interface RouteCollectionInterface
      * @TODO This method is only for auto-routing. So this should be removed in
      *      the future.
      */
-    public function setAutoRoute(bool $value): self;
-
+    public function set_auto_route(bool $value): self;
     /**
      * Sets the class/method that should be called if routing doesn't
      * find a match. It can be either a closure or the controller/method
@@ -123,7 +112,6 @@ interface RouteCollectionInterface
      *      be removed in the future.
      */
     public function set404Override($callable = null): self;
-
     /**
      * Returns the 404 Override setting, which can be null, a closure
      * or the controller/string.
@@ -134,7 +122,6 @@ interface RouteCollectionInterface
      *      be removed in the future.
      */
     public function get404Override();
-
     /**
      * Returns the name of the default controller. With Namespace.
      *
@@ -143,15 +130,13 @@ interface RouteCollectionInterface
      * @TODO The default controller is only for auto-routing. So this should be
      *      removed in the future.
      */
-    public function getDefaultController();
-
+    public function get_default_controller();
     /**
      * Returns the name of the default method to use within the controller.
      *
      * @return string
      */
-    public function getDefaultMethod();
-
+    public function get_default_method();
     /**
      * Returns the current value of the translateURIDashes setting.
      *
@@ -160,8 +145,7 @@ interface RouteCollectionInterface
      * @TODO This method is only for auto-routing. So this should be removed in
      *      the future.
      */
-    public function shouldTranslateURIDashes();
-
+    public function should_translate_uri_dashes();
     /**
      * Returns the flag that tells whether to autoRoute URI against Controllers.
      *
@@ -170,16 +154,14 @@ interface RouteCollectionInterface
      * @TODO This method is only for auto-routing. So this should be removed in
      *      the future.
      */
-    public function shouldAutoRoute();
-
+    public function should_auto_route();
     /**
      * Returns the raw array of available routes.
      *
      * @param non-empty-string|null $verb            HTTP verb like `GET`,`POST` or `*` or `CLI`.
      * @param bool                  $includeWildcard Whether to include '*' routes.
      */
-    public function getRoutes(?string $verb = null, bool $includeWildcard = true): array;
-
+    public function get_routes(?string $verb = null, bool $include_wildcard = true): array;
     /**
      * Returns one or all routes options
      *
@@ -188,8 +170,7 @@ interface RouteCollectionInterface
      *
      * @return array<string, int|string> [key => value]
      */
-    public function getRoutesOptions(?string $from = null, ?string $verb = null): array;
-
+    public function get_routes_options(?string $from = null, ?string $verb = null): array;
     /**
      * Sets the current HTTP verb.
      *
@@ -197,15 +178,13 @@ interface RouteCollectionInterface
      *
      * @return $this
      */
-    public function setHTTPVerb(string $verb);
-
+    public function set_http_verb(string $verb);
     /**
      * Returns the current HTTP Verb being used.
      *
      * @return string
      */
-    public function getHTTPVerb();
-
+    public function get_http_verb();
     /**
      * Attempts to look up a route based on its destination.
      *
@@ -224,30 +203,25 @@ interface RouteCollectionInterface
      *
      * @return false|string The route (URI path relative to baseURL) or false if not found.
      */
-    public function reverseRoute(string $search, ...$params);
-
+    public function reverse_route(string $search, ...$params);
     /**
      * Determines if the route is a redirecting route.
      */
-    public function isRedirect(string $routeKey): bool;
-
+    public function is_redirect(string $route_key): bool;
     /**
      * Grabs the HTTP status code from a redirecting Route.
      */
-    public function getRedirectCode(string $routeKey): int;
-
+    public function get_redirect_code(string $route_key): int;
     /**
      * Get the flag that limit or not the routes with {locale} placeholder to App::$supportedLocales
      */
-    public function shouldUseSupportedLocalesOnly(): bool;
-
+    public function should_use_supported_locales_only(): bool;
     /**
      * Checks a route (using the "from") to see if it's filtered or not.
      *
      * @param string|null $verb HTTP verb like `GET`,`POST` or `*` or `CLI`.
      */
-    public function isFiltered(string $search, ?string $verb = null): bool;
-
+    public function is_filtered(string $search, ?string $verb = null): bool;
     /**
      * Returns the filters that should be applied for a single route, along
      * with any parameters it might have. Parameters are found by splitting
@@ -263,5 +237,5 @@ interface RouteCollectionInterface
      *
      * @return list<string> filter_name or filter_name:arguments like 'role:admin,manager'
      */
-    public function getFiltersForRoute(string $search, ?string $verb = null): array;
+    public function get_filters_for_route(string $search, ?string $verb = null): array;
 }

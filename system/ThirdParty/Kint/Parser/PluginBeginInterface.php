@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,16 +23,14 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ContextInterface;
-
-interface PluginBeginInterface extends PluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Context_Interface;
+interface Plugin_Begin_Interface extends Plugin_Interface
 {
     /**
      * @psalm-param mixed &$var
      */
-    public function parseBegin(&$var, ContextInterface $c): ?AbstractValue;
+    public function parse_begin(&$var, Context_Interface $c): ?Abstract_Value;
 }

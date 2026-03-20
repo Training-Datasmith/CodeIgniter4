@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Database;
+namespace Code_Igniter\Database;
 
 /**
  * @template TConnection
@@ -20,7 +18,7 @@ namespace CodeIgniter\Database;
  * @property-read string                $DBDriver
  * @property      false|object|resource $connID
  */
-interface ConnectionInterface
+interface Connection_Interface
 {
     /**
      * Initializes the database connection/settings.
@@ -28,21 +26,18 @@ interface ConnectionInterface
      * @return void
      */
     public function initialize();
-
     /**
      * Connect to the database.
      *
      * @return false|TConnection
      */
     public function connect(bool $persistent = false);
-
     /**
      * Create a persistent database connection.
      *
      * @return false|TConnection
      */
-    public function persistentConnect();
-
+    public function persistent_connect();
     /**
      * Keep or establish the connection if no queries have been sent for
      * a length of time exceeding the server's idle timeout.
@@ -50,7 +45,6 @@ interface ConnectionInterface
      * @return void
      */
     public function reconnect();
-
     /**
      * Returns the actual connection object. If both a 'read' and 'write'
      * connection has been specified, you can pass either term in to
@@ -59,20 +53,17 @@ interface ConnectionInterface
      *
      * @return false|TConnection
      */
-    public function getConnection(?string $alias = null);
-
+    public function get_connection(?string $alias = null);
     /**
      * Select a specific database table to use.
      *
      * @return bool
      */
-    public function setDatabase(string $databaseName);
-
+    public function set_database(string $database_name);
     /**
      * Returns the name of the current database being used.
      */
-    public function getDatabase(): string;
-
+    public function get_database(): string;
     /**
      * Returns the last error encountered by this connection.
      * Must return this format: ['code' => string|int, 'message' => string]
@@ -81,17 +72,14 @@ interface ConnectionInterface
      * @return array<string, int|string>
      */
     public function error(): array;
-
     /**
      * The name of the platform in use (MySQLi, mssql, etc)
      */
-    public function getPlatform(): string;
-
+    public function get_platform(): string;
     /**
      * Returns a string containing the version of the database being used.
      */
-    public function getVersion(): string;
-
+    public function get_version(): string;
     /**
      * Orchestrates a query against the database. Queries must use
      * Database\Statement objects to store the query and build it.
@@ -105,7 +93,6 @@ interface ConnectionInterface
      * @return BaseResult<TConnection, TResult>|bool|Query
      */
     public function query(string $sql, $binds = null);
-
     /**
      * Performs a basic query against the database. No binding or caching
      * is performed, nor are transactions handled. Simply takes a raw
@@ -113,8 +100,7 @@ interface ConnectionInterface
      *
      * @return false|TResult
      */
-    public function simpleQuery(string $sql);
-
+    public function simple_query(string $sql);
     /**
      * Returns an instance of the query builder for this connection.
      *
@@ -122,15 +108,13 @@ interface ConnectionInterface
      *
      * @return BaseBuilder Builder.
      */
-    public function table($tableName);
-
+    public function table($table_name);
     /**
      * Returns the last query's statement object.
      *
      * @return Query
      */
-    public function getLastQuery();
-
+    public function get_last_query();
     /**
      * "Smart" Escaping
      *
@@ -142,7 +126,6 @@ interface ConnectionInterface
      * @return ($str is array ? array : float|int|string)
      */
     public function escape($str);
-
     /**
      * Allows for custom calls to the database engine that are not
      * supported through our database layer.
@@ -151,12 +134,11 @@ interface ConnectionInterface
      *
      * @return array|bool|float|int|object|resource|string|null
      */
-    public function callFunction(string $functionName, ...$params);
-
+    public function call_function(string $function_name, ...$params);
     /**
      * Determines if the statement is a write-type query or not.
      *
      * @param string $sql
      */
-    public function isWriteType($sql): bool;
+    public function is_write_type($sql): bool;
 }

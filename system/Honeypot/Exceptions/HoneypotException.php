@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,33 +9,29 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Honeypot\Exceptions;
 
-namespace CodeIgniter\Honeypot\Exceptions;
-
-use CodeIgniter\Exceptions\ConfigException;
-
-class HoneypotException extends ConfigException
+use Code_Igniter\Exceptions\Config_Exception;
+class Honeypot_Exception extends Config_Exception
 {
     /**
      * Thrown when the template value of config is empty.
      *
      * @return static
      */
-    public static function forNoTemplate()
+    public static function for_no_template()
     {
         return new static(lang('Honeypot.noTemplate'));
     }
-
     /**
      * Thrown when the name value of config is empty.
      *
      * @return static
      */
-    public static function forNoNameField()
+    public static function for_no_name_field()
     {
         return new static(lang('Honeypot.noNameField'));
     }
-
     /**
      * Thrown when the hidden value of config is false.
      *
@@ -44,17 +39,16 @@ class HoneypotException extends ConfigException
      *
      * @deprecated 4.6.4 Never used.
      */
-    public static function forNoHiddenValue()
+    public static function for_no_hidden_value()
     {
         return new static(lang('Honeypot.noHiddenValue'));
     }
-
     /**
      * Thrown when there are no data in the request of honeypot field.
      *
      * @return static
      */
-    public static function isBot()
+    public static function is_bot()
     {
         return new static(lang('Honeypot.theClientIsABot'));
     }

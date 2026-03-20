@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Config;
+namespace Code_Igniter\Config;
 
 /**
  * Factories Configuration file.
@@ -22,7 +20,7 @@ namespace CodeIgniter\Config;
  * Each property should correspond to the
  * lowercase, plural component name.
  */
-class Factory extends BaseConfig
+class Factory extends Base_Config
 {
     /**
      * Supplies a default set of options to merge for
@@ -30,21 +28,12 @@ class Factory extends BaseConfig
      *
      * @var array
      */
-    public static $default = [
-        'component'  => null,
-        'path'       => null,
-        'instanceOf' => null,
-        'getShared'  => true,
-        'preferApp'  => true,
-    ];
-
+    public static $default = ['component' => null, 'path' => null, 'instanceOf' => null, 'getShared' => true, 'preferApp' => true];
     /**
      * Specifies that Models should always favor child
      * classes to allow easy extension of module Models.
      *
      * @var array
      */
-    public $models = [
-        'preferApp' => true,
-    ];
+    public $models = ['preferApp' => true];
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Filters;
 
-namespace CodeIgniter\Filters;
-
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * Filter interface
  */
-interface FilterInterface
+interface Filter_Interface
 {
     /**
      * Do whatever processing this filter needs to do.
@@ -35,8 +32,7 @@ interface FilterInterface
      *
      * @return RequestInterface|ResponseInterface|string|null
      */
-    public function before(RequestInterface $request, $arguments = null);
-
+    public function before(Request_Interface $request, $arguments = null);
     /**
      * Allows After filters to inspect and modify the response
      * object as needed. This method does not allow any way
@@ -47,5 +43,5 @@ interface FilterInterface
      *
      * @return ResponseInterface|null
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null);
+    public function after(Request_Interface $request, Response_Interface $response, $arguments = null);
 }

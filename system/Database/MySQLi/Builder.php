@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,37 +9,29 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Database\My_Sq_Li;
 
-namespace CodeIgniter\Database\MySQLi;
-
-use CodeIgniter\Database\BaseBuilder;
-use CodeIgniter\Database\Exceptions\DatabaseException;
-use CodeIgniter\Database\RawSql;
-
+use Code_Igniter\Database\Base_Builder;
+use Code_Igniter\Database\Exceptions\Database_Exception;
+use Code_Igniter\Database\Raw_Sql;
 /**
  * Builder for MySQLi
  */
-class Builder extends BaseBuilder
+class Builder extends Base_Builder
 {
     /**
      * Identifier escape character
      *
      * @var string
      */
-    protected $escapeChar = '`';
-
+    protected $escape_char = '`';
     /**
      * Specifies which sql statements
      * support the ignore option.
      *
      * @var array<string, string>
      */
-    protected $supportedIgnoreStatements = [
-        'update' => 'IGNORE',
-        'insert' => 'IGNORE',
-        'delete' => 'IGNORE',
-    ];
-
+    protected $supported_ignore_statements = ['update' => 'IGNORE', 'insert' => 'IGNORE', 'delete' => 'IGNORE'];
     /**
      * FROM tables
      *
@@ -49,99 +40,45 @@ class Builder extends BaseBuilder
      *
      * Note: This is only used (and overridden) by MySQL.
      */
-    protected function _fromTables(): string
+    protected function _from_tables(): string
     {
-        if ($this->QBJoin !== [] && count($this->QBFrom) > 1) {
-            return '(' . implode(', ', $this->QBFrom) . ')';
+        if ($this->qb_join !== [] && count($this->qb_from) > 1) {
+            return '(' . implode(', ', $this->qb_from) . ')';
         }
-
-        return implode(', ', $this->QBFrom);
+        return implode(', ', $this->qb_from);
     }
-
     /**
      * Generates a platform-specific batch update string from the supplied data
      */
-    protected function _updateBatch(string $table, array $keys, array $values): string
+    protected function _update_batch(string $table, array $keys, array $values): string
     {
-        $sql = $this->QBOptions['sql'] ?? '';
-
+        $sql = $this->qb_options['sql'] ?? '';
         // if this is the first iteration of batch then we need to build skeleton sql
         if ($sql === '') {
-            $constraints = $this->QBOptions['constraints'] ?? [];
-
+            $constraints = $this->qb_options['constraints'] ?? [];
             if ($constraints === []) {
-                if ($this->db->DBDebug) {
-                    throw new DatabaseException('You must specify a constraint to match on for batch updates.'); // @codeCoverageIgnore
+                if ($this->db->db_debug) {
+                    throw new Database_Exception('You must specify a constraint to match on for batch updates.');
+                    // @codeCoverageIgnore
                 }
-
-                return ''; // @codeCoverageIgnore
+                return '';
+                // @codeCoverageIgnore
             }
-
-            $updateFields = $this->QBOptions['updateFields'] ??
-                $this->updateFields($keys, false, $constraints)->QBOptions['updateFields'] ??
-                [];
-
-            $alias = $this->QBOptions['alias'] ?? '`_u`';
-
-            $sql = 'UPDATE ' . $this->compileIgnore('update') . $table . "\n";
-
+            $update_fields = $this->qb_options['updateFields'] ?? $this->update_fields($keys, false, $constraints)->qb_options['updateFields'] ?? [];
+            $alias = $this->qb_options['alias'] ?? '`_u`';
+            $sql = 'UPDATE ' . $this->compile_ignore('update') . $table . "\n";
             $sql .= "INNER JOIN (\n{:_table_:}";
-
             $sql .= ') ' . $alias . "\n";
-
-            $sql .= 'ON ' . implode(
-                ' AND ',
-                array_map(
-                    static fn ($key, $value) => (
-                        ($value instanceof RawSql && is_string($key))
-                        ?
-                        $table . '.' . $key . ' = ' . $value
-                        :
-                        (
-                            $value instanceof RawSql
-                            ?
-                            $value
-                            :
-                            $table . '.' . $value . ' = ' . $alias . '.' . $value
-                        )
-                    ),
-                    array_keys($constraints),
-                    $constraints,
-                ),
-            ) . "\n";
-
+            $sql .= 'ON ' . implode(' AND ', array_map(static fn($key, $value) => $value instanceof Raw_Sql && is_string($key) ? $table . '.' . $key . ' = ' . $value : ($value instanceof Raw_Sql ? $value : $table . '.' . $value . ' = ' . $alias . '.' . $value), array_keys($constraints), $constraints)) . "\n";
             $sql .= "SET\n";
-
-            $sql .= implode(
-                ",\n",
-                array_map(
-                    static fn ($key, $value): string => $table . '.' . $key . ($value instanceof RawSql ?
-                        ' = ' . $value :
-                        ' = ' . $alias . '.' . $value),
-                    array_keys($updateFields),
-                    $updateFields,
-                ),
-            );
-
-            $this->QBOptions['sql'] = $sql;
+            $sql .= implode(",\n", array_map(static fn($key, $value): string => $table . '.' . $key . ($value instanceof Raw_Sql ? ' = ' . $value : ' = ' . $alias . '.' . $value), array_keys($update_fields), $update_fields));
+            $this->qb_options['sql'] = $sql;
         }
-
-        if (isset($this->QBOptions['setQueryAsData'])) {
-            $data = $this->QBOptions['setQueryAsData'];
+        if (isset($this->qb_options['setQueryAsData'])) {
+            $data = $this->qb_options['setQueryAsData'];
         } else {
-            $data = implode(
-                " UNION ALL\n",
-                array_map(
-                    static fn ($value): string => 'SELECT ' . implode(', ', array_map(
-                        static fn ($key, $index): string => $index . ' ' . $key,
-                        $keys,
-                        $value,
-                    )),
-                    $values,
-                ),
-            ) . "\n";
+            $data = implode(" UNION ALL\n", array_map(static fn($value): string => 'SELECT ' . implode(', ', array_map(static fn($key, $index): string => $index . ' ' . $key, $keys, $value)), $values)) . "\n";
         }
-
         return str_replace('{:_table_:}', $data, $sql);
     }
 }

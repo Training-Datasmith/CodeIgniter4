@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Config;
+namespace Code_Igniter\Config;
 
 /**
  * Routing configuration
  */
-class Routing extends BaseConfig
+class Routing extends Base_Config
 {
     /**
      * For Defined Routes.
@@ -28,10 +26,7 @@ class Routing extends BaseConfig
      *
      * @var list<string>
      */
-    public array $routeFiles = [
-        APPPATH . 'Config/Routes.php',
-    ];
-
+    public array $route_files = [APPPATH . 'Config/Routes.php'];
     /**
      * For Defined Routes and Auto Routing.
      * The default namespace to use for Controllers when no other
@@ -39,8 +34,7 @@ class Routing extends BaseConfig
      *
      * Default: 'App\Controllers'
      */
-    public string $defaultNamespace = 'App\Controllers';
-
+    public string $default_namespace = 'App\Controllers';
     /**
      * For Auto Routing.
      * The default controller to use when no other controller has been
@@ -48,8 +42,7 @@ class Routing extends BaseConfig
      *
      * Default: 'Home'
      */
-    public string $defaultController = 'Home';
-
+    public string $default_controller = 'Home';
     /**
      * For Defined Routes and Auto Routing.
      * The default method to call on the controller when no other
@@ -57,8 +50,7 @@ class Routing extends BaseConfig
      *
      * Default: 'index'
      */
-    public string $defaultMethod = 'index';
-
+    public string $default_method = 'index';
     /**
      * For Auto Routing.
      * Whether to translate dashes in URIs for controller/method to underscores.
@@ -66,8 +58,7 @@ class Routing extends BaseConfig
      *
      * Default: false
      */
-    public bool $translateURIDashes = false;
-
+    public bool $translate_uri_dashes = false;
     /**
      * Sets the class/method that should be called if routing doesn't
      * find a match. It can be the controller/method name like: Users::index
@@ -85,7 +76,6 @@ class Routing extends BaseConfig
      *  public $override404 = 'App\Errors::show404';
      */
     public ?string $override404 = null;
-
     /**
      * If TRUE, the system will attempt to match the URI against
      * Controllers by matching each segment against folders/files
@@ -94,8 +84,7 @@ class Routing extends BaseConfig
      *
      * If FALSE, will stop searching and do NO automatic routing.
      */
-    public bool $autoRoute = false;
-
+    public bool $auto_route = false;
     /**
      * If TRUE, the system will look for attributes on controller
      * class and methods that can run before and after the
@@ -103,8 +92,7 @@ class Routing extends BaseConfig
      *
      * If FALSE, will ignore any attributes.
      */
-    public bool $useControllerAttributes = true;
-
+    public bool $use_controller_attributes = true;
     /**
      * For Defined Routes.
      * If TRUE, will enable the use of the 'prioritize' option
@@ -113,15 +101,13 @@ class Routing extends BaseConfig
      * Default: false
      */
     public bool $prioritize = false;
-
     /**
      * For Defined Routes.
      * If TRUE, matched multiple URI segments will be passed as one parameter.
      *
      * Default: false
      */
-    public bool $multipleSegmentsOneParam = false;
-
+    public bool $multiple_segments_one_param = false;
     /**
      * For Auto Routing (Improved).
      * Map of URI segments and namespaces.
@@ -134,8 +120,7 @@ class Routing extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $moduleRoutes = [];
-
+    public array $module_routes = [];
     /**
      * For Auto Routing (Improved).
      * Whether to translate dashes in URIs for controller/method to CamelCase.
@@ -145,5 +130,5 @@ class Routing extends BaseConfig
      *
      * Default: false
      */
-    public bool $translateUriToCamelCase = false;
+    public bool $translate_uri_to_camel_case = false;
 }

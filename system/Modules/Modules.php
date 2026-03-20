@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Modules;
+namespace Code_Igniter\Modules;
 
 /**
  * Modules Class
@@ -28,48 +26,39 @@ class Modules
      * @var bool
      */
     public $enabled = true;
-
     /**
      * Auto-Discovery Within Composer Packages
      *
      * @var bool
      */
-    public $discoverInComposer = true;
-
+    public $discover_in_composer = true;
     /**
      * Auto-Discover Rules Handler
      *
      * @var list<string>
      */
     public $aliases = [];
-
     public function __construct()
     {
         // For @phpstan-consistent-constructor
     }
-
     /**
      * Should the application auto-discover the requested resource.
      */
-    public function shouldDiscover(string $alias): bool
+    public function should_discover(string $alias): bool
     {
-        if (! $this->enabled) {
+        if (!$this->enabled) {
             return false;
         }
-
         return in_array(strtolower($alias), $this->aliases, true);
     }
-
     public static function __set_state(array $array)
     {
         $obj = new static();
-
         $properties = array_keys(get_object_vars($obj));
-
         foreach ($properties as $property) {
             $obj->{$property} = $array[$property];
         }
-
         return $obj;
     }
 }

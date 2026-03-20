@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\DataCaster\Cast;
+namespace Code_Igniter\Data_Caster\Cast;
 
 /**
  * Class CSVCast
@@ -19,29 +17,20 @@ namespace CodeIgniter\DataCaster\Cast;
  * (PHP) [array --> string] --> (DB driver) --> (DB column) string
  *       [      <-- string] <-- (DB driver) <-- (DB column) string
  */
-class CSVCast extends BaseCast
+class Csv_Cast extends Base_Cast
 {
-    public static function get(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): array {
-        if (! is_string($value)) {
-            self::invalidTypeValueError($value);
+    public static function get(mixed $value, array $params = [], ?object $helper = null): array
+    {
+        if (!is_string($value)) {
+            self::invalid_type_value_error($value);
         }
-
         return explode(',', $value);
     }
-
-    public static function set(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): string {
-        if (! is_array($value)) {
-            self::invalidTypeValueError($value);
+    public static function set(mixed $value, array $params = [], ?object $helper = null): string
+    {
+        if (!is_array($value)) {
+            self::invalid_type_value_error($value);
         }
-
         return implode(',', $value);
     }
 }

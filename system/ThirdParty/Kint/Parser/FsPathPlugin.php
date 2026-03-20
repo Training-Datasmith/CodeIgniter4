@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,57 +23,48 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\SplFileInfoRepresentation;
-use SplFileInfo;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Spl_File_Info_Representation;
+use Spl_File_Info;
 use TypeError;
-
-class FsPathPlugin extends AbstractPlugin implements PluginCompleteInterface
+class Fs_Path_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     public static array $blacklist = ['/', '.'];
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         if (\strlen($var) > 2048) {
             return $v;
         }
-
-        if (!\preg_match('/[\\/\\'.DIRECTORY_SEPARATOR.']/', $var)) {
+        if (!\preg_match('/[\/\\' . DIRECTORY_SEPARATOR . ']/', $var)) {
             return $v;
         }
-
         if (\preg_match('/[?<>"*|]/', $var)) {
             return $v;
         }
-
         try {
             if (!@\file_exists($var)) {
                 return $v;
             }
-        } catch (TypeError $e) {// @codeCoverageIgnore
+        } catch (TypeError $e) {
+            // @codeCoverageIgnore
             // Only possible in PHP 7
-            return $v; // @codeCoverageIgnore
+            return $v;
+            // @codeCoverageIgnore
         }
-
         if (\in_array($var, self::$blacklist, true)) {
             return $v;
         }
-
-        $v->addRepresentation(new SplFileInfoRepresentation(new SplFileInfo($var)), 0);
-
+        $v->add_representation(new Spl_File_Info_Representation(new Spl_File_Info($var)), 0);
         return $v;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\I18n;
+namespace Code_Igniter\I18n;
 
 use DateTime;
 use Exception;
-
 /**
  * Legacy Time class.
  *
@@ -45,10 +42,9 @@ use Exception;
  * @deprecated Use Time instead.
  * @see \CodeIgniter\I18n\TimeLegacyTest
  */
-class TimeLegacy extends DateTime
+class Time_Legacy extends DateTime
 {
-    use TimeTrait;
-
+    use Time_Trait;
     /**
      * Returns a new instance with the date set to the new timestamp.
      *
@@ -56,10 +52,9 @@ class TimeLegacy extends DateTime
      *
      * @throws Exception
      */
-    public function setTimestamp($timestamp): static
+    public function set_timestamp($timestamp): static
     {
         $time = date('Y-m-d H:i:s', $timestamp);
-
         return static::parse($time, $this->timezone, $this->locale);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,10 +9,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Data_Caster\Cast;
 
-namespace CodeIgniter\DataCaster\Cast;
-
-interface CastInterface
+interface Cast_Interface
 {
     /**
      * Takes a value from DataSource, returns its value for PHP.
@@ -24,12 +22,7 @@ interface CastInterface
      *
      * @return mixed PHP native value
      */
-    public static function get(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): mixed;
-
+    public static function get(mixed $value, array $params = [], ?object $helper = null): mixed;
     /**
      * Takes a PHP value, returns its value for DataSource.
      *
@@ -39,9 +32,5 @@ interface CastInterface
      *
      * @return mixed Data to pass to database driver
      */
-    public static function set(
-        mixed $value,
-        array $params = [],
-        ?object $helper = null,
-    ): mixed;
+    public static function set(mixed $value, array $params = [], ?object $helper = null): mixed;
 }

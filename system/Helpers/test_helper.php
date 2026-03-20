@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-use CodeIgniter\Exceptions\TestException;
-use CodeIgniter\Model;
-use CodeIgniter\Test\Fabricator;
+use Code_Igniter\Exceptions\Test_Exception;
+use Code_Igniter\Model;
+use Code_Igniter\Test\Fabricator;
 use Config\Services;
-
 // CodeIgniter Test Helpers
-
-if (! function_exists('fake')) {
+if (!function_exists('fake')) {
     /**
      * Creates a single item using Fabricator.
      *
@@ -31,20 +27,16 @@ if (! function_exists('fake')) {
     function fake($model, ?array $overrides = null, $persist = true)
     {
         $fabricator = new Fabricator($model);
-
         if ($overrides !== null) {
-            $fabricator->setOverrides($overrides);
+            $fabricator->set_overrides($overrides);
         }
-
         if ($persist) {
             return $fabricator->create();
         }
-
         return $fabricator->make();
     }
 }
-
-if (! function_exists('mock')) {
+if (!function_exists('mock')) {
     /**
      * Used within our test suite to mock certain system tools.
      *
@@ -52,21 +44,17 @@ if (! function_exists('mock')) {
      *
      * @return object
      */
-    function mock(string $className)
+    function mock(string $class_name)
     {
-        $mockClass   = $className::$mockClass;
-        $mockService = $className::$mockServiceName ?? '';
-
-        if (empty($mockClass) || ! class_exists($mockClass)) {
-            throw TestException::forInvalidMockClass($mockClass);
+        $mock_class = $class_name::$mock_class;
+        $mock_service = $class_name::$mock_service_name ?? '';
+        if (empty($mock_class) || !class_exists($mock_class)) {
+            throw Test_Exception::for_invalid_mock_class($mock_class);
         }
-
-        $mock = new $mockClass();
-
-        if (! empty($mockService)) {
-            Services::injectMock($mockService, $mock);
+        $mock = new $mock_class();
+        if (!empty($mock_service)) {
+            Services::inject_mock($mock_service, $mock);
         }
-
         return $mock;
     }
 }

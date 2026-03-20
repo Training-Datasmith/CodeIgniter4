@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Images;
+namespace Code_Igniter\Images;
 
 /**
  * Expected behavior of an Image handler
  */
-interface ImageHandlerInterface
+interface Image_Handler_Interface
 {
     /**
      * Resize the image
@@ -25,8 +23,7 @@ interface ImageHandlerInterface
      *
      * @return $this
      */
-    public function resize(int $width, int $height, bool $maintainRatio = false, string $masterDim = 'auto');
-
+    public function resize(int $width, int $height, bool $maintain_ratio = false, string $master_dim = 'auto');
     /**
      * Crops the image to the desired height and width. If one of the height/width values
      * is not provided, that value will be set the appropriate value based on offsets and
@@ -37,8 +34,7 @@ interface ImageHandlerInterface
      *
      * @return $this
      */
-    public function crop(?int $width = null, ?int $height = null, ?int $x = null, ?int $y = null, bool $maintainRatio = false, string $masterDim = 'auto');
-
+    public function crop(?int $width = null, ?int $height = null, ?int $x = null, ?int $y = null, bool $maintain_ratio = false, string $master_dim = 'auto');
     /**
      * Changes the stored image type to indicate the new file format to use when saving.
      * Does not touch the actual resource.
@@ -47,22 +43,19 @@ interface ImageHandlerInterface
      *
      * @return $this
      */
-    public function convert(int $imageType);
-
+    public function convert(int $image_type);
     /**
      * Rotates the image on the current canvas.
      *
      * @return $this
      */
     public function rotate(float $angle);
-
     /**
      * Flattens transparencies, default white background
      *
      * @return $this
      */
     public function flatten(int $red = 255, int $green = 255, int $blue = 255);
-
     /**
      * Reads the EXIF information from the image and modifies the orientation
      * so that displays correctly in the browser.
@@ -70,7 +63,6 @@ interface ImageHandlerInterface
      * @return ImageHandlerInterface
      */
     public function reorient();
-
     /**
      * Retrieve the EXIF information from the image, if possible. Returns
      * an array of the information, or null if nothing can be found.
@@ -79,8 +71,7 @@ interface ImageHandlerInterface
      *
      * @return mixed
      */
-    public function getEXIF(?string $key = null);
-
+    public function get_exif(?string $key = null);
     /**
      * Flip an image horizontally or vertically
      *
@@ -89,7 +80,6 @@ interface ImageHandlerInterface
      * @return $this
      */
     public function flip(string $dir = 'vertical');
-
     /**
      * Combine cropping and resizing into a single command.
      *
@@ -107,7 +97,6 @@ interface ImageHandlerInterface
      * @return $this
      */
     public function fit(int $width, int $height, string $position);
-
     /**
      * Overlays a string of text over the image.
      *
@@ -136,7 +125,6 @@ interface ImageHandlerInterface
      * @return $this
      */
     public function text(string $text, array $options = []);
-
     /**
      * Saves any changes that have been made to file.
      *
@@ -149,11 +137,10 @@ interface ImageHandlerInterface
      * @return bool
      */
     public function save(?string $target = null, int $quality = 90);
-
     /**
      * Clear metadata before saving image as a new file.
      *
      * @return $this
      */
-    public function clearMetadata(): static;
+    public function clear_metadata(): static;
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,18 +23,16 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ContextInterface;
-
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Context_Interface;
 /**
  * @psalm-import-type ParserTrigger from Parser
  *
  * @psalm-api
  */
-class ProxyPlugin implements PluginBeginInterface, PluginCompleteInterface
+class Proxy_Plugin implements Plugin_Begin_Interface, Plugin_Complete_Interface
 {
     protected array $types;
     /** @psalm-var ParserTrigger */
@@ -43,7 +40,6 @@ class ProxyPlugin implements PluginBeginInterface, PluginCompleteInterface
     /** @psalm-var callable */
     protected $callback;
     private ?Parser $parser = null;
-
     /**
      * @psalm-param ParserTrigger $triggers
      * @psalm-param callable $callback
@@ -54,39 +50,24 @@ class ProxyPlugin implements PluginBeginInterface, PluginCompleteInterface
         $this->triggers = $triggers;
         $this->callback = $callback;
     }
-
-    public function setParser(Parser $p): void
+    public function set_parser(Parser $p): void
     {
         $this->parser = $p;
     }
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return $this->types;
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return $this->triggers;
     }
-
-    public function parseBegin(&$var, ContextInterface $c): ?AbstractValue
+    public function parse_begin(&$var, Context_Interface $c): ?Abstract_Value
     {
-        return \call_user_func_array($this->callback, [
-            &$var,
-            $c,
-            Parser::TRIGGER_BEGIN,
-            $this->parser,
-        ]);
+        return \call_user_func_array($this->callback, [&$var, $c, Parser::TRIGGER_BEGIN, $this->parser]);
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        return \call_user_func_array($this->callback, [
-            &$var,
-            $v,
-            $trigger,
-            $this->parser,
-        ]);
+        return \call_user_func_array($this->callback, [&$var, $v, $trigger, $this->parser]);
     }
 }

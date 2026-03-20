@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,31 +23,26 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\BinaryRepresentation;
-use Kint\Value\StringValue;
-
-class BinaryPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Binary_Representation;
+use Kint\Value\String_Value;
+class Binary_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if ($v instanceof StringValue && false === $v->getEncoding()) {
-            $v->addRepresentation(new BinaryRepresentation($v->getValue(), true), 0);
+        if ($v instanceof String_Value && false === $v->get_encoding()) {
+            $v->add_representation(new Binary_Representation($v->get_value(), true), 0);
         }
-
         return $v;
     }
 }

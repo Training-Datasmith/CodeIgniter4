@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,14 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Entity\Cast;
 
-namespace CodeIgniter\Entity\Cast;
-
-use CodeIgniter\I18n\Time;
+use Code_Igniter\I18n\Time;
 use DateTimeInterface;
 use Exception;
-
-class DatetimeCast extends BaseCast
+class Datetime_Cast extends Base_Cast
 {
     /**
      * {@inheritDoc}
@@ -31,19 +28,15 @@ class DatetimeCast extends BaseCast
         if ($value instanceof Time) {
             return $value;
         }
-
         if ($value instanceof DateTimeInterface) {
-            return Time::createFromInstance($value);
+            return Time::create_from_instance($value);
         }
-
         if (is_numeric($value)) {
-            return Time::createFromTimestamp((int) $value, date_default_timezone_get());
+            return Time::create_from_timestamp((int) $value, date_default_timezone_get());
         }
-
         if (is_string($value)) {
             return Time::parse($value);
         }
-
         return $value;
     }
 }

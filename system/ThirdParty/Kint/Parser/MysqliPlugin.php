@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,80 +23,49 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\PropertyContext;
-use Kint\Value\InstanceValue;
-use Kint\Value\Representation\ContainerRepresentation;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Property_Context;
+use Kint\Value\Instance_Value;
+use Kint\Value\Representation\Container_Representation;
 use mysqli;
 use Throwable;
-
 /**
  * Adds support for mysqli object parsing.
  *
  * Due to the way mysqli is implemented in PHP, this will cause
  * warnings on certain mysqli objects if screaming is enabled.
  */
-class MysqliPlugin extends AbstractPlugin implements PluginCompleteInterface
+class Mysqli_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     // These 'properties' are actually globals
-    public const ALWAYS_READABLE = [
-        'client_version' => true,
-        'connect_errno' => true,
-        'connect_error' => true,
-    ];
-
+    public const ALWAYS_READABLE = ['client_version' => true, 'connect_errno' => true, 'connect_error' => true];
     // These are readable on empty mysqli objects, but not on failed connections
-    public const EMPTY_READABLE = [
-        'client_info' => true,
-        'errno' => true,
-        'error' => true,
-    ];
-
+    public const EMPTY_READABLE = ['client_info' => true, 'errno' => true, 'error' => true];
     // These are only readable on connected mysqli objects
-    public const CONNECTED_READABLE = [
-        'affected_rows' => true,
-        'error_list' => true,
-        'field_count' => true,
-        'host_info' => true,
-        'info' => true,
-        'insert_id' => true,
-        'server_info' => true,
-        'server_version' => true,
-        'sqlstate' => true,
-        'protocol_version' => true,
-        'thread_id' => true,
-        'warning_count' => true,
-    ];
-
-    public function getTypes(): array
+    public const CONNECTED_READABLE = ['affected_rows' => true, 'error_list' => true, 'field_count' => true, 'host_info' => true, 'info' => true, 'insert_id' => true, 'server_info' => true, 'server_version' => true, 'sqlstate' => true, 'protocol_version' => true, 'thread_id' => true, 'warning_count' => true];
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_COMPLETE;
     }
-
     /**
      * Before 8.1: Properties were nulls when cast to array
      * After 8.1: Properties are readonly and uninitialized when cast to array (Aka missing).
      */
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!$var instanceof mysqli || !$v instanceof InstanceValue) {
+        if (!$var instanceof mysqli || !$v instanceof Instance_Value) {
             return $v;
         }
-
-        $props = $v->getRepresentation('properties');
-
-        if (!$props instanceof ContainerRepresentation) {
+        $props = $v->get_representation('properties');
+        if (!$props instanceof Container_Representation) {
             return $v;
         }
-
         /**
          * @psalm-var ?string $var->sqlstate
          * @psalm-var ?string $var->client_info
@@ -108,69 +76,60 @@ class MysqliPlugin extends AbstractPlugin implements PluginCompleteInterface
         } catch (Throwable $t) {
             $connected = false;
         }
-
         try {
             $empty = !$connected && \is_string(@$var->client_info);
-        } catch (Throwable $t) { // @codeCoverageIgnore
+        } catch (Throwable $t) {
+            // @codeCoverageIgnore
             // Only possible in PHP 8.0. Before 8.0 there's no exception,
             // after 8.1 there are no failed connection objects
-            $empty = false; // @codeCoverageIgnore
+            $empty = false;
+            // @codeCoverageIgnore
         }
-
-        $parser = $this->getParser();
-
+        $parser = $this->get_parser();
         $new_contents = [];
-
-        foreach ($props->getContents() as $key => $obj) {
+        foreach ($props->get_contents() as $key => $obj) {
             $new_contents[$key] = $obj;
-
-            $c = $obj->getContext();
-
-            if (!$c instanceof PropertyContext) {
+            $c = $obj->get_context();
+            if (!$c instanceof Property_Context) {
                 continue;
             }
-
-            if (isset(self::CONNECTED_READABLE[$c->getName()])) {
+            if (isset(self::CONNECTED_READABLE[$c->get_name()])) {
                 $c->readonly = KINT_PHP81;
                 if (!$connected) {
                     // No failed connections after PHP 8.1
-                    continue; // @codeCoverageIgnore
+                    continue;
+                    // @codeCoverageIgnore
                 }
-            } elseif (isset(self::EMPTY_READABLE[$c->getName()])) {
+            } elseif (isset(self::EMPTY_READABLE[$c->get_name()])) {
                 $c->readonly = KINT_PHP81;
                 // No failed connections after PHP 8.1
-                if (!$connected && !$empty) { // @codeCoverageIgnore
-                    continue; // @codeCoverageIgnore
+                if (!$connected && !$empty) {
+                    // @codeCoverageIgnore
+                    continue;
+                    // @codeCoverageIgnore
                 }
-            } elseif (!isset(self::ALWAYS_READABLE[$c->getName()])) {
-                continue; // @codeCoverageIgnore
+            } elseif (!isset(self::ALWAYS_READABLE[$c->get_name()])) {
+                continue;
+                // @codeCoverageIgnore
             }
-
             $c->readonly = KINT_PHP81;
-
             // Only handle unparsed properties
-            if ((KINT_PHP81 ? 'uninitialized' : 'null') !== $obj->getType()) {
+            if ((KINT_PHP81 ? 'uninitialized' : 'null') !== $obj->get_type()) {
                 continue;
             }
-
-            $param = $var->{$c->getName()};
-
+            $param = $var->{$c->get_name()};
             // If it really was a null
             if (!KINT_PHP81 && null === $param) {
-                continue; // @codeCoverageIgnore
+                continue;
+                // @codeCoverageIgnore
             }
-
             $new_contents[$key] = $parser->parse($param, $c);
         }
-
         $new_contents = \array_values($new_contents);
-
-        $v->setChildren($new_contents);
-
+        $v->set_children($new_contents);
         if ($new_contents) {
-            $v->replaceRepresentation(new ContainerRepresentation('Properties', $new_contents));
+            $v->replace_representation(new Container_Representation('Properties', $new_contents));
         }
-
         return $v;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Files;
 
-namespace CodeIgniter\Files;
-
-use CodeIgniter\Exceptions\InvalidArgumentException;
-use CodeIgniter\Files\Exceptions\FileException;
-use CodeIgniter\Files\Exceptions\FileNotFoundException;
+use Code_Igniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Files\Exceptions\File_Exception;
+use Code_Igniter\Files\Exceptions\File_Not_Found_Exception;
 use Countable;
 use Generator;
 use IteratorAggregate;
-
 /**
  * File Collection Class
  *
@@ -29,7 +26,7 @@ use IteratorAggregate;
  * @template-implements IteratorAggregate<int, File>
  * @see \CodeIgniter\Files\FileCollectionTest
  */
-class FileCollection implements Countable, IteratorAggregate
+class File_Collection implements Countable, IteratorAggregate
 {
     /**
      * The current list of file paths.
@@ -37,43 +34,35 @@ class FileCollection implements Countable, IteratorAggregate
      * @var list<string>
      */
     protected $files = [];
-
     // --------------------------------------------------------------------
     // Support Methods
     // --------------------------------------------------------------------
-
     /**
      * Resolves a full path and verifies it is an actual directory.
      *
      * @throws FileException
      */
-    final protected static function resolveDirectory(string $directory): string
+    final protected static function resolve_directory(string $directory): string
     {
-        if (! is_dir($directory = set_realpath($directory))) {
+        if (!is_dir($directory = set_realpath($directory))) {
             $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-
-            throw FileException::forExpectedDirectory($caller['function']);
+            throw File_Exception::for_expected_directory($caller['function']);
         }
-
         return $directory;
     }
-
     /**
      * Resolves a full path and verifies it is an actual file.
      *
      * @throws FileException
      */
-    final protected static function resolveFile(string $file): string
+    final protected static function resolve_file(string $file): string
     {
-        if (! is_file($file = set_realpath($file))) {
+        if (!is_file($file = set_realpath($file))) {
             $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
-
-            throw FileException::forExpectedFile($caller['function']);
+            throw File_Exception::for_expected_file($caller['function']);
         }
-
         return $file;
     }
-
     /**
      * Removes files that are not part of the given directory (recursive).
      *
@@ -81,13 +70,11 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return list<string>
      */
-    final protected static function filterFiles(array $files, string $directory): array
+    final protected static function filter_files(array $files, string $directory): array
     {
-        $directory = self::resolveDirectory($directory);
-
-        return array_filter($files, static fn (string $value): bool => str_starts_with($value, $directory));
+        $directory = self::resolve_directory($directory);
+        return array_filter($files, static fn(string $value): bool => str_starts_with($value, $directory));
     }
-
     /**
      * Returns any files whose `basename` matches the given pattern.
      *
@@ -96,25 +83,18 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return list<string>
      */
-    final protected static function matchFiles(array $files, string $pattern): array
+    final protected static function match_files(array $files, string $pattern): array
     {
         // Convert pseudo-regex into their true form
         if (@preg_match($pattern, '') === false) {
-            $pattern = str_replace(
-                ['#', '.', '*', '?'],
-                ['\#', '\.', '.*', '.'],
-                $pattern,
-            );
+            $pattern = str_replace(['#', '.', '*', '?'], ['\#', '\.', '.*', '.'], $pattern);
             $pattern = "#\\A{$pattern}\\z#";
         }
-
-        return array_filter($files, static fn ($value): bool => (bool) preg_match($pattern, basename($value)));
+        return array_filter($files, static fn($value): bool => (bool) preg_match($pattern, basename($value)));
     }
-
     // --------------------------------------------------------------------
     // Class Core
     // --------------------------------------------------------------------
-
     /**
      * Loads the Filesystem helper and adds any initial files.
      *
@@ -123,10 +103,8 @@ class FileCollection implements Countable, IteratorAggregate
     public function __construct(array $files = [])
     {
         helper(['filesystem']);
-
         $this->add($files)->define();
     }
-
     /**
      * Applies any initial inputs after the constructor.
      * This method is a stub to be implemented by child classes.
@@ -134,7 +112,6 @@ class FileCollection implements Countable, IteratorAggregate
     protected function define(): void
     {
     }
-
     /**
      * Optimizes and returns the current file list.
      *
@@ -144,10 +121,8 @@ class FileCollection implements Countable, IteratorAggregate
     {
         $this->files = array_unique($this->files);
         sort($this->files, SORT_STRING);
-
         return $this->files;
     }
-
     /**
      * Sets the file list directly, files are still subject to verification.
      * This works as a "reset" method with [].
@@ -159,10 +134,8 @@ class FileCollection implements Countable, IteratorAggregate
     public function set(array $files)
     {
         $this->files = [];
-
-        return $this->addFiles($files);
+        return $this->add_files($files);
     }
-
     /**
      * Adds an array/single file or directory to the list.
      *
@@ -173,31 +146,24 @@ class FileCollection implements Countable, IteratorAggregate
     public function add($paths, bool $recursive = true)
     {
         $paths = (array) $paths;
-
         foreach ($paths as $path) {
-            if (! is_string($path)) {
+            if (!is_string($path)) {
                 throw new InvalidArgumentException('FileCollection paths must be strings.');
             }
-
             try {
                 // Test for a directory
-                self::resolveDirectory($path);
-            } catch (FileException) {
-                $this->addFile($path);
-
+                self::resolve_directory($path);
+            } catch (File_Exception) {
+                $this->add_file($path);
                 continue;
             }
-
-            $this->addDirectory($path, $recursive);
+            $this->add_directory($path, $recursive);
         }
-
         return $this;
     }
-
     // --------------------------------------------------------------------
     // File Handling
     // --------------------------------------------------------------------
-
     /**
      * Verifies and adds files to the list.
      *
@@ -205,27 +171,23 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function addFiles(array $files)
+    public function add_files(array $files)
     {
         foreach ($files as $file) {
-            $this->addFile($file);
+            $this->add_file($file);
         }
-
         return $this;
     }
-
     /**
      * Verifies and adds a single file to the file list.
      *
      * @return $this
      */
-    public function addFile(string $file)
+    public function add_file(string $file)
     {
-        $this->files[] = self::resolveFile($file);
-
+        $this->files[] = self::resolve_file($file);
         return $this;
     }
-
     /**
      * Removes files from the list.
      *
@@ -233,27 +195,23 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function removeFiles(array $files)
+    public function remove_files(array $files)
     {
         $this->files = array_diff($this->files, $files);
-
         return $this;
     }
-
     /**
      * Removes a single file from the list.
      *
      * @return $this
      */
-    public function removeFile(string $file)
+    public function remove_file(string $file)
     {
-        return $this->removeFiles([$file]);
+        return $this->remove_files([$file]);
     }
-
     // --------------------------------------------------------------------
     // Directory Handling
     // --------------------------------------------------------------------
-
     /**
      * Verifies and adds files from each
      * directory to the list.
@@ -262,40 +220,34 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function addDirectories(array $directories, bool $recursive = false)
+    public function add_directories(array $directories, bool $recursive = false)
     {
         foreach ($directories as $directory) {
-            $this->addDirectory($directory, $recursive);
+            $this->add_directory($directory, $recursive);
         }
-
         return $this;
     }
-
     /**
      * Verifies and adds all files from a directory.
      *
      * @return $this
      */
-    public function addDirectory(string $directory, bool $recursive = false)
+    public function add_directory(string $directory, bool $recursive = false)
     {
-        $directory = self::resolveDirectory($directory);
-
+        $directory = self::resolve_directory($directory);
         // Map the directory to depth 2 to so directories become arrays
         foreach (directory_map($directory, 2, true) as $key => $path) {
             if (is_string($path)) {
-                $this->addFile($directory . $path);
+                $this->add_file($directory . $path);
             } elseif ($recursive && is_array($path)) {
-                $this->addDirectory($directory . $key, true);
+                $this->add_directory($directory . $key, true);
             }
         }
-
         return $this;
     }
-
     // --------------------------------------------------------------------
     // Filtering
     // --------------------------------------------------------------------
-
     /**
      * Removes any files from the list that match the supplied pattern
      * (within the optional scope).
@@ -305,19 +257,16 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function removePattern(string $pattern, ?string $scope = null)
+    public function remove_pattern(string $pattern, ?string $scope = null)
     {
         if ($pattern === '') {
             return $this;
         }
-
         // Start with all files or those in scope
-        $files = $scope === null ? $this->files : self::filterFiles($this->files, $scope);
-
+        $files = $scope === null ? $this->files : self::filter_files($this->files, $scope);
         // Remove any files that match the pattern
-        return $this->removeFiles(self::matchFiles($files, $pattern));
+        return $this->remove_files(self::match_files($files, $pattern));
     }
-
     /**
      * Keeps only the files from the list that match
      * (within the optional scope).
@@ -327,19 +276,16 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function retainPattern(string $pattern, ?string $scope = null)
+    public function retain_pattern(string $pattern, ?string $scope = null)
     {
         if ($pattern === '') {
             return $this;
         }
-
         // Start with all files or those in scope
-        $files = $scope === null ? $this->files : self::filterFiles($this->files, $scope);
-
+        $files = $scope === null ? $this->files : self::filter_files($this->files, $scope);
         // Matches the pattern within the scoped files and remove their inverse.
-        return $this->removeFiles(array_diff($files, self::matchFiles($files, $pattern)));
+        return $this->remove_files(array_diff($files, self::match_files($files, $pattern)));
     }
-
     /**
      * Keeps only the files from the list that match multiple patterns
      * (within the optional scope).
@@ -349,39 +295,31 @@ class FileCollection implements Countable, IteratorAggregate
      *
      * @return $this
      */
-    public function retainMultiplePatterns(array $patterns, ?string $scope = null)
+    public function retain_multiple_patterns(array $patterns, ?string $scope = null)
     {
         if ($patterns === []) {
             return $this;
         }
-
         if (count($patterns) === 1 && $patterns[0] === '') {
             return $this;
         }
-
         // Start with all files or those in scope
-        $files = $scope === null ? $this->files : self::filterFiles($this->files, $scope);
-
+        $files = $scope === null ? $this->files : self::filter_files($this->files, $scope);
         // Add files to retain to array
-        $filesToRetain = [];
-
+        $files_to_retain = [];
         foreach ($patterns as $pattern) {
             if ($pattern === '') {
                 continue;
             }
-
             // Matches the pattern within the scoped files
-            $filesToRetain = array_merge($filesToRetain, self::matchFiles($files, $pattern));
+            $files_to_retain = array_merge($files_to_retain, self::match_files($files, $pattern));
         }
-
         // Remove the inverse of files to retain
-        return $this->removeFiles(array_diff($files, $filesToRetain));
+        return $this->remove_files(array_diff($files, $files_to_retain));
     }
-
     // --------------------------------------------------------------------
     // Interface Methods
     // --------------------------------------------------------------------
-
     /**
      * Returns the current number of files in the collection.
      * Fulfills Countable.
@@ -390,7 +328,6 @@ class FileCollection implements Countable, IteratorAggregate
     {
         return count($this->files);
     }
-
     /**
      * Yields as an Iterator for the current files.
      * Fulfills IteratorAggregate.

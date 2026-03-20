@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,63 +23,51 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use JsonException;
-use Kint\Value\AbstractValue;
-use Kint\Value\ArrayValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\Representation\ContainerRepresentation;
-use Kint\Value\Representation\ValueRepresentation;
-
-class JsonPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Json_Exception;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Array_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Representation\Container_Representation;
+use Kint\Value\Representation\Value_Representation;
+class Json_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!isset($var[0]) || ('{' !== $var[0] && '[' !== $var[0])) {
+        if (!isset($var[0]) || '{' !== $var[0] && '[' !== $var[0]) {
             return $v;
         }
-
         try {
             $json = \json_decode($var, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (Json_Exception $e) {
             return $v;
         }
-
         $json = (array) $json;
-
-        $c = $v->getContext();
-
-        $base = new BaseContext('JSON Decode');
-        $base->depth = $c->getDepth();
-
-        if (null !== ($ap = $c->getAccessPath())) {
-            $base->access_path = 'json_decode('.$ap.', true)';
+        $c = $v->get_context();
+        $base = new Base_Context('JSON Decode');
+        $base->depth = $c->get_depth();
+        if (null !== $ap = $c->get_access_path()) {
+            $base->access_path = 'json_decode(' . $ap . ', true)';
         }
-
-        $json = $this->getParser()->parse($json, $base);
-
-        if ($json instanceof ArrayValue && (~$json->flags & AbstractValue::FLAG_DEPTH_LIMIT) && $contents = $json->getContents()) {
+        $json = $this->get_parser()->parse($json, $base);
+        if ($json instanceof Array_Value && ~$json->flags & Abstract_Value::FLAG_DEPTH_LIMIT && $contents = $json->get_contents()) {
             foreach ($contents as $value) {
-                $value->flags |= AbstractValue::FLAG_GENERATED;
+                $value->flags |= Abstract_Value::FLAG_GENERATED;
             }
-            $v->addRepresentation(new ContainerRepresentation('Json', $contents), 0);
+            $v->add_representation(new Container_Representation('Json', $contents), 0);
         } else {
-            $json->flags |= AbstractValue::FLAG_GENERATED;
-            $v->addRepresentation(new ValueRepresentation('Json', $json), 0);
+            $json->flags |= Abstract_Value::FLAG_GENERATED;
+            $v->add_representation(new Value_Representation('Json', $json), 0);
         }
-
         return $v;
     }
 }

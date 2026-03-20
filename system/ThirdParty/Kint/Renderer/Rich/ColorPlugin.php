@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,79 +23,66 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\ColorRepresentation;
-use Kint\Value\Representation\RepresentationInterface;
-
-class ColorPlugin extends AbstractPlugin implements TabPluginInterface, ValuePluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Color_Representation;
+use Kint\Value\Representation\Representation_Interface;
+class Color_Plugin extends Abstract_Plugin implements Tab_Plugin_Interface, Value_Plugin_Interface
 {
-    public function renderValue(AbstractValue $v): ?string
+    public function render_value(Abstract_Value $v): ?string
     {
-        $r = $v->getRepresentation('color');
-
-        if (!$r instanceof ColorRepresentation) {
+        $r = $v->get_representation('color');
+        if (!$r instanceof Color_Representation) {
             return null;
         }
-
-        $children = $this->renderer->renderChildren($v);
-
-        $header = $this->renderer->renderHeader($v);
+        $children = $this->renderer->render_children($v);
+        $header = $this->renderer->render_header($v);
         $header .= '<div class="kint-color-preview"><div style="background:';
-        $header .= $r->getColor(ColorRepresentation::COLOR_RGBA);
+        $header .= $r->get_color(Color_Representation::COLOR_RGBA);
         $header .= '"></div></div>';
-
-        $header = $this->renderer->renderHeaderWrapper($v->getContext(), (bool) \strlen($children), $header);
-
-        return '<dl>'.$header.$children.'</dl>';
+        $header = $this->renderer->render_header_wrapper($v->get_context(), (bool) \strlen($children), $header);
+        return '<dl>' . $header . $children . '</dl>';
     }
-
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string
     {
-        if (!$r instanceof ColorRepresentation) {
+        if (!$r instanceof Color_Representation) {
             return null;
         }
-
         $out = '';
-
-        if ($color = $r->getColor(ColorRepresentation::COLOR_NAME)) {
-            $out .= '<dfn>'.$color."</dfn>\n";
+        if ($color = $r->get_color(Color_Representation::COLOR_NAME)) {
+            $out .= '<dfn>' . $color . "</dfn>\n";
         }
-        if ($color = $r->getColor(ColorRepresentation::COLOR_HEX_3)) {
-            $out .= '<dfn>'.$color."</dfn>\n";
+        if ($color = $r->get_color(Color_Representation::COLOR_HEX_3)) {
+            $out .= '<dfn>' . $color . "</dfn>\n";
         }
-        if ($color = $r->getColor(ColorRepresentation::COLOR_HEX_6)) {
-            $out .= '<dfn>'.$color."</dfn>\n";
+        if ($color = $r->get_color(Color_Representation::COLOR_HEX_6)) {
+            $out .= '<dfn>' . $color . "</dfn>\n";
         }
-
-        if ($r->hasAlpha()) {
-            if ($color = $r->getColor(ColorRepresentation::COLOR_HEX_4)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+        if ($r->has_alpha()) {
+            if ($color = $r->get_color(Color_Representation::COLOR_HEX_4)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
-            if ($color = $r->getColor(ColorRepresentation::COLOR_HEX_8)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+            if ($color = $r->get_color(Color_Representation::COLOR_HEX_8)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
-            if ($color = $r->getColor(ColorRepresentation::COLOR_RGBA)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+            if ($color = $r->get_color(Color_Representation::COLOR_RGBA)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
-            if ($color = $r->getColor(ColorRepresentation::COLOR_HSLA)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+            if ($color = $r->get_color(Color_Representation::COLOR_HSLA)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
         } else {
-            if ($color = $r->getColor(ColorRepresentation::COLOR_RGB)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+            if ($color = $r->get_color(Color_Representation::COLOR_RGB)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
-            if ($color = $r->getColor(ColorRepresentation::COLOR_HSL)) {
-                $out .= '<dfn>'.$color."</dfn>\n";
+            if ($color = $r->get_color(Color_Representation::COLOR_HSL)) {
+                $out .= '<dfn>' . $color . "</dfn>\n";
             }
         }
-
         if (!\strlen($out)) {
             return null;
         }
-
-        return '<pre>'.$out.'</pre>';
+        return '<pre>' . $out . '</pre>';
     }
 }

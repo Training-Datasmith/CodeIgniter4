@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,54 +9,41 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Cache;
 
-namespace CodeIgniter\Cache;
-
-use CodeIgniter\Cache\FactoriesCache\FileVarExportHandler;
-use CodeIgniter\Config\Factories;
-
-final readonly class FactoriesCache
+use Code_Igniter\Cache\Factories_Cache\File_Var_Export_Handler;
+use Code_Igniter\Config\Factories;
+final readonly class Factories_Cache
 {
-    private CacheInterface|FileVarExportHandler $cache;
-
-    public function __construct(CacheInterface|FileVarExportHandler|null $cache = null)
+    private Cache_Interface|File_Var_Export_Handler $cache;
+    public function __construct(Cache_Interface|File_Var_Export_Handler|null $cache = null)
     {
-        $this->cache = $cache ?? new FileVarExportHandler();
+        $this->cache = $cache ?? new File_Var_Export_Handler();
     }
-
     public function save(string $component): void
     {
-        if (! Factories::isUpdated($component)) {
+        if (!Factories::is_updated($component)) {
             return;
         }
-
-        $data = Factories::getComponentInstances($component);
-
-        $this->cache->save($this->getCacheKey($component), $data, 3600 * 24);
+        $data = Factories::get_component_instances($component);
+        $this->cache->save($this->get_cache_key($component), $data, 3600 * 24);
     }
-
-    private function getCacheKey(string $component): string
+    private function get_cache_key(string $component): string
     {
         return 'FactoriesCache_' . $component;
     }
-
     public function load(string $component): bool
     {
-        $key = $this->getCacheKey($component);
-
+        $key = $this->get_cache_key($component);
         $data = $this->cache->get($key);
-
-        if (! is_array($data) || $data === []) {
+        if (!is_array($data) || $data === []) {
             return false;
         }
-
-        Factories::setComponentInstances($component, $data);
-
+        Factories::set_component_instances($component, $data);
         return true;
     }
-
     public function delete(string $component): void
     {
-        $this->cache->delete($this->getCacheKey($component));
+        $this->cache->delete($this->get_cache_key($component));
     }
 }

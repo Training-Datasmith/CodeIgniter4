@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-use CodeIgniter\Exceptions\BadFunctionCallException;
-
+use Code_Igniter\Exceptions\BadFunctionCallException;
 // CodeIgniter Number Helpers
-
-if (! function_exists('number_to_size')) {
+if (!function_exists('number_to_size')) {
     /**
      * Formats a numbers as bytes, based on size, and adds the appropriate suffix
      *
@@ -34,34 +30,30 @@ if (! function_exists('number_to_size')) {
             // Catch "Warning:  A non-numeric value encountered"
             return false;
         }
-
         // ignore sub part
-        $generalLocale = $locale;
-        if ($locale !== null && $locale !== '' && ($underscorePos = strpos($locale, '_'))) {
-            $generalLocale = substr($locale, 0, $underscorePos);
+        $general_locale = $locale;
+        if ($locale !== null && $locale !== '' && $underscore_pos = strpos($locale, '_')) {
+            $general_locale = substr($locale, 0, $underscore_pos);
         }
-
-        if ($num >= 1_000_000_000_000) {
-            $num  = round($num / 1_099_511_627_776, $precision);
-            $unit = lang('Number.terabyteAbbr', [], $generalLocale);
-        } elseif ($num >= 1_000_000_000) {
-            $num  = round($num / 1_073_741_824, $precision);
-            $unit = lang('Number.gigabyteAbbr', [], $generalLocale);
-        } elseif ($num >= 1_000_000) {
-            $num  = round($num / 1_048_576, $precision);
-            $unit = lang('Number.megabyteAbbr', [], $generalLocale);
+        if ($num >= 1000000000000) {
+            $num = round($num / 1099511627776, $precision);
+            $unit = lang('Number.terabyteAbbr', [], $general_locale);
+        } elseif ($num >= 1000000000) {
+            $num = round($num / 1073741824, $precision);
+            $unit = lang('Number.gigabyteAbbr', [], $general_locale);
+        } elseif ($num >= 1000000) {
+            $num = round($num / 1048576, $precision);
+            $unit = lang('Number.megabyteAbbr', [], $general_locale);
         } elseif ($num >= 1000) {
-            $num  = round($num / 1024, $precision);
-            $unit = lang('Number.kilobyteAbbr', [], $generalLocale);
+            $num = round($num / 1024, $precision);
+            $unit = lang('Number.kilobyteAbbr', [], $general_locale);
         } else {
-            $unit = lang('Number.bytes', [], $generalLocale);
+            $unit = lang('Number.bytes', [], $general_locale);
         }
-
         return format_number($num, $precision, $locale, ['after' => ' ' . $unit]);
     }
 }
-
-if (! function_exists('number_to_amount')) {
+if (!function_exists('number_to_amount')) {
     /**
      * Converts numbers to a more readable representation
      * when dealing with very large numbers (in the thousands or above),
@@ -89,48 +81,38 @@ if (! function_exists('number_to_amount')) {
             // Catch "Warning:  A non-numeric value encountered"
             return false;
         }
-
         $suffix = '';
-
         // ignore sub part
-        $generalLocale = $locale;
-        if ($locale !== null && $locale !== '' && ($underscorePos = strpos($locale, '_'))) {
-            $generalLocale = substr($locale, 0, $underscorePos);
+        $general_locale = $locale;
+        if ($locale !== null && $locale !== '' && $underscore_pos = strpos($locale, '_')) {
+            $general_locale = substr($locale, 0, $underscore_pos);
         }
-
-        if ($num >= 1_000_000_000_000_000) {
-            $suffix = lang('Number.quadrillion', [], $generalLocale);
-            $num    = round(($num / 1_000_000_000_000_000), $precision);
-        } elseif ($num >= 1_000_000_000_000) {
-            $suffix = lang('Number.trillion', [], $generalLocale);
-            $num    = round(($num / 1_000_000_000_000), $precision);
-        } elseif ($num >= 1_000_000_000) {
-            $suffix = lang('Number.billion', [], $generalLocale);
-            $num    = round(($num / 1_000_000_000), $precision);
-        } elseif ($num >= 1_000_000) {
-            $suffix = lang('Number.million', [], $generalLocale);
-            $num    = round(($num / 1_000_000), $precision);
+        if ($num >= 1000000000000000) {
+            $suffix = lang('Number.quadrillion', [], $general_locale);
+            $num = round($num / 1000000000000000, $precision);
+        } elseif ($num >= 1000000000000) {
+            $suffix = lang('Number.trillion', [], $general_locale);
+            $num = round($num / 1000000000000, $precision);
+        } elseif ($num >= 1000000000) {
+            $suffix = lang('Number.billion', [], $general_locale);
+            $num = round($num / 1000000000, $precision);
+        } elseif ($num >= 1000000) {
+            $suffix = lang('Number.million', [], $general_locale);
+            $num = round($num / 1000000, $precision);
         } elseif ($num >= 1000) {
-            $suffix = lang('Number.thousand', [], $generalLocale);
-            $num    = round(($num / 1000), $precision);
+            $suffix = lang('Number.thousand', [], $general_locale);
+            $num = round($num / 1000, $precision);
         }
-
         return format_number($num, $precision, $locale, ['after' => $suffix]);
     }
 }
-
-if (! function_exists('number_to_currency')) {
+if (!function_exists('number_to_currency')) {
     function number_to_currency(float $num, string $currency, ?string $locale = null, int $fraction = 0): string
     {
-        return format_number($num, 1, $locale, [
-            'type'     => NumberFormatter::CURRENCY,
-            'currency' => $currency,
-            'fraction' => $fraction,
-        ]);
+        return format_number($num, 1, $locale, ['type' => Number_Formatter::CURRENCY, 'currency' => $currency, 'fraction' => $fraction]);
     }
 }
-
-if (! function_exists('format_number')) {
+if (!function_exists('format_number')) {
     /**
      * A general purpose, locale-aware, number_format method.
      * Used by all of the functions of the number_helper.
@@ -139,47 +121,37 @@ if (! function_exists('format_number')) {
     {
         // If locale is not passed, get from the default locale that is set from our config file
         // or set by HTTP content negotiation.
-        $locale ??= Locale::getDefault();
-
+        $locale ??= Locale::get_default();
         // Type can be any of the NumberFormatter options, but provide a default.
-        $type = (int) ($options['type'] ?? NumberFormatter::DECIMAL);
-
-        $formatter = new NumberFormatter($locale, $type);
-
+        $type = (int) ($options['type'] ?? Number_Formatter::DECIMAL);
+        $formatter = new Number_Formatter($locale, $type);
         // Try to format it per the locale
-        if ($type === NumberFormatter::CURRENCY) {
-            $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, (float) $options['fraction']);
-            $output = $formatter->formatCurrency($num, $options['currency']);
+        if ($type === Number_Formatter::CURRENCY) {
+            $formatter->set_attribute(Number_Formatter::FRACTION_DIGITS, (float) $options['fraction']);
+            $output = $formatter->format_currency($num, $options['currency']);
         } else {
             // In order to specify a precision, we'll have to modify
             // the pattern used by NumberFormatter.
             $pattern = '#,##0.' . str_repeat('#', $precision);
-
-            $formatter->setPattern($pattern);
+            $formatter->set_pattern($pattern);
             $output = $formatter->format($num);
         }
-
         // This might lead a trailing period if $precision == 0
         $output = trim($output, '. ');
-
-        if (intl_is_failure($formatter->getErrorCode())) {
-            throw new BadFunctionCallException($formatter->getErrorMessage());
+        if (intl_is_failure($formatter->get_error_code())) {
+            throw new BadFunctionCallException($formatter->get_error_message());
         }
-
         // Add on any before/after text.
         if (isset($options['before']) && is_string($options['before'])) {
             $output = $options['before'] . $output;
         }
-
         if (isset($options['after']) && is_string($options['after'])) {
             $output .= $options['after'];
         }
-
         return $output;
     }
 }
-
-if (! function_exists('number_to_roman')) {
+if (!function_exists('number_to_roman')) {
     /**
      * Convert a number to a roman numeral.
      *
@@ -187,36 +159,17 @@ if (! function_exists('number_to_roman')) {
      */
     function number_to_roman($num): ?string
     {
-        static $map = [
-            'M'  => 1000,
-            'CM' => 900,
-            'D'  => 500,
-            'CD' => 400,
-            'C'  => 100,
-            'XC' => 90,
-            'L'  => 50,
-            'XL' => 40,
-            'X'  => 10,
-            'IX' => 9,
-            'V'  => 5,
-            'IV' => 4,
-            'I'  => 1,
-        ];
-
+        static $map = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
         $num = (int) $num;
-
         if ($num < 1 || $num > 3999) {
             return null;
         }
-
         $result = '';
-
         foreach ($map as $roman => $arabic) {
             $repeat = (int) floor($num / $arabic);
             $result .= str_repeat($roman, $repeat);
             $num %= $arabic;
         }
-
         return $result;
     }
 }

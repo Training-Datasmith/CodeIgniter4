@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,24 +9,21 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Autoloader;
 
-namespace CodeIgniter\Autoloader;
-
-use CodeIgniter\Cache\CacheInterface;
-use CodeIgniter\Cache\FactoriesCache\FileVarExportHandler;
-
+use Code_Igniter\Cache\Cache_Interface;
+use Code_Igniter\Cache\Factories_Cache\File_Var_Export_Handler;
 /**
  * FileLocator with Cache
  *
  * @see \CodeIgniter\Autoloader\FileLocatorCachedTest
  */
-final class FileLocatorCached implements FileLocatorInterface
+final class File_Locator_Cached implements File_Locator_Interface
 {
     /**
      * @var CacheInterface|FileVarExportHandler
      */
-    private $cacheHandler;
-
+    private $cache_handler;
     /**
      * Cache data
      *
@@ -40,140 +36,106 @@ final class FileLocatorCached implements FileLocatorInterface
      * @var array<string, array<string, mixed>>
      */
     private array $cache = [];
-
     /**
      * Is the cache updated?
      */
-    private bool $cacheUpdated = false;
-
-    private string $cacheKey = 'FileLocatorCache';
-
+    private bool $cache_updated = false;
+    private string $cache_key = 'FileLocatorCache';
     /**
      * @param CacheInterface|FileVarExportHandler|null $cache
      */
-    public function __construct(private readonly FileLocator $locator, $cache = null)
+    public function __construct(private readonly File_Locator $locator, $cache = null)
     {
-        $this->cacheHandler = $cache ?? new FileVarExportHandler();
-
-        $this->loadCache();
+        $this->cache_handler = $cache ?? new File_Var_Export_Handler();
+        $this->load_cache();
     }
-
-    private function loadCache(): void
+    private function load_cache(): void
     {
-        $data = $this->cacheHandler->get($this->cacheKey);
-
+        $data = $this->cache_handler->get($this->cache_key);
         if (is_array($data)) {
             $this->cache = $data;
         }
     }
-
     public function __destruct()
     {
-        $this->saveCache();
+        $this->save_cache();
     }
-
-    private function saveCache(): void
+    private function save_cache(): void
     {
-        if ($this->cacheUpdated) {
-            $this->cacheHandler->save($this->cacheKey, $this->cache, 3600 * 24);
+        if ($this->cache_updated) {
+            $this->cache_handler->save($this->cache_key, $this->cache, 3600 * 24);
         }
     }
-
     /**
      * Delete cache data
      */
-    public function deleteCache(): void
+    public function delete_cache(): void
     {
-        $this->cacheUpdated = false;
-        $this->cacheHandler->delete($this->cacheKey);
+        $this->cache_updated = false;
+        $this->cache_handler->delete($this->cache_key);
     }
-
-    public function findQualifiedNameFromPath(string $path): false|string
+    public function find_qualified_name_from_path(string $path): false|string
     {
         if (isset($this->cache['findQualifiedNameFromPath'][$path])) {
             return $this->cache['findQualifiedNameFromPath'][$path];
         }
-
-        $classname = $this->locator->findQualifiedNameFromPath($path);
-
+        $classname = $this->locator->find_qualified_name_from_path($path);
         $this->cache['findQualifiedNameFromPath'][$path] = $classname;
-        $this->cacheUpdated                              = true;
-
+        $this->cache_updated = true;
         return $classname;
     }
-
-    public function getClassname(string $file): string
+    public function get_classname(string $file): string
     {
         if (isset($this->cache['getClassname'][$file])) {
             return $this->cache['getClassname'][$file];
         }
-
-        $classname = $this->locator->getClassname($file);
-
+        $classname = $this->locator->get_classname($file);
         $this->cache['getClassname'][$file] = $classname;
-        $this->cacheUpdated                 = true;
-
+        $this->cache_updated = true;
         return $classname;
     }
-
     /**
      * @return list<non-empty-string>
      */
-    public function search(string $path, string $ext = 'php', bool $prioritizeApp = true): array
+    public function search(string $path, string $ext = 'php', bool $prioritize_app = true): array
     {
-        if (isset($this->cache['search'][$path][$ext][$prioritizeApp])) {
-            return $this->cache['search'][$path][$ext][$prioritizeApp];
+        if (isset($this->cache['search'][$path][$ext][$prioritize_app])) {
+            return $this->cache['search'][$path][$ext][$prioritize_app];
         }
-
-        $foundPaths = $this->locator->search($path, $ext, $prioritizeApp);
-
-        $this->cache['search'][$path][$ext][$prioritizeApp] = $foundPaths;
-        $this->cacheUpdated                                 = true;
-
-        return $foundPaths;
+        $found_paths = $this->locator->search($path, $ext, $prioritize_app);
+        $this->cache['search'][$path][$ext][$prioritize_app] = $found_paths;
+        $this->cache_updated = true;
+        return $found_paths;
     }
-
-    public function listFiles(string $path): array
+    public function list_files(string $path): array
     {
         if (isset($this->cache['listFiles'][$path])) {
             return $this->cache['listFiles'][$path];
         }
-
-        $files = $this->locator->listFiles($path);
-
+        $files = $this->locator->list_files($path);
         $this->cache['listFiles'][$path] = $files;
-        $this->cacheUpdated              = true;
-
+        $this->cache_updated = true;
         return $files;
     }
-
-    public function listNamespaceFiles(string $prefix, string $path): array
+    public function list_namespace_files(string $prefix, string $path): array
     {
         if (isset($this->cache['listNamespaceFiles'][$prefix][$path])) {
             return $this->cache['listNamespaceFiles'][$prefix][$path];
         }
-
-        $files = $this->locator->listNamespaceFiles($prefix, $path);
-
+        $files = $this->locator->list_namespace_files($prefix, $path);
         $this->cache['listNamespaceFiles'][$prefix][$path] = $files;
-        $this->cacheUpdated                                = true;
-
+        $this->cache_updated = true;
         return $files;
     }
-
-    public function locateFile(string $file, ?string $folder = null, string $ext = 'php'): false|string
+    public function locate_file(string $file, ?string $folder = null, string $ext = 'php'): false|string
     {
-        $folderKey = $folder ?? '';
-
-        if (isset($this->cache['locateFile'][$file][$folderKey][$ext])) {
-            return $this->cache['locateFile'][$file][$folderKey][$ext];
+        $folder_key = $folder ?? '';
+        if (isset($this->cache['locateFile'][$file][$folder_key][$ext])) {
+            return $this->cache['locateFile'][$file][$folder_key][$ext];
         }
-
-        $files = $this->locator->locateFile($file, $folder, $ext);
-
-        $this->cache['locateFile'][$file][$folderKey][$ext] = $files;
-        $this->cacheUpdated                                 = true;
-
+        $files = $this->locator->locate_file($file, $folder, $ext);
+        $this->cache['locateFile'][$file][$folder_key][$ext] = $files;
+        $this->cache_updated = true;
         return $files;
     }
 }

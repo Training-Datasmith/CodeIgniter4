@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,55 +23,45 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
 use InvalidArgumentException;
-use Kint\Value\AbstractValue;
-use Kint\Value\ColorValue;
-use Kint\Value\Representation\ColorRepresentation;
-use Kint\Value\StringValue;
-
-class ColorPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Color_Value;
+use Kint\Value\Representation\Color_Representation;
+use Kint\Value\String_Value;
+class Color_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         if (\strlen($var) > 32) {
             return $v;
         }
-
-        if (!$v instanceof StringValue) {
+        if (!$v instanceof String_Value) {
             return $v;
         }
-
         $trimmed = \strtolower(\trim($var));
-
-        if (!isset(ColorRepresentation::$color_map[$trimmed]) && !\preg_match('/^(?:(?:rgb|hsl)a?[^\\)]{6,}\\)|#[0-9a-f]{3,8})$/', $trimmed)) {
+        if (!isset(Color_Representation::$color_map[$trimmed]) && !\preg_match('/^(?:(?:rgb|hsl)a?[^\)]{6,}\)|#[0-9a-f]{3,8})$/', $trimmed)) {
             return $v;
         }
-
         try {
-            $rep = new ColorRepresentation($var);
+            $rep = new Color_Representation($var);
         } catch (InvalidArgumentException $e) {
             return $v;
         }
-
-        $out = new ColorValue($v->getContext(), $v->getValue(), $v->getEncoding());
+        $out = new Color_Value($v->get_context(), $v->get_value(), $v->get_encoding());
         $out->flags = $v->flags;
-        $out->appendRepresentations($v->getRepresentations());
-        $out->removeRepresentation('contents');
-        $out->addRepresentation($rep, 0);
-
+        $out->append_representations($v->get_representations());
+        $out->remove_representation('contents');
+        $out->add_representation($rep, 0);
         return $out;
     }
 }

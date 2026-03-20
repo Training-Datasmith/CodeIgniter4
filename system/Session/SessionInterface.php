@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Session;
+namespace Code_Igniter\Session;
 
 /**
  * Expected behavior of a session container used with CodeIgniter.
  */
-interface SessionInterface
+interface Session_Interface
 {
     /**
      * Regenerates the session ID.
@@ -26,14 +24,12 @@ interface SessionInterface
      * @return void
      */
     public function regenerate(bool $destroy = false);
-
     /**
      * Destroys the current session.
      *
      * @return void
      */
     public function destroy();
-
     /**
      * Sets user data into the session.
      *
@@ -49,7 +45,6 @@ interface SessionInterface
      * @return void
      */
     public function set($data, $value = null);
-
     /**
      * Get user data that has been set in the session.
      *
@@ -64,14 +59,12 @@ interface SessionInterface
      * @return ($key is string ? mixed : array<string, mixed>)
      */
     public function get(?string $key = null);
-
     /**
      * Returns whether an index exists in the session array.
      *
      * @param string $key Identifier of the session property we are interested in.
      */
     public function has(string $key): bool;
-
     /**
      * Remove one or more session properties.
      *
@@ -84,7 +77,6 @@ interface SessionInterface
      * @return void
      */
     public function remove($key);
-
     /**
      * Sets data into the session that will only last for a single request.
      * Perfect for use with single-use status update messages.
@@ -99,8 +91,7 @@ interface SessionInterface
      *
      * @return void
      */
-    public function setFlashdata($data, $value = null);
-
+    public function set_flashdata($data, $value = null);
     /**
      * Retrieve one or more items of flash data from the session.
      *
@@ -110,8 +101,7 @@ interface SessionInterface
      *
      * @return ($key is string ? mixed : array<string, mixed>)
      */
-    public function getFlashdata(?string $key = null);
-
+    public function get_flashdata(?string $key = null);
     /**
      * Keeps a single piece of flash data alive for one more request.
      *
@@ -119,8 +109,7 @@ interface SessionInterface
      *
      * @return void
      */
-    public function keepFlashdata($key);
-
+    public function keep_flashdata($key);
     /**
      * Mark a session property or properties as flashdata. This returns
      * `false` if any of the properties were not already set.
@@ -129,8 +118,7 @@ interface SessionInterface
      *
      * @return bool
      */
-    public function markAsFlashdata($key);
-
+    public function mark_as_flashdata($key);
     /**
      * Unmark data in the session as flashdata.
      *
@@ -138,15 +126,13 @@ interface SessionInterface
      *
      * @return void
      */
-    public function unmarkFlashdata($key);
-
+    public function unmark_flashdata($key);
     /**
      * Retrieve all of the keys for session data marked as flashdata.
      *
      * @return list<string>
      */
-    public function getFlashKeys(): array;
-
+    public function get_flash_keys(): array;
     /**
      * Sets new data into the session, and marks it as temporary data
      * with a set lifespan.
@@ -157,8 +143,7 @@ interface SessionInterface
      *
      * @return void
      */
-    public function setTempdata($data, $value = null, int $ttl = 300);
-
+    public function set_tempdata($data, $value = null, int $ttl = 300);
     /**
      * Returns either a single piece of tempdata, or all temp data currently
      * in the session.
@@ -167,8 +152,7 @@ interface SessionInterface
      *
      * @return ($key is string ? mixed : array<string, mixed>)
      */
-    public function getTempdata(?string $key = null);
-
+    public function get_tempdata(?string $key = null);
     /**
      * Removes a single piece of temporary data from the session.
      *
@@ -176,8 +160,7 @@ interface SessionInterface
      *
      * @return void
      */
-    public function removeTempdata(string $key);
-
+    public function remove_tempdata(string $key);
     /**
      * Mark one of more pieces of data as being temporary, meaning that
      * it has a set lifespan within the session.
@@ -189,8 +172,7 @@ interface SessionInterface
      *
      * @return bool
      */
-    public function markAsTempdata($key, int $ttl = 300);
-
+    public function mark_as_tempdata($key, int $ttl = 300);
     /**
      * Unmarks temporary data in the session, effectively removing its
      * lifespan and allowing it to live as long as the session does.
@@ -199,12 +181,11 @@ interface SessionInterface
      *
      * @return void
      */
-    public function unmarkTempdata($key);
-
+    public function unmark_tempdata($key);
     /**
      * Retrieve the keys of all session data that have been marked as temporary data.
      *
      * @return list<string>
      */
-    public function getTempKeys(): array;
+    public function get_temp_keys(): array;
 }

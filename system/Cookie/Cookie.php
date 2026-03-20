@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Cookie;
+namespace Code_Igniter\Cookie;
 
 use ArrayAccess;
-use CodeIgniter\Cookie\Exceptions\CookieException;
-use CodeIgniter\Exceptions\InvalidArgumentException;
-use CodeIgniter\Exceptions\LogicException;
-use CodeIgniter\I18n\Time;
+use Code_Igniter\Cookie\Exceptions\Cookie_Exception;
+use Code_Igniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Exceptions\LogicException;
+use Code_Igniter\I18n\Time;
 use Config\Cookie as CookieConfig;
 use DateTimeInterface;
-
 /**
  * A `Cookie` class represents an immutable HTTP cookie value object.
  *
@@ -42,58 +39,48 @@ use DateTimeInterface;
  * @template-implements ArrayAccess<string, bool|int|string>
  * @see \CodeIgniter\Cookie\CookieTest
  */
-class Cookie implements ArrayAccess, CloneableCookieInterface
+class Cookie implements ArrayAccess, Cloneable_Cookie_Interface
 {
     /**
      * @var string
      */
     protected $prefix = '';
-
     /**
      * @var string
      */
     protected $name;
-
     /**
      * @var string
      */
     protected $value;
-
     /**
      * @var int Unix timestamp
      */
     protected $expires;
-
     /**
      * @var string
      */
     protected $path = '/';
-
     /**
      * @var string
      */
     protected $domain = '';
-
     /**
      * @var bool
      */
     protected $secure = false;
-
     /**
      * @var bool
      */
     protected $httponly = true;
-
     /**
      * @var string
      */
     protected $samesite = self::SAMESITE_LAX;
-
     /**
      * @var bool
      */
     protected $raw = false;
-
     /**
      * Default attributes for a Cookie object. The keys here are the
      * lowercase attribute names. Do not camelCase!
@@ -109,17 +96,7 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      *  raw: bool,
      * }
      */
-    private static array $defaults = [
-        'prefix'   => '',
-        'expires'  => 0,
-        'path'     => '/',
-        'domain'   => '',
-        'secure'   => false,
-        'httponly' => true,
-        'samesite' => self::SAMESITE_LAX,
-        'raw'      => false,
-    ];
-
+    private static array $defaults = ['prefix' => '', 'expires' => 0, 'path' => '/', 'domain' => '', 'secure' => false, 'httponly' => true, 'samesite' => self::SAMESITE_LAX, 'raw' => false];
     /**
      * A cookie name can be any US-ASCII characters, except control characters,
      * spaces, tabs, or separator characters.
@@ -127,8 +104,7 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#attributes
      * @see https://tools.ietf.org/html/rfc2616#section-2.2
      */
-    private static string $reservedCharsList = "=,; \t\r\n\v\f()<>@:\\\"/[]?{}";
-
+    private static string $reserved_chars_list = "=,; \t\r\n\v\f()<>@:\\\"/[]?{}";
     /**
      * Set the default attributes to a Cookie instance by injecting
      * the values from the `CookieConfig` config or an array.
@@ -157,37 +133,23 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      *  raw: bool,
      * } The old defaults array. Useful for resetting.
      */
-    public static function setDefaults($config = [])
+    public static function set_defaults($config = [])
     {
-        $oldDefaults = self::$defaults;
-        $newDefaults = [];
-
-        if ($config instanceof CookieConfig) {
-            $newDefaults = [
-                'prefix'   => $config->prefix,
-                'expires'  => $config->expires,
-                'path'     => $config->path,
-                'domain'   => $config->domain,
-                'secure'   => $config->secure,
-                'httponly' => $config->httponly,
-                'samesite' => $config->samesite,
-                'raw'      => $config->raw,
-            ];
+        $old_defaults = self::$defaults;
+        $new_defaults = [];
+        if ($config instanceof Cookie_Config) {
+            $new_defaults = ['prefix' => $config->prefix, 'expires' => $config->expires, 'path' => $config->path, 'domain' => $config->domain, 'secure' => $config->secure, 'httponly' => $config->httponly, 'samesite' => $config->samesite, 'raw' => $config->raw];
         } elseif (is_array($config)) {
-            $newDefaults = $config;
+            $new_defaults = $config;
         }
-
         // This array union ensures that even if passed `$config` is not
         // `CookieConfig` or `array`, no empty defaults will occur.
-        self::$defaults = $newDefaults + $oldDefaults;
-
-        return $oldDefaults;
+        self::$defaults = $new_defaults + $old_defaults;
+        return $old_defaults;
     }
-
     // =========================================================================
     // CONSTRUCTORS
     // =========================================================================
-
     /**
      * Create a new Cookie instance from a `Set-Cookie` header.
      *
@@ -195,32 +157,26 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      *
      * @throws CookieException
      */
-    public static function fromHeaderString(string $cookie, bool $raw = false)
+    public static function from_header_string(string $cookie, bool $raw = false)
     {
-        $data        = self::$defaults;
+        $data = self::$defaults;
         $data['raw'] = $raw;
-
         $parts = preg_split('/\;[\s]*/', $cookie);
-        $part  = explode('=', array_shift($parts), 2);
-
-        $name  = $raw ? $part[0] : urldecode($part[0]);
-        $value = isset($part[1]) ? ($raw ? $part[1] : urldecode($part[1])) : '';
+        $part = explode('=', array_shift($parts), 2);
+        $name = $raw ? $part[0] : urldecode($part[0]);
+        $value = isset($part[1]) ? $raw ? $part[1] : urldecode($part[1]) : '';
         unset($part);
-
         foreach ($parts as $part) {
             if (str_contains($part, '=')) {
                 [$attr, $val] = explode('=', $part);
             } else {
                 $attr = $part;
-                $val  = true;
+                $val = true;
             }
-
             $data[strtolower($attr)] = $val;
         }
-
         return new static($name, $value, $data);
     }
-
     /**
      * Construct a new Cookie instance.
      *
@@ -243,353 +199,275 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
     final public function __construct(string $name, string $value = '', array $options = [])
     {
         $options += self::$defaults;
-
-        $options['expires'] = static::convertExpiresTimestamp($options['expires']);
-
+        $options['expires'] = static::convert_expires_timestamp($options['expires']);
         // If both `Expires` and `Max-Age` are set, `Max-Age` has precedence.
         if (isset($options['max-age']) && is_numeric($options['max-age'])) {
-            $options['expires'] = Time::now()->getTimestamp() + (int) $options['max-age'];
+            $options['expires'] = Time::now()->get_timestamp() + (int) $options['max-age'];
             unset($options['max-age']);
         }
-
         // to preserve backward compatibility with array-based cookies in previous CI versions
-        $prefix = ($options['prefix'] === '') ? self::$defaults['prefix'] : $options['prefix'];
-        $path   = $options['path'] ?: self::$defaults['path'];
+        $prefix = $options['prefix'] === '' ? self::$defaults['prefix'] : $options['prefix'];
+        $path = $options['path'] ?: self::$defaults['path'];
         $domain = $options['domain'] ?: self::$defaults['domain'];
-
         // empty string SameSite should use the default for browsers
         $samesite = $options['samesite'] ?: self::$defaults['samesite'];
-
-        $raw      = $options['raw'];
-        $secure   = $options['secure'];
+        $raw = $options['raw'];
+        $secure = $options['secure'];
         $httponly = $options['httponly'];
-
-        $this->validateName($name, $raw);
-        $this->validatePrefix($prefix, $secure, $path, $domain);
-        $this->validateSameSite($samesite, $secure);
-
-        $this->prefix   = $prefix;
-        $this->name     = $name;
-        $this->value    = $value;
-        $this->expires  = static::convertExpiresTimestamp($options['expires']);
-        $this->path     = $path;
-        $this->domain   = $domain;
-        $this->secure   = $secure;
+        $this->validate_name($name, $raw);
+        $this->validate_prefix($prefix, $secure, $path, $domain);
+        $this->validate_same_site($samesite, $secure);
+        $this->prefix = $prefix;
+        $this->name = $name;
+        $this->value = $value;
+        $this->expires = static::convert_expires_timestamp($options['expires']);
+        $this->path = $path;
+        $this->domain = $domain;
+        $this->secure = $secure;
         $this->httponly = $httponly;
         $this->samesite = ucfirst(strtolower($samesite));
-        $this->raw      = $raw;
+        $this->raw = $raw;
     }
-
     // =========================================================================
     // GETTERS
     // =========================================================================
-
     /**
      * {@inheritDoc}
      */
-    public function getId(): string
+    public function get_id(): string
     {
-        return implode(';', [$this->getPrefixedName(), $this->getPath(), $this->getDomain()]);
+        return implode(';', [$this->get_prefixed_name(), $this->get_path(), $this->get_domain()]);
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getPrefix(): string
+    public function get_prefix(): string
     {
         return $this->prefix;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return $this->name;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getPrefixedName(): string
+    public function get_prefixed_name(): string
     {
-        $name = $this->getPrefix();
-
-        if ($this->isRaw()) {
-            $name .= $this->getName();
+        $name = $this->get_prefix();
+        if ($this->is_raw()) {
+            $name .= $this->get_name();
         } else {
-            $search  = str_split(self::$reservedCharsList);
+            $search = str_split(self::$reserved_chars_list);
             $replace = array_map(rawurlencode(...), $search);
-
-            $name .= str_replace($search, $replace, $this->getName());
+            $name .= str_replace($search, $replace, $this->get_name());
         }
-
         return $name;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getValue(): string
+    public function get_value(): string
     {
         return $this->value;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getExpiresTimestamp(): int
+    public function get_expires_timestamp(): int
     {
         return $this->expires;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getExpiresString(): string
+    public function get_expires_string(): string
     {
         return gmdate(self::EXPIRES_FORMAT, $this->expires);
     }
-
     /**
      * {@inheritDoc}
      */
-    public function isExpired(): bool
+    public function is_expired(): bool
     {
-        return $this->expires === 0 || $this->expires < Time::now()->getTimestamp();
+        return $this->expires === 0 || $this->expires < Time::now()->get_timestamp();
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getMaxAge(): int
+    public function get_max_age(): int
     {
-        $maxAge = $this->expires - Time::now()->getTimestamp();
-
-        return $maxAge >= 0 ? $maxAge : 0;
+        $max_age = $this->expires - Time::now()->get_timestamp();
+        return $max_age >= 0 ? $max_age : 0;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getPath(): string
+    public function get_path(): string
     {
         return $this->path;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getDomain(): string
+    public function get_domain(): string
     {
         return $this->domain;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function isSecure(): bool
+    public function is_secure(): bool
     {
         return $this->secure;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function isHTTPOnly(): bool
+    public function is_http_only(): bool
     {
         return $this->httponly;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getSameSite(): string
+    public function get_same_site(): string
     {
         return $this->samesite;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function isRaw(): bool
+    public function is_raw(): bool
     {
         return $this->raw;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function getOptions(): array
+    public function get_options(): array
     {
         // This is the order of options in `setcookie`. DO NOT CHANGE.
-        return [
-            'expires'  => $this->expires,
-            'path'     => $this->path,
-            'domain'   => $this->domain,
-            'secure'   => $this->secure,
-            'httponly' => $this->httponly,
-            'samesite' => $this->samesite ?: ucfirst(self::SAMESITE_LAX),
-        ];
+        return ['expires' => $this->expires, 'path' => $this->path, 'domain' => $this->domain, 'secure' => $this->secure, 'httponly' => $this->httponly, 'samesite' => $this->samesite ?: ucfirst(self::SAMESITE_LAX)];
     }
-
     // =========================================================================
     // CLONING
     // =========================================================================
-
     /**
      * {@inheritDoc}
      */
-    public function withPrefix(string $prefix = '')
+    public function with_prefix(string $prefix = '')
     {
-        $this->validatePrefix($prefix, $this->secure, $this->path, $this->domain);
-
+        $this->validate_prefix($prefix, $this->secure, $this->path, $this->domain);
         $cookie = clone $this;
-
         $cookie->prefix = $prefix;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withName(string $name)
+    public function with_name(string $name)
     {
-        $this->validateName($name, $this->raw);
-
+        $this->validate_name($name, $this->raw);
         $cookie = clone $this;
-
         $cookie->name = $name;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withValue(string $value)
+    public function with_value(string $value)
     {
         $cookie = clone $this;
-
         $cookie->value = $value;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withExpires($expires)
+    public function with_expires($expires)
     {
         $cookie = clone $this;
-
-        $cookie->expires = static::convertExpiresTimestamp($expires);
-
+        $cookie->expires = static::convert_expires_timestamp($expires);
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withExpired()
+    public function with_expired()
     {
         $cookie = clone $this;
-
         $cookie->expires = 0;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withPath(?string $path)
+    public function with_path(?string $path)
     {
         $path = in_array($path, [null, '', '0'], true) ? self::$defaults['path'] : $path;
-        $this->validatePrefix($this->prefix, $this->secure, $path, $this->domain);
-
+        $this->validate_prefix($this->prefix, $this->secure, $path, $this->domain);
         $cookie = clone $this;
-
         $cookie->path = $path;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withDomain(?string $domain)
+    public function with_domain(?string $domain)
     {
         $domain ??= self::$defaults['domain'];
-        $this->validatePrefix($this->prefix, $this->secure, $this->path, $domain);
-
+        $this->validate_prefix($this->prefix, $this->secure, $this->path, $domain);
         $cookie = clone $this;
-
         $cookie->domain = $domain;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withSecure(bool $secure = true)
+    public function with_secure(bool $secure = true)
     {
-        $this->validatePrefix($this->prefix, $secure, $this->path, $this->domain);
-        $this->validateSameSite($this->samesite, $secure);
-
+        $this->validate_prefix($this->prefix, $secure, $this->path, $this->domain);
+        $this->validate_same_site($this->samesite, $secure);
         $cookie = clone $this;
-
         $cookie->secure = $secure;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withHTTPOnly(bool $httponly = true)
+    public function with_http_only(bool $httponly = true)
     {
         $cookie = clone $this;
-
         $cookie->httponly = $httponly;
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withSameSite(string $samesite)
+    public function with_same_site(string $samesite)
     {
-        $this->validateSameSite($samesite, $this->secure);
-
+        $this->validate_same_site($samesite, $this->secure);
         $cookie = clone $this;
-
         $cookie->samesite = ucfirst(strtolower($samesite));
-
         return $cookie;
     }
-
     /**
      * {@inheritDoc}
      */
-    public function withRaw(bool $raw = true)
+    public function with_raw(bool $raw = true)
     {
-        $this->validateName($this->name, $raw);
-
+        $this->validate_name($this->name, $raw);
         $cookie = clone $this;
-
         $cookie->raw = $raw;
-
         return $cookie;
     }
-
     // =========================================================================
     // ARRAY ACCESS FOR BC
     // =========================================================================
-
     /**
      * Whether an offset exists.
      *
@@ -599,7 +477,6 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
     {
         return $offset === 'expire' ? true : property_exists($this, $offset);
     }
-
     /**
      * Offset to retrieve.
      *
@@ -609,13 +486,11 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      */
     public function offsetGet($offset): bool|int|string
     {
-        if (! $this->offsetExists($offset)) {
+        if (!$this->offsetExists($offset)) {
             throw new InvalidArgumentException(sprintf('Undefined offset "%s".', $offset));
         }
-
         return $offset === 'expire' ? $this->expires : $this->{$offset};
     }
-
     /**
      * Offset to set.
      *
@@ -628,7 +503,6 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
     {
         throw new LogicException(sprintf('Cannot set values of properties of %s as it is immutable.', static::class));
     }
-
     /**
      * Offset to unset.
      *
@@ -640,113 +514,86 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
     {
         throw new LogicException(sprintf('Cannot unset values of properties of %s as it is immutable.', static::class));
     }
-
     // =========================================================================
     // CONVERTERS
     // =========================================================================
-
     /**
      * {@inheritDoc}
      */
-    public function toHeaderString(): string
+    public function to_header_string(): string
     {
         return $this->__toString();
     }
-
     /**
      * {@inheritDoc}
      */
     public function __toString(): string
     {
-        $cookieHeader = [];
-
-        if ($this->getValue() === '') {
-            $cookieHeader[] = $this->getPrefixedName() . '=deleted';
-            $cookieHeader[] = 'Expires=' . gmdate(self::EXPIRES_FORMAT, 0);
-            $cookieHeader[] = 'Max-Age=0';
+        $cookie_header = [];
+        if ($this->get_value() === '') {
+            $cookie_header[] = $this->get_prefixed_name() . '=deleted';
+            $cookie_header[] = 'Expires=' . gmdate(self::EXPIRES_FORMAT, 0);
+            $cookie_header[] = 'Max-Age=0';
         } else {
-            $value = $this->isRaw() ? $this->getValue() : rawurlencode($this->getValue());
-
-            $cookieHeader[] = sprintf('%s=%s', $this->getPrefixedName(), $value);
-
-            if ($this->getExpiresTimestamp() !== 0) {
-                $cookieHeader[] = 'Expires=' . $this->getExpiresString();
-                $cookieHeader[] = 'Max-Age=' . $this->getMaxAge();
+            $value = $this->is_raw() ? $this->get_value() : rawurlencode($this->get_value());
+            $cookie_header[] = sprintf('%s=%s', $this->get_prefixed_name(), $value);
+            if ($this->get_expires_timestamp() !== 0) {
+                $cookie_header[] = 'Expires=' . $this->get_expires_string();
+                $cookie_header[] = 'Max-Age=' . $this->get_max_age();
             }
         }
-
-        if ($this->getPath() !== '') {
-            $cookieHeader[] = 'Path=' . $this->getPath();
+        if ($this->get_path() !== '') {
+            $cookie_header[] = 'Path=' . $this->get_path();
         }
-
-        if ($this->getDomain() !== '') {
-            $cookieHeader[] = 'Domain=' . $this->getDomain();
+        if ($this->get_domain() !== '') {
+            $cookie_header[] = 'Domain=' . $this->get_domain();
         }
-
-        if ($this->isSecure()) {
-            $cookieHeader[] = 'Secure';
+        if ($this->is_secure()) {
+            $cookie_header[] = 'Secure';
         }
-
-        if ($this->isHTTPOnly()) {
-            $cookieHeader[] = 'HttpOnly';
+        if ($this->is_http_only()) {
+            $cookie_header[] = 'HttpOnly';
         }
-
-        $samesite = $this->getSameSite();
-
+        $samesite = $this->get_same_site();
         if ($samesite === '') {
             // modern browsers warn in console logs that an empty SameSite attribute
             // will be given the `Lax` value
             $samesite = self::SAMESITE_LAX;
         }
-
-        $cookieHeader[] = 'SameSite=' . ucfirst(strtolower($samesite));
-
-        return implode('; ', $cookieHeader);
+        $cookie_header[] = 'SameSite=' . ucfirst(strtolower($samesite));
+        return implode('; ', $cookie_header);
     }
-
     /**
      * {@inheritDoc}
      */
-    public function toArray(): array
+    public function to_array(): array
     {
-        return [
-            'name'   => $this->name,
-            'value'  => $this->value,
-            'prefix' => $this->prefix,
-            'raw'    => $this->raw,
-        ] + $this->getOptions();
+        return ['name' => $this->name, 'value' => $this->value, 'prefix' => $this->prefix, 'raw' => $this->raw] + $this->get_options();
     }
-
     /**
      * Converts expires time to Unix format.
      *
      * @param DateTimeInterface|int|string $expires
      */
-    protected static function convertExpiresTimestamp($expires = 0): int
+    protected static function convert_expires_timestamp($expires = 0): int
     {
         if ($expires instanceof DateTimeInterface) {
             $expires = $expires->format('U');
         }
-
-        if (! is_string($expires) && ! is_int($expires)) {
-            throw CookieException::forInvalidExpiresTime(gettype($expires));
+        if (!is_string($expires) && !is_int($expires)) {
+            throw Cookie_Exception::for_invalid_expires_time(gettype($expires));
         }
-
-        if (! is_numeric($expires)) {
+        if (!is_numeric($expires)) {
             $expires = strtotime($expires);
-
             if ($expires === false) {
-                throw CookieException::forInvalidExpiresValue();
+                throw Cookie_Exception::for_invalid_expires_value();
             }
         }
-
         return $expires > 0 ? (int) $expires : 0;
     }
-
     // =========================================================================
     // VALIDATION
     // =========================================================================
-
     /**
      * Validates the cookie name per RFC 2616.
      *
@@ -755,33 +602,29 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      *
      * @throws CookieException
      */
-    protected function validateName(string $name, bool $raw): void
+    protected function validate_name(string $name, bool $raw): void
     {
-        if ($raw && strpbrk($name, self::$reservedCharsList) !== false) {
-            throw CookieException::forInvalidCookieName($name);
+        if ($raw && strpbrk($name, self::$reserved_chars_list) !== false) {
+            throw Cookie_Exception::for_invalid_cookie_name($name);
         }
-
         if ($name === '') {
-            throw CookieException::forEmptyCookieName();
+            throw Cookie_Exception::for_empty_cookie_name();
         }
     }
-
     /**
      * Validates the special prefixes if some attribute requirements are met.
      *
      * @throws CookieException
      */
-    protected function validatePrefix(string $prefix, bool $secure, string $path, string $domain): void
+    protected function validate_prefix(string $prefix, bool $secure, string $path, string $domain): void
     {
-        if (str_starts_with($prefix, '__Secure-') && ! $secure) {
-            throw CookieException::forInvalidSecurePrefix();
+        if (str_starts_with($prefix, '__Secure-') && !$secure) {
+            throw Cookie_Exception::for_invalid_secure_prefix();
         }
-
-        if (str_starts_with($prefix, '__Host-') && (! $secure || $domain !== '' || $path !== '/')) {
-            throw CookieException::forInvalidHostPrefix();
+        if (str_starts_with($prefix, '__Host-') && (!$secure || $domain !== '' || $path !== '/')) {
+            throw Cookie_Exception::for_invalid_host_prefix();
         }
     }
-
     /**
      * Validates the `SameSite` to be within the allowed types.
      *
@@ -789,22 +632,19 @@ class Cookie implements ArrayAccess, CloneableCookieInterface
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
      */
-    protected function validateSameSite(string $samesite, bool $secure): void
+    protected function validate_same_site(string $samesite, bool $secure): void
     {
         if ($samesite === '') {
             $samesite = self::$defaults['samesite'];
         }
-
         if ($samesite === '') {
             $samesite = self::SAMESITE_LAX;
         }
-
-        if (! in_array(ucfirst(strtolower($samesite)), self::ALLOWED_SAMESITE_VALUES, true)) {
-            throw CookieException::forInvalidSameSite($samesite);
+        if (!in_array(ucfirst(strtolower($samesite)), self::ALLOWED_SAMESITE_VALUES, true)) {
+            throw Cookie_Exception::for_invalid_same_site($samesite);
         }
-
-        if (ucfirst(strtolower($samesite)) === self::SAMESITE_NONE && ! $secure) {
-            throw CookieException::forInvalidSameSiteNone();
+        if (ucfirst(strtolower($samesite)) === self::SAMESITE_NONE && !$secure) {
+            throw Cookie_Exception::for_invalid_same_site_none();
         }
     }
 }

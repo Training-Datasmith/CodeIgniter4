@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,20 +9,18 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Cache\Handlers;
+namespace Code_Igniter\Cache\Handlers;
 
 use Closure;
-use CodeIgniter\Cache\CacheInterface;
-use CodeIgniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Cache\Cache_Interface;
+use Code_Igniter\Exceptions\InvalidArgumentException;
 use Config\Cache;
-
 /**
  * Base class for cache handling
  *
  * @see \CodeIgniter\Cache\Handlers\BaseHandlerTest
  */
-abstract class BaseHandler implements CacheInterface
+abstract class Base_Handler implements Cache_Interface
 {
     /**
      * Reserved characters that cannot be used in a key or tag. May be overridden by the config.
@@ -32,12 +29,10 @@ abstract class BaseHandler implements CacheInterface
      * @deprecated in favor of the Cache config
      */
     public const RESERVED_CHARACTERS = '{}()/\@:';
-
     /**
      * Maximum key length.
      */
     public const MAX_KEY_LENGTH = PHP_INT_MAX;
-
     /**
      * Prefix to apply to cache keys.
      * May not be used by all handlers.
@@ -45,7 +40,6 @@ abstract class BaseHandler implements CacheInterface
      * @var string
      */
     protected $prefix;
-
     /**
      * Validates a cache key according to PSR-6.
      * Keys that exceed MAX_KEY_LENGTH are hashed.
@@ -56,38 +50,30 @@ abstract class BaseHandler implements CacheInterface
      *
      * @throws InvalidArgumentException When $key is not valid
      */
-    public static function validateKey($key, $prefix = ''): string
+    public static function validate_key($key, $prefix = ''): string
     {
-        if (! is_string($key)) {
+        if (!is_string($key)) {
             throw new InvalidArgumentException('Cache key must be a string');
         }
         if ($key === '') {
             throw new InvalidArgumentException('Cache key cannot be empty.');
         }
-
-        $reserved = config(Cache::class)->reservedCharacters;
-
+        $reserved = config(Cache::class)->reserved_characters;
         if ($reserved !== '' && strpbrk($key, $reserved) !== false) {
             throw new InvalidArgumentException('Cache key contains reserved characters ' . $reserved);
         }
-
         // If the key with prefix exceeds the length then return the hashed version
         return strlen($prefix . $key) > static::MAX_KEY_LENGTH ? $prefix . md5($key) : $prefix . $key;
     }
-
     public function remember(string $key, int $ttl, Closure $callback): mixed
     {
         $value = $this->get($key);
-
         if ($value !== null) {
             return $value;
         }
-
         $this->save($key, $value = $callback(), $ttl);
-
         return $value;
     }
-
     /**
      * Check if connection is alive.
      *
@@ -98,7 +84,6 @@ abstract class BaseHandler implements CacheInterface
     {
         return true;
     }
-
     /**
      * Reconnect to the cache server.
      *

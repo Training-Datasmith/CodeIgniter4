@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\HTTP;
+namespace Code_Igniter\HTTP;
 
 /**
  * Representation of an incoming, server-side HTTP request.
  *
  * Corresponds to Psr7\ServerRequestInterface.
  */
-interface RequestInterface extends OutgoingRequestInterface
+interface Request_Interface extends Outgoing_Request_Interface
 {
     /**
      * Gets the user's IP address.
@@ -26,8 +24,7 @@ interface RequestInterface extends OutgoingRequestInterface
      *
      * @return string IP address
      */
-    public function getIPAddress(): string;
-
+    public function get_ip_address(): string;
     /**
      * Fetch an item from the $_SERVER array.
      * Supplied by RequestTrait.
@@ -37,5 +34,5 @@ interface RequestInterface extends OutgoingRequestInterface
      *
      * @return mixed
      */
-    public function getServer($index = null, $filter = null);
+    public function get_server($index = null, $filter = null);
 }

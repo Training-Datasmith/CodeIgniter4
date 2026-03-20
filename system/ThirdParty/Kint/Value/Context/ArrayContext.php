@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,12 +23,11 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Value\Context;
 
-class ArrayContext extends BaseContext
+class Array_Context extends Base_Context
 {
-    public function getOperator(): ?string
+    public function get_operator(): ?string
     {
         return '=>';
     }

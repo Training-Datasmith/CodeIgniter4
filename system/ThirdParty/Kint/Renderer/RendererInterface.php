@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,24 +23,16 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer;
 
-use Kint\Value\AbstractValue;
-
-interface RendererInterface
+use Kint\Value\Abstract_Value;
+interface Renderer_Interface
 {
-    public function render(AbstractValue $v): string;
-
-    public function shouldRenderObjectIds(): bool;
-
-    public function setCallInfo(array $info): void;
-
-    public function setStatics(array $statics): void;
-
-    public function filterParserPlugins(array $plugins): array;
-
-    public function preRender(): string;
-
-    public function postRender(): string;
+    public function render(Abstract_Value $v): string;
+    public function should_render_object_ids(): bool;
+    public function set_call_info(array $info): void;
+    public function set_statics(array $statics): void;
+    public function filter_parser_plugins(array $plugins): array;
+    public function pre_render(): string;
+    public function post_render(): string;
 }

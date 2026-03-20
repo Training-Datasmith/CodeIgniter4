@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,25 +9,22 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\Exceptions\InvalidArgumentException;
-
+use Code_Igniter\Exceptions\InvalidArgumentException;
 /**
  * Representation of an outgoing, client-side request.
  *
  * Corresponds to Psr7\RequestInterface.
  */
-interface OutgoingRequestInterface extends MessageInterface
+interface Outgoing_Request_Interface extends Message_Interface
 {
     /**
      * Retrieves the HTTP method of the request.
      *
      * @return string Returns the request method.
      */
-    public function getMethod(): string;
-
+    public function get_method(): string;
     /**
      * Return an instance with the provided HTTP method.
      *
@@ -46,8 +42,7 @@ interface OutgoingRequestInterface extends MessageInterface
      *
      * @throws InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method);
-
+    public function with_method($method);
     /**
      * Retrieves the URI instance.
      *
@@ -55,8 +50,7 @@ interface OutgoingRequestInterface extends MessageInterface
      *
      * @return URI
      */
-    public function getUri();
-
+    public function get_uri();
     /**
      * Returns an instance with the provided URI.
      *
@@ -89,5 +83,5 @@ interface OutgoingRequestInterface extends MessageInterface
      *
      * @return static
      */
-    public function withUri(URI $uri, $preserveHost = false);
+    public function with_uri(URI $uri, $preserve_host = false);
 }

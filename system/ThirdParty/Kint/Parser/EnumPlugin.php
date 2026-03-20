@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,61 +23,49 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\EnumValue;
-use Kint\Value\Representation\ContainerRepresentation;
-use UnitEnum;
-
-class EnumPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Enum_Value;
+use Kint\Value\Representation\Container_Representation;
+use Unit_Enum;
+class Enum_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     private array $cache = [];
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         if (!KINT_PHP81) {
             return Parser::TRIGGER_NONE;
         }
-
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        if (!$var instanceof UnitEnum) {
+        if (!$var instanceof Unit_Enum) {
             return $v;
         }
-
-        $c = $v->getContext();
+        $c = $v->get_context();
         $class = \get_class($var);
-
         if (!isset($this->cache[$class])) {
             $contents = [];
-
             foreach ($var->cases() as $case) {
-                $base = new BaseContext($case->name);
-                $base->access_path = '\\'.$class.'::'.$case->name;
-                $base->depth = $c->getDepth() + 1;
-                $contents[] = new EnumValue($base, $case);
+                $base = new Base_Context($case->name);
+                $base->access_path = '\\' . $class . '::' . $case->name;
+                $base->depth = $c->get_depth() + 1;
+                $contents[] = new Enum_Value($base, $case);
             }
-
             /** @psalm-var non-empty-array<EnumValue> $contents */
-            $this->cache[$class] = new ContainerRepresentation('Enum values', $contents, 'enum');
+            $this->cache[$class] = new Container_Representation('Enum values', $contents, 'enum');
         }
-
-        $object = new EnumValue($c, $var);
+        $object = new Enum_Value($c, $var);
         $object->flags = $v->flags;
-        $object->appendRepresentations($v->getRepresentations());
-        $object->addRepresentation($this->cache[$class], 0);
-
+        $object->append_representations($v->get_representations());
+        $object->add_representation($this->cache[$class], 0);
         return $object;
     }
 }

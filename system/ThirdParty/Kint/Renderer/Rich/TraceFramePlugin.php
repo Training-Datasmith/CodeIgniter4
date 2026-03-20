@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,46 +23,37 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\MethodValue;
-use Kint\Value\TraceFrameValue;
-
-class TraceFramePlugin extends AbstractPlugin implements ValuePluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Method_Value;
+use Kint\Value\Trace_Frame_Value;
+class Trace_Frame_Plugin extends Abstract_Plugin implements Value_Plugin_Interface
 {
-    public function renderValue(AbstractValue $v): ?string
+    public function render_value(Abstract_Value $v): ?string
     {
-        if (!$v instanceof TraceFrameValue) {
+        if (!$v instanceof Trace_Frame_Value) {
             return null;
         }
-
-        if (null !== ($file = $v->getFile()) && null !== ($line = $v->getLine())) {
-            $header = '<var>'.$this->renderer->ideLink($file, $line).'</var> ';
+        if (null !== ($file = $v->get_file()) && null !== $line = $v->get_line()) {
+            $header = '<var>' . $this->renderer->ide_link($file, $line) . '</var> ';
         } else {
             $header = '<var>PHP internal call</var> ';
         }
-
-        if ($callable = $v->getCallable()) {
-            if ($callable instanceof MethodValue) {
-                $function = $callable->getFullyQualifiedDisplayName();
+        if ($callable = $v->get_callable()) {
+            if ($callable instanceof Method_Value) {
+                $function = $callable->get_fully_qualified_display_name();
             } else {
-                $function = $callable->getDisplayName();
+                $function = $callable->get_display_name();
             }
-
             $function = $this->renderer->escape($function);
-
-            if (null !== ($url = $callable->getPhpDocUrl())) {
-                $function = '<a href="'.$url.'" target=_blank>'.$function.'</a>';
+            if (null !== $url = $callable->get_php_doc_url()) {
+                $function = '<a href="' . $url . '" target=_blank>' . $function . '</a>';
             }
-
             $header .= $function;
         }
-
-        $children = $this->renderer->renderChildren($v);
-        $header = $this->renderer->renderHeaderWrapper($v->getContext(), (bool) \strlen($children), $header);
-
-        return '<dl>'.$header.$children.'</dl>';
+        $children = $this->renderer->render_children($v);
+        $header = $this->renderer->render_header_wrapper($v->get_context(), (bool) \strlen($children), $header);
+        return '<dl>' . $header . $children . '</dl>';
     }
 }

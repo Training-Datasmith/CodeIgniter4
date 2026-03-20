@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,22 +9,20 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Database\Postgre;
 
-namespace CodeIgniter\Database\Postgre;
-
-use CodeIgniter\Database\BasePreparedQuery;
-use CodeIgniter\Database\Exceptions\DatabaseException;
-use CodeIgniter\Exceptions\BadMethodCallException;
+use Code_Igniter\Database\Base_Prepared_Query;
+use Code_Igniter\Database\Exceptions\Database_Exception;
+use Code_Igniter\Exceptions\BadMethodCallException;
 use Exception;
-use PgSql\Connection as PgSqlConnection;
-use PgSql\Result as PgSqlResult;
-
+use Pg_Sql\Connection as PgSqlConnection;
+use Pg_Sql\Result as PgSqlResult;
 /**
  * Prepared query for Postgre
  *
  * @extends BasePreparedQuery<PgSqlConnection, PgSqlResult, PgSqlResult>
  */
-class PreparedQuery extends BasePreparedQuery
+class Prepared_Query extends Base_Prepared_Query
 {
     /**
      * Stores the name this query can be
@@ -34,7 +31,6 @@ class PreparedQuery extends BasePreparedQuery
      * @var string
      */
     protected $name;
-
     /**
      * The result resource from a successful
      * pg_exec. Or false.
@@ -42,7 +38,6 @@ class PreparedQuery extends BasePreparedQuery
      * @var false|PgSqlResult
      */
     protected $result;
-
     /**
      * Prepares the query against the database, and saves the connection
      * info necessary to execute the query later.
@@ -55,67 +50,55 @@ class PreparedQuery extends BasePreparedQuery
      *
      * @throws Exception
      */
-    public function _prepare(string $sql, array $options = []): PreparedQuery
+    public function _prepare(string $sql, array $options = []): Prepared_Query
     {
-        $this->name = (string) random_int(1, 10_000_000_000_000_000);
-
+        $this->name = (string) random_int(1, 10000000000000000);
         $sql = $this->parameterize($sql);
-
         // Update the query object since the parameters are slightly different
         // than what was put in.
-        $this->query->setQuery($sql);
-
-        if (! $this->statement = pg_prepare($this->db->connID, $this->name, $sql)) {
-            $this->errorCode   = 0;
-            $this->errorString = pg_last_error($this->db->connID);
-
-            if ($this->db->DBDebug) {
-                throw new DatabaseException($this->errorString . ' code: ' . $this->errorCode);
+        $this->query->set_query($sql);
+        if (!$this->statement = pg_prepare($this->db->conn_id, $this->name, $sql)) {
+            $this->error_code = 0;
+            $this->error_string = pg_last_error($this->db->conn_id);
+            if ($this->db->db_debug) {
+                throw new Database_Exception($this->error_string . ' code: ' . $this->error_code);
             }
         }
-
         return $this;
     }
-
     /**
      * Takes a new set of data and runs it against the currently
      * prepared query. Upon success, will return a Results object.
      */
     public function _execute(array $data): bool
     {
-        if (! isset($this->statement)) {
+        if (!isset($this->statement)) {
             throw new BadMethodCallException('You must call prepare before trying to execute a prepared statement.');
         }
-
         foreach ($data as &$item) {
-            if (is_string($item) && $this->isBinary($item)) {
-                $item = pg_escape_bytea($this->db->connID, $item);
+            if (is_string($item) && $this->is_binary($item)) {
+                $item = pg_escape_bytea($this->db->conn_id, $item);
             }
         }
-
-        $this->result = pg_execute($this->db->connID, $this->name, $data);
-
+        $this->result = pg_execute($this->db->conn_id, $this->name, $data);
         return (bool) $this->result;
     }
-
     /**
      * Returns the result object for the prepared query or false on failure.
      *
      * @return PgSqlResult|null
      */
-    public function _getResult()
+    public function _get_result()
     {
         return $this->result;
     }
-
     /**
      * Deallocate prepared statements.
      */
     protected function _close(): bool
     {
-        return pg_query($this->db->connID, 'DEALLOCATE "' . $this->db->escapeIdentifiers($this->name) . '"') !== false;
+        return pg_query($this->db->conn_id, 'DEALLOCATE "' . $this->db->escape_identifiers($this->name) . '"') !== false;
     }
-
     /**
      * Replaces the ? placeholders with $1, $2, etc parameters for use
      * within the prepared query.
@@ -124,10 +107,8 @@ class PreparedQuery extends BasePreparedQuery
     {
         // Track our current value
         $count = 0;
-
         return preg_replace_callback('/\?/', static function () use (&$count): string {
             $count++;
-
             return "\${$count}";
         }, $sql);
     }

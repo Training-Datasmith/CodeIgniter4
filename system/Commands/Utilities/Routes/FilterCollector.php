@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,21 +9,19 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Utilities\Routes;
 
-namespace CodeIgniter\Commands\Utilities\Routes;
-
-use CodeIgniter\Filters\Filters;
-use CodeIgniter\HTTP\Method;
-use CodeIgniter\HTTP\Request;
-use CodeIgniter\Router\Router;
+use Code_Igniter\Filters\Filters;
+use Code_Igniter\HTTP\Method;
+use Code_Igniter\HTTP\Request;
+use Code_Igniter\Router\Router;
 use Config\Filters as FiltersConfig;
-
 /**
  * Collects filters for a route.
  *
  * @see \CodeIgniter\Commands\Utilities\Routes\FilterCollectorTest
  */
-final readonly class FilterCollector
+final readonly class Filter_Collector
 {
     public function __construct(
         /**
@@ -32,10 +29,10 @@ final readonly class FilterCollector
          *
          * If set to true, route filters are not found.
          */
-        private bool $resetRoutes = false,
-    ) {
+        private bool $reset_routes = false
+    )
+    {
     }
-
     /**
      * Returns filters for the URI
      *
@@ -47,37 +44,23 @@ final readonly class FilterCollector
     public function get(string $method, string $uri): array
     {
         if ($method === strtolower($method)) {
-            @trigger_error(
-                'Passing lowercase HTTP method "' . $method . '" is deprecated.'
-                . ' Use uppercase HTTP method like "' . strtoupper($method) . '".',
-                E_USER_DEPRECATED,
-            );
+            @trigger_error('Passing lowercase HTTP method "' . $method . '" is deprecated.' . ' Use uppercase HTTP method like "' . strtoupper($method) . '".', E_USER_DEPRECATED);
         }
-
         /**
          * @deprecated 4.5.0
          * @TODO Remove this in the future.
          */
         $method = strtoupper($method);
-
         if ($method === 'CLI') {
-            return [
-                'before' => [],
-                'after'  => [],
-            ];
+            return ['before' => [], 'after' => []];
         }
-
         $request = service('incomingrequest', null, false);
-        $request->setMethod($method);
-
-        $router  = $this->createRouter($request);
-        $filters = $this->createFilters($request);
-
-        $finder = new FilterFinder($router, $filters);
-
+        $request->set_method($method);
+        $router = $this->create_router($request);
+        $filters = $this->create_filters($request);
+        $finder = new Filter_Finder($router, $filters);
         return $finder->find($uri);
     }
-
     /**
      * Returns filter classes for the URI
      *
@@ -86,91 +69,65 @@ final readonly class FilterCollector
      *
      * @return array{before: list<string>, after: list<string>} array of classname:args
      */
-    public function getClasses(string $method, string $uri): array
+    public function get_classes(string $method, string $uri): array
     {
         if ($method === strtolower($method)) {
-            @trigger_error(
-                'Passing lowercase HTTP method "' . $method . '" is deprecated.'
-                . ' Use uppercase HTTP method like "' . strtoupper($method) . '".',
-                E_USER_DEPRECATED,
-            );
+            @trigger_error('Passing lowercase HTTP method "' . $method . '" is deprecated.' . ' Use uppercase HTTP method like "' . strtoupper($method) . '".', E_USER_DEPRECATED);
         }
-
         /**
          * @deprecated 4.5.0
          * @TODO Remove this in the future.
          */
         $method = strtoupper($method);
-
         if ($method === 'CLI') {
-            return [
-                'before' => [],
-                'after'  => [],
-            ];
+            return ['before' => [], 'after' => []];
         }
-
         $request = service('incomingrequest', null, false);
-        $request->setMethod($method);
-
-        $router  = $this->createRouter($request);
-        $filters = $this->createFilters($request);
-
-        $finder = new FilterFinder($router, $filters);
-
-        return $finder->findClasses($uri);
+        $request->set_method($method);
+        $router = $this->create_router($request);
+        $filters = $this->create_filters($request);
+        $finder = new Filter_Finder($router, $filters);
+        return $finder->find_classes($uri);
     }
-
     /**
      * Returns Required Filters
      *
      * @return array{before: list<string>, after: list<string>} array of aliases
      */
-    public function getRequiredFilters(): array
+    public function get_required_filters(): array
     {
         $request = service('incomingrequest', null, false);
-        $request->setMethod(Method::GET);
-
-        $router  = $this->createRouter($request);
-        $filters = $this->createFilters($request);
-
-        $finder = new FilterFinder($router, $filters);
-
-        return $finder->getRequiredFilters();
+        $request->set_method(Method::GET);
+        $router = $this->create_router($request);
+        $filters = $this->create_filters($request);
+        $finder = new Filter_Finder($router, $filters);
+        return $finder->get_required_filters();
     }
-
     /**
      * Returns Required Filter class list
      *
      * @return array{before: list<string>, after: list<string>} array of classnames
      */
-    public function getRequiredFilterClasses(): array
+    public function get_required_filter_classes(): array
     {
         $request = service('incomingrequest', null, false);
-        $request->setMethod(Method::GET);
-
-        $router  = $this->createRouter($request);
-        $filters = $this->createFilters($request);
-
-        $finder = new FilterFinder($router, $filters);
-
-        return $finder->getRequiredFilterClasses();
+        $request->set_method(Method::GET);
+        $router = $this->create_router($request);
+        $filters = $this->create_filters($request);
+        $finder = new Filter_Finder($router, $filters);
+        return $finder->get_required_filter_classes();
     }
-
-    private function createRouter(Request $request): Router
+    private function create_router(Request $request): Router
     {
         $routes = service('routes');
-
-        if ($this->resetRoutes) {
-            $routes->resetRoutes();
+        if ($this->reset_routes) {
+            $routes->reset_routes();
         }
-
         return new Router($routes, $request);
     }
-
-    private function createFilters(Request $request): Filters
+    private function create_filters(Request $request): Filters
     {
-        $config = config(FiltersConfig::class);
-
+        $config = config(Filters_Config::class);
         return new Filters($config, $request, service('response'));
     }
 }

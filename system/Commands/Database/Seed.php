@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,20 +9,18 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Database;
 
-namespace CodeIgniter\Commands\Database;
-
-use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-use CodeIgniter\Database\Seeder;
+use Code_Igniter\CLI\Base_Command;
+use Code_Igniter\CLI\CLI;
+use Code_Igniter\Database\Seeder;
 use Config\Database;
 use Throwable;
-
 /**
  * Runs the specified Seeder file to populate the database
  * with some data.
  */
-class Seed extends BaseCommand
+class Seed extends Base_Command
 {
     /**
      * The group the command is lumped under
@@ -32,53 +29,45 @@ class Seed extends BaseCommand
      * @var string
      */
     protected $group = 'Database';
-
     /**
      * The Command's name
      *
      * @var string
      */
     protected $name = 'db:seed';
-
     /**
      * the Command's short description
      *
      * @var string
      */
     protected $description = 'Runs the specified seeder to populate known data into the database.';
-
     /**
      * the Command's usage
      *
      * @var string
      */
     protected $usage = 'db:seed <seeder_name>';
-
     /**
      * the Command's Arguments
      *
      * @var array<string, string>
      */
-    protected $arguments = [
-        'seeder_name' => 'The seeder name to run',
-    ];
-
+    protected $arguments = ['seeder_name' => 'The seeder name to run'];
     /**
      * Passes to Seeder to populate the database.
      */
     public function run(array $params)
     {
-        $seeder   = new Seeder(new Database());
-        $seedName = array_shift($params);
-
-        if (empty($seedName)) {
-            $seedName = CLI::prompt(lang('Migrations.migSeeder'), null, 'required'); // @codeCoverageIgnore
+        $seeder = new Seeder(new Database());
+        $seed_name = array_shift($params);
+        if (empty($seed_name)) {
+            $seed_name = CLI::prompt(lang('Migrations.migSeeder'), null, 'required');
+            // @codeCoverageIgnore
         }
-
         try {
-            $seeder->call($seedName);
+            $seeder->call($seed_name);
         } catch (Throwable $e) {
-            $this->showError($e);
+            $this->show_error($e);
         }
     }
 }

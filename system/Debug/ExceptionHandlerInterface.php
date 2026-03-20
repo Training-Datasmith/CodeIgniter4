@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,27 +9,19 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Debug;
 
-namespace CodeIgniter\Debug;
-
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
+use Code_Igniter\HTTP\Cli_Request;
+use Code_Igniter\HTTP\Incoming_Request;
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 use Throwable;
-
-interface ExceptionHandlerInterface
+interface Exception_Handler_Interface
 {
     /**
      * Determines the correct way to display the error.
      *
      * @param CLIRequest|IncomingRequest $request
      */
-    public function handle(
-        Throwable $exception,
-        RequestInterface $request,
-        ResponseInterface $response,
-        int $statusCode,
-        int $exitCode,
-    ): void;
+    public function handle(Throwable $exception, Request_Interface $request, Response_Interface $response, int $status_code, int $exit_code): void;
 }

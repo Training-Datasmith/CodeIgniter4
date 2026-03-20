@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,84 +23,63 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Renderer\RichRenderer;
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ClassDeclaredContext;
-use Kint\Value\Context\PropertyContext;
-use Kint\Value\InstanceValue;
-
-abstract class AbstractPlugin implements PluginInterface
+use Kint\Renderer\Rich_Renderer;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Class_Declared_Context;
+use Kint\Value\Context\Property_Context;
+use Kint\Value\Instance_Value;
+abstract class Abstract_Plugin implements Plugin_Interface
 {
-    protected RichRenderer $renderer;
-
-    public function __construct(RichRenderer $r)
+    protected Rich_Renderer $renderer;
+    public function __construct(Rich_Renderer $r)
     {
         $this->renderer = $r;
     }
-
     /**
      * @param string $content The replacement for the getValueShort contents
      */
-    public function renderLockedHeader(AbstractValue $v, string $content): string
+    public function render_locked_header(Abstract_Value $v, string $content): string
     {
         $header = '<dt class="kint-parent kint-locked">';
-
-        $c = $v->getContext();
-
-        if (RichRenderer::$access_paths && $c->getDepth() > 0 && null !== ($ap = $c->getAccessPath())) {
+        $c = $v->get_context();
+        if (Rich_Renderer::$access_paths && $c->get_depth() > 0 && null !== $ap = $c->get_access_path()) {
             $header .= '<span class="kint-access-path-trigger" title="Show access path">&rlarr;</span>';
         }
-
         $header .= '<nav></nav>';
-
-        if ($c instanceof ClassDeclaredContext) {
-            $header .= '<var>'.$c->getModifiers().'</var> ';
+        if ($c instanceof Class_Declared_Context) {
+            $header .= '<var>' . $c->get_modifiers() . '</var> ';
         }
-
-        $header .= '<dfn>'.$this->renderer->escape($v->getDisplayName()).'</dfn> ';
-
-        if ($c instanceof PropertyContext && null !== ($s = $c->getHooks())) {
-            $header .= '<var>'.$this->renderer->escape($s).'</var> ';
+        $header .= '<dfn>' . $this->renderer->escape($v->get_display_name()) . '</dfn> ';
+        if ($c instanceof Property_Context && null !== $s = $c->get_hooks()) {
+            $header .= '<var>' . $this->renderer->escape($s) . '</var> ';
         }
-
-        if (null !== ($s = $c->getOperator())) {
-            $header .= $this->renderer->escape($s, 'ASCII').' ';
+        if (null !== $s = $c->get_operator()) {
+            $header .= $this->renderer->escape($s, 'ASCII') . ' ';
         }
-
-        $s = $v->getDisplayType();
-
-        if (RichRenderer::$escape_types) {
+        $s = $v->get_display_type();
+        if (Rich_Renderer::$escape_types) {
             $s = $this->renderer->escape($s);
         }
-
-        if ($c->isRef()) {
-            $s = '&amp;'.$s;
+        if ($c->is_ref()) {
+            $s = '&amp;' . $s;
         }
-
-        $header .= '<var>'.$s.'</var>';
-
-        if ($v instanceof InstanceValue && $this->renderer->shouldRenderObjectIds()) {
-            $header .= '#'.$v->getSplObjectId();
+        $header .= '<var>' . $s . '</var>';
+        if ($v instanceof Instance_Value && $this->renderer->should_render_object_ids()) {
+            $header .= '#' . $v->get_spl_object_id();
         }
-
         $header .= ' ';
-
-        if (null !== ($s = $v->getDisplaySize())) {
-            if (RichRenderer::$escape_types) {
+        if (null !== $s = $v->get_display_size()) {
+            if (Rich_Renderer::$escape_types) {
                 $s = $this->renderer->escape($s);
             }
-            $header .= '('.$s.') ';
+            $header .= '(' . $s . ') ';
         }
-
         $header .= $content;
-
         if (!empty($ap)) {
-            $header .= '<div class="access-path">'.$this->renderer->escape($ap).'</div>';
+            $header .= '<div class="access-path">' . $this->renderer->escape($ap) . '</div>';
         }
-
-        return $header.'</dt>';
+        return $header . '</dt>';
     }
 }

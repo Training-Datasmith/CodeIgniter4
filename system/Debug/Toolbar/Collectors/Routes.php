@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,16 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
-namespace CodeIgniter\Debug\Toolbar\Collectors;
-
-use CodeIgniter\Router\DefinedRouteCollector;
-use ReflectionException;
+use Code_Igniter\Router\Defined_Route_Collector;
+use Reflection_Exception;
 use ReflectionFunction;
 use ReflectionMethod;
-
 /**
  * Routes collector
  */
-class Routes extends BaseCollector
+class Routes extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -29,16 +26,14 @@ class Routes extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = false;
-
+    protected $has_timeline = false;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = true;
-
+    protected $has_tab_content = true;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -46,7 +41,6 @@ class Routes extends BaseCollector
      * @var string
      */
     protected $title = 'Routes';
-
     /**
      * Returns the data of this collector to be formatted in the toolbar
      *
@@ -73,90 +67,51 @@ class Routes extends BaseCollector
      */
     public function display(): array
     {
-        $rawRoutes = service('routes', true);
-        $router    = service('router', null, null, true);
-
+        $raw_routes = service('routes', true);
+        $router = service('router', null, null, true);
         // Get our parameters
         // Closure routes
-        if (is_callable($router->controllerName())) {
-            $method = new ReflectionFunction($router->controllerName());
+        if (is_callable($router->controller_name())) {
+            $method = new ReflectionFunction($router->controller_name());
         } else {
             try {
-                $method = new ReflectionMethod($router->controllerName(), $router->methodName());
-            } catch (ReflectionException) {
+                $method = new ReflectionMethod($router->controller_name(), $router->method_name());
+            } catch (Reflection_Exception) {
                 try {
                     // If we're here, the method doesn't exist
                     // and is likely calculated in _remap.
-                    $method = new ReflectionMethod($router->controllerName(), '_remap');
-                } catch (ReflectionException) {
+                    $method = new ReflectionMethod($router->controller_name(), '_remap');
+                } catch (Reflection_Exception) {
                     // If we're here, page cache is returned. The router is not executed.
-                    return [
-                        'matchedRoute' => [],
-                        'routes'       => [],
-                    ];
+                    return ['matchedRoute' => [], 'routes' => []];
                 }
             }
         }
-
-        $rawParams = $method->getParameters();
-
+        $raw_params = $method->get_parameters();
         $params = [];
-
-        foreach ($rawParams as $key => $param) {
-            $params[] = [
-                'name'  => '$' . $param->getName() . ' = ',
-                'value' => $router->params()[$key] ??
-                    ' <empty> | default: '
-                    . var_export(
-                        $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null,
-                        true,
-                    ),
-            ];
+        foreach ($raw_params as $key => $param) {
+            $params[] = ['name' => '$' . $param->get_name() . ' = ', 'value' => $router->params()[$key] ?? ' <empty> | default: ' . var_export($param->is_default_value_available() ? $param->get_default_value() : null, true)];
         }
-
-        $matchedRoute = [
-            [
-                'directory'  => $router->directory(),
-                'controller' => $router->controllerName(),
-                'method'     => $router->methodName(),
-                'paramCount' => count($router->params()),
-                'truePCount' => count($params),
-                'params'     => $params,
-            ],
-        ];
-
+        $matched_route = [['directory' => $router->directory(), 'controller' => $router->controller_name(), 'method' => $router->method_name(), 'paramCount' => count($router->params()), 'truePCount' => count($params), 'params' => $params]];
         // Defined Routes
         $routes = [];
-
-        $definedRouteCollector = new DefinedRouteCollector($rawRoutes);
-
-        foreach ($definedRouteCollector->collect() as $route) {
+        $defined_route_collector = new Defined_Route_Collector($raw_routes);
+        foreach ($defined_route_collector->collect() as $route) {
             // filter for strings, as callbacks aren't displayable
             if ($route['handler'] !== '(Closure)') {
-                $routes[] = [
-                    'method'  => strtoupper($route['method']),
-                    'route'   => $route['route'],
-                    'handler' => $route['handler'],
-                ];
+                $routes[] = ['method' => strtoupper($route['method']), 'route' => $route['route'], 'handler' => $route['handler']];
             }
         }
-
-        return [
-            'matchedRoute' => $matchedRoute,
-            'routes'       => $routes,
-        ];
+        return ['matchedRoute' => $matched_route, 'routes' => $routes];
     }
-
     /**
      * Returns a count of all the routes in the system.
      */
-    public function getBadgeValue(): int
+    public function get_badge_value(): int
     {
-        $rawRoutes = service('routes', true);
-
-        return count($rawRoutes->getRoutes());
+        $raw_routes = service('routes', true);
+        return count($raw_routes->get_routes());
     }
-
     /**
      * Display the icon.
      *

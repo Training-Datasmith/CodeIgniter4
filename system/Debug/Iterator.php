@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,11 +9,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Debug;
+namespace Code_Igniter\Debug;
 
 use Closure;
-
 /**
  * Iterator for debugging.
  */
@@ -26,14 +23,12 @@ class Iterator
      * @var array
      */
     protected $tests = [];
-
     /**
      * Stores the results of each of the tests.
      *
      * @var array
      */
     protected $results = [];
-
     /**
      * Adds a test to run.
      *
@@ -47,12 +42,9 @@ class Iterator
     public function add(string $name, Closure $closure)
     {
         $name = strtolower($name);
-
         $this->tests[$name] = $closure;
-
         return $this;
     }
-
     /**
      * Runs through all of the tests that have been added, recording
      * time to execute the desired number of iterations, and the approximate
@@ -65,42 +57,29 @@ class Iterator
         foreach ($this->tests as $name => $test) {
             // clear memory before start
             gc_collect_cycles();
-
-            $start    = microtime(true);
-            $startMem = $maxMemory = memory_get_usage(true);
-
+            $start = microtime(true);
+            $start_mem = $max_memory = memory_get_usage(true);
             for ($i = 0; $i < $iterations; $i++) {
-                $result    = $test();
-                $maxMemory = max($maxMemory, memory_get_usage(true));
-
+                $result = $test();
+                $max_memory = max($max_memory, memory_get_usage(true));
                 unset($result);
             }
-
-            $this->results[$name] = [
-                'time'   => microtime(true) - $start,
-                'memory' => $maxMemory - $startMem,
-                'n'      => $iterations,
-            ];
+            $this->results[$name] = ['time' => microtime(true) - $start, 'memory' => $max_memory - $start_mem, 'n' => $iterations];
         }
-
         if ($output) {
-            return $this->getReport();
+            return $this->get_report();
         }
-
         return null;
     }
-
     /**
      * Get results.
      */
-    public function getReport(): string
+    public function get_report(): string
     {
         if ($this->results === []) {
             return 'No results to display.';
         }
-
         helper('number');
-
         // Template
         $tpl = '<table>
 			<thead>
@@ -114,21 +93,12 @@ class Iterator
 				{rows}
 			</tbody>
 		</table>';
-
         $rows = '';
-
         foreach ($this->results as $name => $result) {
             $memory = number_to_size($result['memory'], 4);
-
-            $rows .= "<tr>
-				<td>{$name}</td>
-				<td>" . number_format($result['time'], 4) . "</td>
-				<td>{$memory}</td>
-			</tr>";
+            $rows .= "<tr>\n\t\t\t\t<td>{$name}</td>\n\t\t\t\t<td>" . number_format($result['time'], 4) . "</td>\n\t\t\t\t<td>{$memory}</td>\n\t\t\t</tr>";
         }
-
         $tpl = str_replace('{rows}', $rows, $tpl);
-
         return $tpl . '<br/>';
     }
 }

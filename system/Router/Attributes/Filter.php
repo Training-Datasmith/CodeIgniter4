@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,11 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Router\Attributes;
+namespace Code_Igniter\Router\Attributes;
 
 use Attribute;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-
+use Code_Igniter\HTTP\Request_Interface;
+use Code_Igniter\HTTP\Response_Interface;
 /**
  * Filter Attribute
  *
@@ -36,32 +33,26 @@ use CodeIgniter\HTTP\ResponseInterface;
  * - Ensure sensitive filters are registered as globals if they should apply site-wide
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-class Filter implements RouteAttributeInterface
+class Filter implements Route_Attribute_Interface
 {
-    public function __construct(
-        public string $by,
-        public array $having = [],
-    ) {
+    public function __construct(public string $by, public array $having = [])
+    {
     }
-
-    public function before(RequestInterface $request): RequestInterface|ResponseInterface|null
+    public function before(Request_Interface $request): Request_Interface|Response_Interface|null
     {
         // Filters are handled by the filter system via getFilters()
         // No processing needed here
         return null;
     }
-
-    public function after(RequestInterface $request, ResponseInterface $response): ?ResponseInterface
+    public function after(Request_Interface $request, Response_Interface $response): ?Response_Interface
     {
         return null;
     }
-
-    public function getFilters(): array
+    public function get_filters(): array
     {
         if ($this->having === []) {
             return [$this->by];
         }
-
         return [$this->by . ':' . implode(',', $this->having)];
     }
 }

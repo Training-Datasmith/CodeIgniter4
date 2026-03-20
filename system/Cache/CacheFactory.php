@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,35 +9,31 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Cache;
 
-namespace CodeIgniter\Cache;
-
-use CodeIgniter\Cache\Exceptions\CacheException;
-use CodeIgniter\Exceptions\CriticalError;
-use CodeIgniter\Test\Mock\MockCache;
+use Code_Igniter\Cache\Exceptions\Cache_Exception;
+use Code_Igniter\Exceptions\Critical_Error;
+use Code_Igniter\Test\Mock\Mock_Cache;
 use Config\Cache;
-
 /**
  * A factory for loading the desired
  *
  * @see \CodeIgniter\Cache\CacheFactoryTest
  */
-class CacheFactory
+class Cache_Factory
 {
     /**
      * The class to use when mocking
      *
      * @var string
      */
-    public static $mockClass = MockCache::class;
-
+    public static $mock_class = Mock_Cache::class;
     /**
      * The service to inject the mock as
      *
      * @var string
      */
-    public static $mockServiceName = 'cache';
-
+    public static $mock_service_name = 'cache';
     /**
      * Attempts to create the desired cache handler, based upon the
      *
@@ -47,45 +42,36 @@ class CacheFactory
      *
      * @return CacheInterface
      */
-    public static function getHandler(Cache $config, ?string $handler = null, ?string $backup = null)
+    public static function get_handler(Cache $config, ?string $handler = null, ?string $backup = null)
     {
-        if (! isset($config->validHandlers) || $config->validHandlers === []) {
-            throw CacheException::forInvalidHandlers();
+        if (!isset($config->valid_handlers) || $config->valid_handlers === []) {
+            throw Cache_Exception::for_invalid_handlers();
         }
-
-        if (! isset($config->handler) || ! isset($config->backupHandler)) {
-            throw CacheException::forNoBackup();
+        if (!isset($config->handler) || !isset($config->backup_handler)) {
+            throw Cache_Exception::for_no_backup();
         }
-
         $handler ??= $config->handler;
-        $backup ??= $config->backupHandler;
-
-        if (! array_key_exists($handler, $config->validHandlers) || ! array_key_exists($backup, $config->validHandlers)) {
-            throw CacheException::forHandlerNotFound();
+        $backup ??= $config->backup_handler;
+        if (!array_key_exists($handler, $config->valid_handlers) || !array_key_exists($backup, $config->valid_handlers)) {
+            throw Cache_Exception::for_handler_not_found();
         }
-
-        $adapter = new $config->validHandlers[$handler]($config);
-
-        if (! $adapter->isSupported()) {
-            $adapter = new $config->validHandlers[$backup]($config);
-
-            if (! $adapter->isSupported()) {
+        $adapter = new $config->valid_handlers[$handler]($config);
+        if (!$adapter->is_supported()) {
+            $adapter = new $config->valid_handlers[$backup]($config);
+            if (!$adapter->is_supported()) {
                 // Fall back to the dummy adapter.
-                $adapter = new $config->validHandlers['dummy']();
+                $adapter = new $config->valid_handlers['dummy']();
             }
         }
-
         // If $adapter->initialize() throws a CriticalError exception, we will attempt to
         // use the $backup handler, if that also fails, we resort to the dummy handler.
         try {
             $adapter->initialize();
-        } catch (CriticalError $e) {
+        } catch (Critical_Error $e) {
             log_message('critical', $e . ' Resorting to using ' . $backup . ' handler.');
-
             // get the next best cache handler (or dummy if the $backup also fails)
-            $adapter = self::getHandler($config, $backup, 'dummy');
+            $adapter = self::get_handler($config, $backup, 'dummy');
         }
-
         return $adapter;
     }
 }

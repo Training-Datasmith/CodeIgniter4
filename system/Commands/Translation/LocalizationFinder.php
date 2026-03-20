@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,379 +9,281 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Translation;
 
-namespace CodeIgniter\Commands\Translation;
-
-use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-use CodeIgniter\Helpers\Array\ArrayHelper;
+use Code_Igniter\CLI\Base_Command;
+use Code_Igniter\CLI\CLI;
+use Code_Igniter\Helpers\Array\Array_Helper;
 use Config\App;
 use Locale;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
-
+use Recursive_Directory_Iterator;
+use Recursive_Iterator_Iterator;
+use Spl_File_Info;
 /**
  * @see \CodeIgniter\Commands\Translation\LocalizationFinderTest
  */
-class LocalizationFinder extends BaseCommand
+class Localization_Finder extends Base_Command
 {
-    protected $group       = 'Translation';
-    protected $name        = 'lang:find';
+    protected $group = 'Translation';
+    protected $name = 'lang:find';
     protected $description = 'Find and save available phrases to translate.';
-    protected $usage       = 'lang:find [options]';
-    protected $arguments   = [];
-    protected $options     = [
-        '--locale'   => 'Specify locale (en, ru, etc.) to save files.',
-        '--dir'      => 'Directory to search for translations relative to APPPATH.',
-        '--show-new' => 'Show only new translations in table. Does not write to files.',
-        '--verbose'  => 'Output detailed information.',
-    ];
-
+    protected $usage = 'lang:find [options]';
+    protected $arguments = [];
+    protected $options = ['--locale' => 'Specify locale (en, ru, etc.) to save files.', '--dir' => 'Directory to search for translations relative to APPPATH.', '--show-new' => 'Show only new translations in table. Does not write to files.', '--verbose' => 'Output detailed information.'];
     /**
      * Flag for output detailed information
      */
     private bool $verbose = false;
-
     /**
      * Flag for showing only translations, without saving
      */
-    private bool $showNew = false;
-
-    private string $languagePath;
-
+    private bool $show_new = false;
+    private string $language_path;
     public function run(array $params)
     {
-        $this->verbose      = array_key_exists('verbose', $params);
-        $this->showNew      = array_key_exists('show-new', $params);
-        $optionLocale       = $params['locale'] ?? null;
-        $optionDir          = $params['dir'] ?? null;
-        $currentLocale      = Locale::getDefault();
-        $currentDir         = APPPATH;
-        $this->languagePath = $currentDir . 'Language';
-
+        $this->verbose = array_key_exists('verbose', $params);
+        $this->show_new = array_key_exists('show-new', $params);
+        $option_locale = $params['locale'] ?? null;
+        $option_dir = $params['dir'] ?? null;
+        $current_locale = Locale::get_default();
+        $current_dir = APPPATH;
+        $this->language_path = $current_dir . 'Language';
         if (ENVIRONMENT === 'testing') {
-            $currentDir         = SUPPORTPATH . 'Services' . DIRECTORY_SEPARATOR;
-            $this->languagePath = SUPPORTPATH . 'Language';
+            $current_dir = SUPPORTPATH . 'Services' . DIRECTORY_SEPARATOR;
+            $this->language_path = SUPPORTPATH . 'Language';
         }
-
-        if (is_string($optionLocale)) {
-            if (! in_array($optionLocale, config(App::class)->supportedLocales, true)) {
-                CLI::error(
-                    'Error: "' . $optionLocale . '" is not supported. Supported locales: '
-                    . implode(', ', config(App::class)->supportedLocales),
-                );
-
+        if (is_string($option_locale)) {
+            if (!in_array($option_locale, config(App::class)->supported_locales, true)) {
+                CLI::error('Error: "' . $option_locale . '" is not supported. Supported locales: ' . implode(', ', config(App::class)->supported_locales));
                 return EXIT_USER_INPUT;
             }
-
-            $currentLocale = $optionLocale;
+            $current_locale = $option_locale;
         }
-
-        if (is_string($optionDir)) {
-            $tempCurrentDir = realpath($currentDir . $optionDir);
-
-            if ($tempCurrentDir === false) {
-                CLI::error('Error: Directory must be located in "' . $currentDir . '"');
-
+        if (is_string($option_dir)) {
+            $temp_current_dir = realpath($current_dir . $option_dir);
+            if ($temp_current_dir === false) {
+                CLI::error('Error: Directory must be located in "' . $current_dir . '"');
                 return EXIT_USER_INPUT;
             }
-
-            if ($this->isSubDirectory($tempCurrentDir, $this->languagePath)) {
-                CLI::error('Error: Directory "' . $this->languagePath . '" restricted to scan.');
-
+            if ($this->is_sub_directory($temp_current_dir, $this->language_path)) {
+                CLI::error('Error: Directory "' . $this->language_path . '" restricted to scan.');
                 return EXIT_USER_INPUT;
             }
-
-            $currentDir = $tempCurrentDir;
+            $current_dir = $temp_current_dir;
         }
-
-        $this->process($currentDir, $currentLocale);
-
+        $this->process($current_dir, $current_locale);
         CLI::write('All operations done!');
-
         return EXIT_SUCCESS;
     }
-
-    private function process(string $currentDir, string $currentLocale): void
+    private function process(string $current_dir, string $current_locale): void
     {
-        $tableRows    = [];
-        $countNewKeys = 0;
-
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($currentDir));
-        $files    = iterator_to_array($iterator, true);
+        $table_rows = [];
+        $count_new_keys = 0;
+        $iterator = new Recursive_Iterator_Iterator(new Recursive_Directory_Iterator($current_dir));
+        $files = iterator_to_array($iterator, true);
         ksort($files);
-
-        [
-            'foundLanguageKeys' => $foundLanguageKeys,
-            'badLanguageKeys'   => $badLanguageKeys,
-            'countFiles'        => $countFiles,
-        ] = $this->findLanguageKeysInFiles($files);
-
-        ksort($foundLanguageKeys);
-
-        $languageDiff        = [];
-        $languageFoundGroups = array_unique(array_keys($foundLanguageKeys));
-
-        foreach ($languageFoundGroups as $langFileName) {
-            $languageStoredKeys = [];
-            $languageFilePath   = $this->languagePath . DIRECTORY_SEPARATOR . $currentLocale . DIRECTORY_SEPARATOR . $langFileName . '.php';
-
-            if (is_file($languageFilePath)) {
+        ['foundLanguageKeys' => $found_language_keys, 'badLanguageKeys' => $bad_language_keys, 'countFiles' => $count_files] = $this->find_language_keys_in_files($files);
+        ksort($found_language_keys);
+        $language_diff = [];
+        $language_found_groups = array_unique(array_keys($found_language_keys));
+        foreach ($language_found_groups as $lang_file_name) {
+            $language_stored_keys = [];
+            $language_file_path = $this->language_path . DIRECTORY_SEPARATOR . $current_locale . DIRECTORY_SEPARATOR . $lang_file_name . '.php';
+            if (is_file($language_file_path)) {
                 // Load old localization
-                $languageStoredKeys = require $languageFilePath;
+                $language_stored_keys = require $language_file_path;
             }
-
-            $languageDiff = ArrayHelper::recursiveDiff($foundLanguageKeys[$langFileName], $languageStoredKeys);
-            $countNewKeys += ArrayHelper::recursiveCount($languageDiff);
-
-            if ($this->showNew) {
-                $tableRows = array_merge($this->arrayToTableRows($langFileName, $languageDiff), $tableRows);
+            $language_diff = Array_Helper::recursive_diff($found_language_keys[$lang_file_name], $language_stored_keys);
+            $count_new_keys += Array_Helper::recursive_count($language_diff);
+            if ($this->show_new) {
+                $table_rows = array_merge($this->array_to_table_rows($lang_file_name, $language_diff), $table_rows);
             } else {
-                $newLanguageKeys = array_replace_recursive($foundLanguageKeys[$langFileName], $languageStoredKeys);
-
-                if ($languageDiff !== []) {
-                    if (file_put_contents($languageFilePath, $this->templateFile($newLanguageKeys)) === false) {
-                        $this->writeIsVerbose('Lang file ' . $langFileName . ' (error write).', 'red');
+                $new_language_keys = array_replace_recursive($found_language_keys[$lang_file_name], $language_stored_keys);
+                if ($language_diff !== []) {
+                    if (file_put_contents($language_file_path, $this->template_file($new_language_keys)) === false) {
+                        $this->write_is_verbose('Lang file ' . $lang_file_name . ' (error write).', 'red');
                     } else {
-                        $this->writeIsVerbose('Lang file "' . $langFileName . '" successful updated!', 'green');
+                        $this->write_is_verbose('Lang file "' . $lang_file_name . '" successful updated!', 'green');
                     }
                 }
             }
         }
-
-        if ($this->showNew && $tableRows !== []) {
-            sort($tableRows);
-            CLI::table($tableRows, ['File', 'Key']);
+        if ($this->show_new && $table_rows !== []) {
+            sort($table_rows);
+            CLI::table($table_rows, ['File', 'Key']);
         }
-
-        if (! $this->showNew && $countNewKeys > 0) {
+        if (!$this->show_new && $count_new_keys > 0) {
             CLI::write('Note: You need to run your linting tool to fix coding standards issues.', 'white', 'red');
         }
-
-        $this->writeIsVerbose('Files found: ' . $countFiles);
-        $this->writeIsVerbose('New translates found: ' . $countNewKeys);
-        $this->writeIsVerbose('Bad translates found: ' . count($badLanguageKeys));
-
-        if ($this->verbose && $badLanguageKeys !== []) {
-            $tableBadRows = [];
-
-            foreach ($badLanguageKeys as $value) {
-                $tableBadRows[] = [$value[1], $value[0]];
+        $this->write_is_verbose('Files found: ' . $count_files);
+        $this->write_is_verbose('New translates found: ' . $count_new_keys);
+        $this->write_is_verbose('Bad translates found: ' . count($bad_language_keys));
+        if ($this->verbose && $bad_language_keys !== []) {
+            $table_bad_rows = [];
+            foreach ($bad_language_keys as $value) {
+                $table_bad_rows[] = [$value[1], $value[0]];
             }
-
-            ArrayHelper::sortValuesByNatural($tableBadRows, 0);
-
-            CLI::table($tableBadRows, ['Bad Key', 'Filepath']);
+            Array_Helper::sort_values_by_natural($table_bad_rows, 0);
+            CLI::table($table_bad_rows, ['Bad Key', 'Filepath']);
         }
     }
-
     /**
      * @param SplFileInfo|string $file
      *
      * @return array<string, array>
      */
-    private function findTranslationsInFile($file): array
+    private function find_translations_in_file($file): array
     {
-        $foundLanguageKeys = [];
-        $badLanguageKeys   = [];
-
+        $found_language_keys = [];
+        $bad_language_keys = [];
         if (is_string($file) && is_file($file)) {
-            $file = new SplFileInfo($file);
+            $file = new Spl_File_Info($file);
         }
-
-        $fileContent = file_get_contents($file->getRealPath());
-        preg_match_all('/lang\(\'([._a-z0-9\-]+)\'\)/ui', $fileContent, $matches);
-
+        $file_content = file_get_contents($file->get_real_path());
+        preg_match_all('/lang\(\'([._a-z0-9\-]+)\'\)/ui', $file_content, $matches);
         if ($matches[1] === []) {
             return compact('foundLanguageKeys', 'badLanguageKeys');
         }
-
-        foreach ($matches[1] as $phraseKey) {
-            $phraseKeys = explode('.', $phraseKey);
-
+        foreach ($matches[1] as $phrase_key) {
+            $phrase_keys = explode('.', $phrase_key);
             // Language key not have Filename or Lang key
-            if (count($phraseKeys) < 2) {
-                $badLanguageKeys[] = [mb_substr($file->getRealPath(), mb_strlen(ROOTPATH)), $phraseKey];
-
+            if (count($phrase_keys) < 2) {
+                $bad_language_keys[] = [mb_substr($file->get_real_path(), mb_strlen(ROOTPATH)), $phrase_key];
                 continue;
             }
-
-            $languageFileName   = array_shift($phraseKeys);
-            $isEmptyNestedArray = ($languageFileName !== '' && $phraseKeys[0] === '')
-                || ($languageFileName === '' && $phraseKeys[0] !== '')
-                || ($languageFileName === '' && $phraseKeys[0] === '');
-
-            if ($isEmptyNestedArray) {
-                $badLanguageKeys[] = [mb_substr($file->getRealPath(), mb_strlen(ROOTPATH)), $phraseKey];
-
+            $language_file_name = array_shift($phrase_keys);
+            $is_empty_nested_array = $language_file_name !== '' && $phrase_keys[0] === '' || $language_file_name === '' && $phrase_keys[0] !== '' || $language_file_name === '' && $phrase_keys[0] === '';
+            if ($is_empty_nested_array) {
+                $bad_language_keys[] = [mb_substr($file->get_real_path(), mb_strlen(ROOTPATH)), $phrase_key];
                 continue;
             }
-
-            if (count($phraseKeys) === 1) {
-                $foundLanguageKeys[$languageFileName][$phraseKeys[0]] = $phraseKey;
+            if (count($phrase_keys) === 1) {
+                $found_language_keys[$language_file_name][$phrase_keys[0]] = $phrase_key;
             } else {
-                $childKeys = $this->buildMultiArray($phraseKeys, $phraseKey);
-
-                $foundLanguageKeys[$languageFileName] = array_replace_recursive($foundLanguageKeys[$languageFileName] ?? [], $childKeys);
+                $child_keys = $this->build_multi_array($phrase_keys, $phrase_key);
+                $found_language_keys[$language_file_name] = array_replace_recursive($found_language_keys[$language_file_name] ?? [], $child_keys);
             }
         }
-
         return compact('foundLanguageKeys', 'badLanguageKeys');
     }
-
-    private function isIgnoredFile(SplFileInfo $file): bool
+    private function is_ignored_file(Spl_File_Info $file): bool
     {
-        if ($file->isDir() || $this->isSubDirectory($file->getRealPath(), $this->languagePath)) {
+        if ($file->is_dir() || $this->is_sub_directory($file->get_real_path(), $this->language_path)) {
             return true;
         }
-
-        return $file->getExtension() !== 'php';
+        return $file->get_extension() !== 'php';
     }
-
-    private function templateFile(array $language = []): string
+    private function template_file(array $language = []): string
     {
         if ($language !== []) {
-            $languageArrayString = var_export($language, true);
-
+            $language_array_string = var_export($language, true);
             $code = <<<PHP
-                <?php
-
-                return {$languageArrayString};
-
-                PHP;
-
-            return $this->replaceArraySyntax($code);
-        }
-
-        return <<<'PHP'
             <?php
-
-            return [];
-
+            
+            return {$language_array_string};
+            
             PHP;
+            return $this->replace_array_syntax($code);
+        }
+        return <<<'PHP'
+        <?php
+        
+        return [];
+        
+        PHP;
     }
-
-    private function replaceArraySyntax(string $code): string
+    private function replace_array_syntax(string $code): string
     {
-        $tokens    = token_get_all($code);
-        $newTokens = $tokens;
-
+        $tokens = token_get_all($code);
+        $new_tokens = $tokens;
         foreach ($tokens as $i => $token) {
             if (is_array($token)) {
-                [$tokenId, $tokenValue] = $token;
-
+                [$token_id, $token_value] = $token;
                 // Replace "array ("
-                if (
-                    $tokenId === T_ARRAY
-                    && $tokens[$i + 1][0] === T_WHITESPACE
-                    && $tokens[$i + 2] === '('
-                ) {
-                    $newTokens[$i][1]     = '[';
-                    $newTokens[$i + 1][1] = '';
-                    $newTokens[$i + 2]    = '';
+                if ($token_id === T_ARRAY && $tokens[$i + 1][0] === T_WHITESPACE && $tokens[$i + 2] === '(') {
+                    $new_tokens[$i][1] = '[';
+                    $new_tokens[$i + 1][1] = '';
+                    $new_tokens[$i + 2] = '';
                 }
-
                 // Replace indent
-                if ($tokenId === T_WHITESPACE && preg_match('/\n([ ]+)/u', $tokenValue, $matches)) {
-                    $newTokens[$i][1] = "\n{$matches[1]}{$matches[1]}";
+                if ($token_id === T_WHITESPACE && preg_match('/\n([ ]+)/u', $token_value, $matches)) {
+                    $new_tokens[$i][1] = "\n{$matches[1]}{$matches[1]}";
                 }
-            } // Replace ")"
-            elseif ($token === ')') {
-                $newTokens[$i] = ']';
+            } elseif ($token === ')') {
+                $new_tokens[$i] = ']';
             }
         }
-
         $output = '';
-
-        foreach ($newTokens as $token) {
+        foreach ($new_tokens as $token) {
             $output .= $token[1] ?? $token;
         }
-
         return $output;
     }
-
     /**
      * Create multidimensional array from another keys
      */
-    private function buildMultiArray(array $fromKeys, string $lastArrayValue = ''): array
+    private function build_multi_array(array $from_keys, string $last_array_value = ''): array
     {
-        $newArray  = [];
-        $lastIndex = array_pop($fromKeys);
-        $current   = &$newArray;
-
-        foreach ($fromKeys as $value) {
+        $new_array = [];
+        $last_index = array_pop($from_keys);
+        $current =& $new_array;
+        foreach ($from_keys as $value) {
             $current[$value] = [];
-            $current         = &$current[$value];
+            $current =& $current[$value];
         }
-
-        $current[$lastIndex] = $lastArrayValue;
-
-        return $newArray;
+        $current[$last_index] = $last_array_value;
+        return $new_array;
     }
-
     /**
      * Convert multi arrays to specific CLI table rows (flat array)
      */
-    private function arrayToTableRows(string $langFileName, array $array): array
+    private function array_to_table_rows(string $lang_file_name, array $array): array
     {
         $rows = [];
-
         foreach ($array as $value) {
             if (is_array($value)) {
-                $rows = array_merge($rows, $this->arrayToTableRows($langFileName, $value));
-
+                $rows = array_merge($rows, $this->array_to_table_rows($lang_file_name, $value));
                 continue;
             }
-
             if (is_string($value)) {
-                $rows[] = [$langFileName, $value];
+                $rows[] = [$lang_file_name, $value];
             }
         }
-
         return $rows;
     }
-
     /**
      * Show details in the console if the flag is set
      */
-    private function writeIsVerbose(string $text = '', ?string $foreground = null, ?string $background = null): void
+    private function write_is_verbose(string $text = '', ?string $foreground = null, ?string $background = null): void
     {
         if ($this->verbose) {
             CLI::write($text, $foreground, $background);
         }
     }
-
-    private function isSubDirectory(string $directory, string $rootDirectory): bool
+    private function is_sub_directory(string $directory, string $root_directory): bool
     {
-        return 0 === strncmp($directory, $rootDirectory, strlen($directory));
+        return 0 === strncmp($directory, $root_directory, strlen($directory));
     }
-
     /**
      * @param list<SplFileInfo> $files
      *
      * @return array{'foundLanguageKeys': array<string, array<string, string>>, 'badLanguageKeys': array<int, array<int, string>>, 'countFiles': int}
      */
-    private function findLanguageKeysInFiles(array $files): array
+    private function find_language_keys_in_files(array $files): array
     {
-        $foundLanguageKeys = [];
-        $badLanguageKeys   = [];
-        $countFiles        = 0;
-
+        $found_language_keys = [];
+        $bad_language_keys = [];
+        $count_files = 0;
         foreach ($files as $file) {
-            if ($this->isIgnoredFile($file)) {
+            if ($this->is_ignored_file($file)) {
                 continue;
             }
-
-            $this->writeIsVerbose('File found: ' . mb_substr($file->getRealPath(), mb_strlen(APPPATH)));
-            $countFiles++;
-
-            $findInFile = $this->findTranslationsInFile($file);
-
-            $foundLanguageKeys = array_replace_recursive($findInFile['foundLanguageKeys'], $foundLanguageKeys);
-            $badLanguageKeys   = array_merge($findInFile['badLanguageKeys'], $badLanguageKeys);
+            $this->write_is_verbose('File found: ' . mb_substr($file->get_real_path(), mb_strlen(APPPATH)));
+            $count_files++;
+            $find_in_file = $this->find_translations_in_file($file);
+            $found_language_keys = array_replace_recursive($find_in_file['foundLanguageKeys'], $found_language_keys);
+            $bad_language_keys = array_merge($find_in_file['badLanguageKeys'], $bad_language_keys);
         }
-
         return compact('foundLanguageKeys', 'badLanguageKeys', 'countFiles');
     }
 }

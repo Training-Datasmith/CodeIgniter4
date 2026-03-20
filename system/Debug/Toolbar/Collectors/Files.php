@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Debug\Toolbar\Collectors;
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
 /**
  * Files collector
  */
-class Files extends BaseCollector
+class Files extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -24,16 +22,14 @@ class Files extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = false;
-
+    protected $has_timeline = false;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = true;
-
+    protected $has_tab_content = true;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -41,57 +37,40 @@ class Files extends BaseCollector
      * @var string
      */
     protected $title = 'Files';
-
     /**
      * Returns any information that should be shown next to the title.
      */
-    public function getTitleDetails(): string
+    public function get_title_details(): string
     {
         return '( ' . count(get_included_files()) . ' )';
     }
-
     /**
      * Returns the data of this collector to be formatted in the toolbar
      */
     public function display(): array
     {
-        $rawFiles  = get_included_files();
-        $coreFiles = [];
-        $userFiles = [];
-
-        foreach ($rawFiles as $file) {
+        $raw_files = get_included_files();
+        $core_files = [];
+        $user_files = [];
+        foreach ($raw_files as $file) {
             $path = clean_path($file);
-
             if (str_contains($path, 'SYSTEMPATH')) {
-                $coreFiles[] = [
-                    'path' => $path,
-                    'name' => basename($file),
-                ];
+                $core_files[] = ['path' => $path, 'name' => basename($file)];
             } else {
-                $userFiles[] = [
-                    'path' => $path,
-                    'name' => basename($file),
-                ];
+                $user_files[] = ['path' => $path, 'name' => basename($file)];
             }
         }
-
-        sort($userFiles);
-        sort($coreFiles);
-
-        return [
-            'coreFiles' => $coreFiles,
-            'userFiles' => $userFiles,
-        ];
+        sort($user_files);
+        sort($core_files);
+        return ['coreFiles' => $core_files, 'userFiles' => $user_files];
     }
-
     /**
      * Displays the number of included files as a badge in the tab button.
      */
-    public function getBadgeValue(): int
+    public function get_badge_value(): int
     {
         return count(get_included_files());
     }
-
     /**
      * Display the icon.
      *

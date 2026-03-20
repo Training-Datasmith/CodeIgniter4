@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,33 +23,27 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\ProfileRepresentation;
-use Kint\Value\Representation\RepresentationInterface;
-
-class ProfilePlugin extends AbstractPlugin implements TabPluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Profile_Representation;
+use Kint\Value\Representation\Representation_Interface;
+class Profile_Plugin extends Abstract_Plugin implements Tab_Plugin_Interface
 {
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string
     {
-        if (!$r instanceof ProfileRepresentation) {
+        if (!$r instanceof Profile_Representation) {
             return null;
         }
-
         $out = '<pre>';
-
-        $out .= 'Complexity: '.$r->complexity.PHP_EOL;
+        $out .= 'Complexity: ' . $r->complexity . PHP_EOL;
         if (isset($r->instance_counts)) {
-            $out .= 'Instance repetitions: '.\var_export($r->instance_counts, true).PHP_EOL;
+            $out .= 'Instance repetitions: ' . \var_export($r->instance_counts, true) . PHP_EOL;
         }
         if (isset($r->instance_complexity)) {
-            $out .= 'Instance complexity: '.\var_export($r->instance_complexity, true).PHP_EOL;
+            $out .= 'Instance complexity: ' . \var_export($r->instance_complexity, true) . PHP_EOL;
         }
-
         $out .= '</pre>';
-
         return $out;
     }
 }

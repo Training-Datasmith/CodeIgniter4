@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,41 +23,31 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\BinaryRepresentation;
-use Kint\Value\Representation\RepresentationInterface;
-
-class BinaryPlugin extends AbstractPlugin implements TabPluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Binary_Representation;
+use Kint\Value\Representation\Representation_Interface;
+class Binary_Plugin extends Abstract_Plugin implements Tab_Plugin_Interface
 {
     /** @psalm-var positive-int */
     public static int $line_length = 0x10;
     /** @psalm-var positive-int */
     public static int $chunk_length = 0x2;
-
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string
     {
-        if (!$r instanceof BinaryRepresentation) {
+        if (!$r instanceof Binary_Representation) {
             return null;
         }
-
         $out = '<pre>';
-
-        $lines = \str_split($r->getValue(), self::$line_length);
-
+        $lines = \str_split($r->get_value(), self::$line_length);
         foreach ($lines as $index => $line) {
-            $out .= ((string) \sprintf('%08X', $index * self::$line_length)).":\t";
-
+            $out .= (string) \sprintf('%08X', $index * self::$line_length) . ":\t";
             $chunks = \str_split(\str_pad(\bin2hex($line), 2 * self::$line_length, ' '), 2 * self::$chunk_length);
-
             $out .= \implode(' ', $chunks);
-            $out .= "\t".\preg_replace('/[^\\x20-\\x7E]/', '.', $line)."\n";
+            $out .= "\t" . \preg_replace('/[^\x20-\x7E]/', '.', $line) . "\n";
         }
-
         $out .= '</pre>';
-
         return $out;
     }
 }

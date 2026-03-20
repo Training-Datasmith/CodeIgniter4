@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\API;
 
-namespace CodeIgniter\API;
-
-use CodeIgniter\HTTP\IncomingRequest;
+use Code_Igniter\HTTP\Incoming_Request;
 use InvalidArgumentException;
-
 /**
  * Base class for transforming resources into arrays.
  * Fulfills common functionality of the TransformerInterface,
@@ -52,36 +49,25 @@ use InvalidArgumentException;
  *   }
  * }
  */
-abstract class BaseTransformer implements TransformerInterface
+abstract class Base_Transformer implements Transformer_Interface
 {
     /**
      * @var list<string>|null
      */
     private ?array $fields = null;
-
     /**
      * @var list<string>|null
      */
     private ?array $includes = null;
-
     protected mixed $resource = null;
-
-    public function __construct(
-        private ?IncomingRequest $request = null,
-    ) {
+    public function __construct(private ?Incoming_Request $request = null)
+    {
         $this->request = $request ?? request();
-
-        $fields       = $this->request->getGet('fields');
-        $this->fields = is_string($fields)
-            ? array_map(trim(...), explode(',', $fields))
-            : $fields;
-
-        $includes       = $this->request->getGet('include');
-        $this->includes = is_string($includes)
-            ? array_map(trim(...), explode(',', $includes))
-            : $includes;
+        $fields = $this->request->get_get('fields');
+        $this->fields = is_string($fields) ? array_map(trim(...), explode(',', $fields)) : $fields;
+        $includes = $this->request->get_get('include');
+        $this->includes = is_string($includes) ? array_map(trim(...), explode(',', $includes)) : $includes;
     }
-
     /**
      * Converts the resource to an array representation.
      * This is overridden by child classes to define the
@@ -89,8 +75,7 @@ abstract class BaseTransformer implements TransformerInterface
      *
      * @param mixed $resource The resource being transformed
      */
-    abstract public function toArray(mixed $resource): array;
-
+    abstract public function to_array(mixed $resource): array;
     /**
      * Transforms the given resource into an array using
      * the $this->toArray().
@@ -99,31 +84,26 @@ abstract class BaseTransformer implements TransformerInterface
     {
         // Store the resource so include methods can access it
         $this->resource = $resource;
-
         if ($resource === null) {
-            $data = $this->toArray(null);
+            $data = $this->to_array(null);
         } elseif (is_object($resource) && method_exists($resource, 'toArray')) {
-            $data = $this->toArray($resource->toArray());
+            $data = $this->to_array($resource->to_array());
         } else {
-            $data = $this->toArray((array) $resource);
+            $data = $this->to_array((array) $resource);
         }
-
-        $data = $this->limitFields($data);
-
-        return $this->insertIncludes($data);
+        $data = $this->limit_fields($data);
+        return $this->insert_includes($data);
     }
-
     /**
      * Transforms a collection of resources using $this->transform() on each item.
      *
      * If the request's 'fields' query variable is set, only those fields will be included
      * in the transformed output.
      */
-    public function transformMany(array $resources): array
+    public function transform_many(array $resources): array
     {
         return array_map($this->transform(...), $resources);
     }
-
     /**
      * Define which fields can be requested via the 'fields' query parameter.
      * Override in child classes to restrict available fields.
@@ -131,11 +111,10 @@ abstract class BaseTransformer implements TransformerInterface
      *
      * @return list<string>|null
      */
-    protected function getAllowedFields(): ?array
+    protected function get_allowed_fields(): ?array
     {
         return null;
     }
-
     /**
      * Define which related resources can be included via the 'include' query parameter.
      * Override in child classes to restrict available includes.
@@ -144,11 +123,10 @@ abstract class BaseTransformer implements TransformerInterface
      *
      * @return list<string>|null
      */
-    protected function getAllowedIncludes(): ?array
+    protected function get_allowed_includes(): ?array
     {
         return null;
     }
-
     /**
      * Limits the given data array to only the fields specified
      *
@@ -158,26 +136,21 @@ abstract class BaseTransformer implements TransformerInterface
      *
      * @throws InvalidArgumentException
      */
-    private function limitFields(array $data): array
+    private function limit_fields(array $data): array
     {
         if ($this->fields === null || $this->fields === []) {
             return $data;
         }
-
-        $allowedFields = $this->getAllowedFields();
-
+        $allowed_fields = $this->get_allowed_fields();
         // If whitelist is defined, validate against it
-        if ($allowedFields !== null) {
-            $invalidFields = array_diff($this->fields, $allowedFields);
-
-            if ($invalidFields !== []) {
-                throw ApiException::forInvalidFields(implode(', ', $invalidFields));
+        if ($allowed_fields !== null) {
+            $invalid_fields = array_diff($this->fields, $allowed_fields);
+            if ($invalid_fields !== []) {
+                throw Api_Exception::for_invalid_fields(implode(', ', $invalid_fields));
             }
         }
-
         return array_intersect_key($data, array_flip($this->fields));
     }
-
     /**
      * Checks the request for 'include' query variable, and if present,
      * calls the corresponding include{Resource} methods to add related data.
@@ -186,36 +159,31 @@ abstract class BaseTransformer implements TransformerInterface
      *
      * @return array<string, mixed>
      */
-    private function insertIncludes(array $data): array
+    private function insert_includes(array $data): array
     {
         if ($this->includes === null) {
             return $data;
         }
-
-        $allowedIncludes = $this->getAllowedIncludes();
-
-        if ($allowedIncludes === []) {
-            return $data; // No includes allowed
+        $allowed_includes = $this->get_allowed_includes();
+        if ($allowed_includes === []) {
+            return $data;
+            // No includes allowed
         }
-
         // If whitelist is defined, filter the requested includes
-        if ($allowedIncludes !== null) {
-            $invalidIncludes = array_diff($this->includes, $allowedIncludes);
-
-            if ($invalidIncludes !== []) {
-                throw ApiException::forInvalidIncludes(implode(', ', $invalidIncludes));
+        if ($allowed_includes !== null) {
+            $invalid_includes = array_diff($this->includes, $allowed_includes);
+            if ($invalid_includes !== []) {
+                throw Api_Exception::for_invalid_includes(implode(', ', $invalid_includes));
             }
         }
-
         foreach ($this->includes as $include) {
             $method = 'include' . ucfirst($include);
             if (method_exists($this, $method)) {
                 $data[$include] = $this->{$method}();
             } else {
-                throw ApiException::forMissingInclude($include);
+                throw Api_Exception::for_missing_include($include);
             }
         }
-
         return $data;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\HTTP\Exceptions\HTTPException;
+use Code_Igniter\HTTP\Exceptions\Http_Exception;
 use Config\Feature;
-
 /**
  * Class Negotiate
  *
@@ -34,33 +31,27 @@ class Negotiate
      * @var IncomingRequest
      */
     protected $request;
-
     /**
      * Constructor
      */
-    public function __construct(?RequestInterface $request = null)
+    public function __construct(?Request_Interface $request = null)
     {
-        if ($request instanceof RequestInterface) {
-            assert($request instanceof IncomingRequest);
-
+        if ($request instanceof Request_Interface) {
+            assert($request instanceof Incoming_Request);
             $this->request = $request;
         }
     }
-
     /**
      * Stores the request instance to grab the headers from.
      *
      * @return $this
      */
-    public function setRequest(RequestInterface $request)
+    public function set_request(Request_Interface $request)
     {
-        assert($request instanceof IncomingRequest);
-
+        assert($request instanceof Incoming_Request);
         $this->request = $request;
-
         return $this;
     }
-
     /**
      * Determines the best content-type to use based on the $supported
      * types the application says it supports, and the types requested
@@ -72,11 +63,10 @@ class Negotiate
      * @param bool $strictMatch If TRUE, will return an empty string when no match found.
      *                          If FALSE, will return the first supported element.
      */
-    public function media(array $supported, bool $strictMatch = false): string
+    public function media(array $supported, bool $strict_match = false): string
     {
-        return $this->getBestMatch($supported, $this->request->getHeaderLine('accept'), true, $strictMatch);
+        return $this->get_best_match($supported, $this->request->get_header_line('accept'), true, $strict_match);
     }
-
     /**
      * Determines the best charset to use based on the $supported
      * types the application says it supports, and the types requested
@@ -87,22 +77,14 @@ class Negotiate
      */
     public function charset(array $supported): string
     {
-        $match = $this->getBestMatch(
-            $supported,
-            $this->request->getHeaderLine('accept-charset'),
-            false,
-            true,
-        );
-
+        $match = $this->get_best_match($supported, $this->request->get_header_line('accept-charset'), false, true);
         // If no charset is shown as a match, ignore the directive
         // as allowed by the RFC, and tell it a default value.
         if ($match === '') {
             return 'utf-8';
         }
-
         return $match;
     }
-
     /**
      * Determines the best encoding type to use based on the $supported
      * types the application says it supports, and the types requested
@@ -114,10 +96,8 @@ class Negotiate
     public function encoding(array $supported = []): string
     {
         $supported[] = 'identity';
-
-        return $this->getBestMatch($supported, $this->request->getHeaderLine('accept-encoding'));
+        return $this->get_best_match($supported, $this->request->get_header_line('accept-encoding'));
     }
-
     /**
      * Determines the best language to use based on the $supported
      * types the application says it supports, and the types requested
@@ -128,17 +108,14 @@ class Negotiate
      */
     public function language(array $supported): string
     {
-        if (config(Feature::class)->strictLocaleNegotiation) {
-            return $this->getBestLocaleMatch($supported, $this->request->getHeaderLine('accept-language'));
+        if (config(Feature::class)->strict_locale_negotiation) {
+            return $this->get_best_locale_match($supported, $this->request->get_header_line('accept-language'));
         }
-
-        return $this->getBestMatch($supported, $this->request->getHeaderLine('accept-language'), false, false, true);
+        return $this->get_best_match($supported, $this->request->get_header_line('accept-language'), false, false, true);
     }
-
     // --------------------------------------------------------------------
     // Utility Methods
     // --------------------------------------------------------------------
-
     /**
      * Does the grunt work of comparing any of the app-supported values
      * against a given Accept* header string.
@@ -154,46 +131,34 @@ class Negotiate
      *
      * @return string Best match
      */
-    protected function getBestMatch(
-        array $supported,
-        ?string $header = null,
-        bool $enforceTypes = false,
-        bool $strictMatch = false,
-        bool $matchLocales = false,
-    ): string {
+    protected function get_best_match(array $supported, ?string $header = null, bool $enforce_types = false, bool $strict_match = false, bool $match_locales = false): string
+    {
         if ($supported === []) {
-            throw HTTPException::forEmptySupportedNegotiations();
+            throw Http_Exception::for_empty_supported_negotiations();
         }
-
         if ($header === null || $header === '') {
-            return $strictMatch ? '' : $supported[0];
+            return $strict_match ? '' : $supported[0];
         }
-
-        $acceptable = $this->parseHeader($header);
-
+        $acceptable = $this->parse_header($header);
         foreach ($acceptable as $accept) {
             // if acceptable quality is zero, skip it.
             if ($accept['q'] === 0.0) {
                 continue;
             }
-
             // if acceptable value is "anything", return the first available
             if ($accept['value'] === '*' || $accept['value'] === '*/*') {
                 return $supported[0];
             }
-
             // If an acceptable value is supported, return it
             foreach ($supported as $available) {
-                if ($this->match($accept, $available, $enforceTypes, $matchLocales)) {
+                if ($this->match($accept, $available, $enforce_types, $match_locales)) {
                     return $available;
                 }
             }
         }
-
         // No matches? Return the first supported element.
-        return $strictMatch ? '' : $supported[0];
+        return $strict_match ? '' : $supported[0];
     }
-
     /**
      * Try to find the best matching locale. It supports strict locale comparison.
      *
@@ -207,225 +172,173 @@ class Negotiate
      * @param list<string> $supportedLocales App-supported values
      * @param ?string      $header           Compatible 'Accept-Language' header string
      */
-    protected function getBestLocaleMatch(array $supportedLocales, ?string $header): string
+    protected function get_best_locale_match(array $supported_locales, ?string $header): string
     {
-        if ($supportedLocales === []) {
-            throw HTTPException::forEmptySupportedNegotiations();
+        if ($supported_locales === []) {
+            throw Http_Exception::for_empty_supported_negotiations();
         }
-
         if ($header === null || $header === '') {
-            return $supportedLocales[0];
+            return $supported_locales[0];
         }
-
-        $acceptable      = $this->parseHeader($header);
-        $fallbackLocales = [];
-
+        $acceptable = $this->parse_header($header);
+        $fallback_locales = [];
         foreach ($acceptable as $accept) {
             // if acceptable quality is zero, skip it.
             if ($accept['q'] === 0.0) {
                 continue;
             }
-
             // if acceptable value is "anything", return the first available
             if ($accept['value'] === '*') {
-                return $supportedLocales[0];
+                return $supported_locales[0];
             }
-
             // look for exact match
-            if (in_array($accept['value'], $supportedLocales, true)) {
+            if (in_array($accept['value'], $supported_locales, true)) {
                 return $accept['value'];
             }
-
             // set a fallback locale
-            $fallbackLocales[] = strtok($accept['value'], '-');
+            $fallback_locales[] = strtok($accept['value'], '-');
         }
-
-        foreach ($fallbackLocales as $fallbackLocale) {
+        foreach ($fallback_locales as $fallback_locale) {
             // look for exact match
-            if (in_array($fallbackLocale, $supportedLocales, true)) {
-                return $fallbackLocale;
+            if (in_array($fallback_locale, $supported_locales, true)) {
+                return $fallback_locale;
             }
-
             // look for regional locale match
-            foreach ($supportedLocales as $locale) {
-                if (str_starts_with($locale, $fallbackLocale . '-')) {
+            foreach ($supported_locales as $locale) {
+                if (str_starts_with($locale, $fallback_locale . '-')) {
                     return $locale;
                 }
             }
         }
-
-        return $supportedLocales[0];
+        return $supported_locales[0];
     }
-
     /**
      * Parses an Accept* header into it's multiple values.
      *
      * This is based on code from Aura.Accept library.
      */
-    public function parseHeader(string $header): array
+    public function parse_header(string $header): array
     {
-        $results    = [];
+        $results = [];
         $acceptable = explode(',', $header);
-
         foreach ($acceptable as $value) {
             $pairs = explode(';', $value);
-
             $value = $pairs[0];
-
             unset($pairs[0]);
-
             $parameters = [];
-
             foreach ($pairs as $pair) {
-                if (preg_match(
-                    '/^(?P<name>.+?)=(?P<quoted>"|\')?(?P<value>.*?)(?:\k<quoted>)?$/',
-                    $pair,
-                    $param,
-                )) {
+                if (preg_match('/^(?P<name>.+?)=(?P<quoted>"|\')?(?P<value>.*?)(?:\k<quoted>)?$/', $pair, $param)) {
                     $parameters[trim($param['name'])] = trim($param['value']);
                 }
             }
-
             $quality = 1.0;
-
             if (array_key_exists('q', $parameters)) {
                 $quality = $parameters['q'];
                 unset($parameters['q']);
             }
-
-            $results[] = [
-                'value'  => trim($value),
-                'q'      => (float) $quality,
-                'params' => $parameters,
-            ];
+            $results[] = ['value' => trim($value), 'q' => (float) $quality, 'params' => $parameters];
         }
-
         // Sort to get the highest results first
         usort($results, static function ($a, $b): int {
             if ($a['q'] === $b['q']) {
-                $aAst = substr_count($a['value'], '*');
-                $bAst = substr_count($b['value'], '*');
-
+                $a_ast = substr_count($a['value'], '*');
+                $b_ast = substr_count($b['value'], '*');
                 // '*/*' has lower precedence than 'text/*',
                 // and 'text/*' has lower priority than 'text/plain'
                 //
                 // This seems backwards, but needs to be that way
                 // due to the way PHP7 handles ordering or array
                 // elements created by reference.
-                if ($aAst > $bAst) {
+                if ($a_ast > $b_ast) {
                     return 1;
                 }
-
                 // If the counts are the same, but one element
                 // has more params than another, it has higher precedence.
                 //
                 // This seems backwards, but needs to be that way
                 // due to the way PHP7 handles ordering or array
                 // elements created by reference.
-                if ($aAst === $bAst) {
+                if ($a_ast === $b_ast) {
                     return count($b['params']) - count($a['params']);
                 }
-
                 return 0;
             }
-
             // Still here? Higher q values have precedence.
-            return ($a['q'] > $b['q']) ? -1 : 1;
+            return $a['q'] > $b['q'] ? -1 : 1;
         });
-
         return $results;
     }
-
     /**
      * Match-maker
      *
      * @param bool $matchLocales
      */
-    protected function match(array $acceptable, string $supported, bool $enforceTypes = false, $matchLocales = false): bool
+    protected function match(array $acceptable, string $supported, bool $enforce_types = false, $match_locales = false): bool
     {
-        $supported = $this->parseHeader($supported);
+        $supported = $this->parse_header($supported);
         if (count($supported) === 1) {
             $supported = $supported[0];
         }
-
         // Is it an exact match?
         if ($acceptable['value'] === $supported['value']) {
-            return $this->matchParameters($acceptable, $supported);
+            return $this->match_parameters($acceptable, $supported);
         }
-
         // Do we need to compare types/sub-types? Only used
         // by negotiateMedia().
-        if ($enforceTypes) {
-            return $this->matchTypes($acceptable, $supported);
+        if ($enforce_types) {
+            return $this->match_types($acceptable, $supported);
         }
-
         // Do we need to match locales against broader locales?
-        if ($matchLocales) {
-            return $this->matchLocales($acceptable, $supported);
+        if ($match_locales) {
+            return $this->match_locales($acceptable, $supported);
         }
-
         return false;
     }
-
     /**
      * Checks two Accept values with matching 'values' to see if their
      * 'params' are the same.
      */
-    protected function matchParameters(array $acceptable, array $supported): bool
+    protected function match_parameters(array $acceptable, array $supported): bool
     {
         if (count($acceptable['params']) !== count($supported['params'])) {
             return false;
         }
-
         foreach ($supported['params'] as $label => $value) {
-            if (! isset($acceptable['params'][$label])
-                || $acceptable['params'][$label] !== $value
-            ) {
+            if (!isset($acceptable['params'][$label]) || $acceptable['params'][$label] !== $value) {
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * Compares the types/subtypes of an acceptable Media type and
      * the supported string.
      */
-    public function matchTypes(array $acceptable, array $supported): bool
+    public function match_types(array $acceptable, array $supported): bool
     {
         // PHPDocumentor v2 cannot parse yet the shorter list syntax,
         // causing no API generation for the file.
-        [$aType, $aSubType] = explode('/', $acceptable['value']);
-        [$sType, $sSubType] = explode('/', $supported['value']);
-
+        [$a_type, $a_sub_type] = explode('/', $acceptable['value']);
+        [$s_type, $s_sub_type] = explode('/', $supported['value']);
         // If the types don't match, we're done.
-        if ($aType !== $sType) {
+        if ($a_type !== $s_type) {
             return false;
         }
-
         // If there's an asterisk, we're cool
-        if ($aSubType === '*') {
+        if ($a_sub_type === '*') {
             return true;
         }
-
         // Otherwise, subtypes must match also.
-        return $aSubType === $sSubType;
+        return $a_sub_type === $s_sub_type;
     }
-
     /**
      * Will match locales against their broader pairs, so that fr-FR would
      * match a supported localed of fr
      */
-    public function matchLocales(array $acceptable, array $supported): bool
+    public function match_locales(array $acceptable, array $supported): bool
     {
-        $aBroad = mb_strpos($acceptable['value'], '-') > 0
-            ? mb_substr($acceptable['value'], 0, mb_strpos($acceptable['value'], '-'))
-            : $acceptable['value'];
-        $sBroad = mb_strpos($supported['value'], '-') > 0
-            ? mb_substr($supported['value'], 0, mb_strpos($supported['value'], '-'))
-            : $supported['value'];
-
-        return strtolower($aBroad) === strtolower($sBroad);
+        $a_broad = mb_strpos($acceptable['value'], '-') > 0 ? mb_substr($acceptable['value'], 0, mb_strpos($acceptable['value'], '-')) : $acceptable['value'];
+        $s_broad = mb_strpos($supported['value'], '-') > 0 ? mb_substr($supported['value'], 0, mb_strpos($supported['value'], '-')) : $supported['value'];
+        return strtolower($a_broad) === strtolower($s_broad);
     }
 }

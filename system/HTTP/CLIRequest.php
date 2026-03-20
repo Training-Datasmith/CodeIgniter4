@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,11 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\Exceptions\RuntimeException;
+use Code_Igniter\Exceptions\RuntimeException;
 use Config\App;
 use Locale;
-
 /**
  * Represents a request from the command-line. Provides additional
  * tools to interact with that request since CLI requests are not
@@ -30,7 +27,7 @@ use Locale;
  *
  * @see \CodeIgniter\HTTP\CLIRequestTest
  */
-class CLIRequest extends Request
+class Cli_Request extends Request
 {
     /**
      * Stores the segments of our cli "URI" command.
@@ -38,48 +35,40 @@ class CLIRequest extends Request
      * @var array
      */
     protected $segments = [];
-
     /**
      * Command line options and their values.
      *
      * @var array
      */
     protected $options = [];
-
     /**
      * Command line arguments (segments and options).
      *
      * @var array
      */
     protected $args = [];
-
     /**
      * Set the expected HTTP verb
      *
      * @var string
      */
     protected $method = 'CLI';
-
     /**
      * Constructor
      */
     public function __construct(App $config)
     {
-        if (! is_cli()) {
-            throw new RuntimeException(static::class . ' needs to run from the command line.'); // @codeCoverageIgnore
+        if (!is_cli()) {
+            throw new RuntimeException(static::class . ' needs to run from the command line.');
+            // @codeCoverageIgnore
         }
-
         parent::__construct($config);
-
         // Don't terminate the script when the cli's tty goes away
         ignore_user_abort(true);
-
-        $this->parseCommand();
-
+        $this->parse_command();
         // Set SiteURI for this request
-        $this->uri = new SiteURI($config, $this->getPath());
+        $this->uri = new Site_Uri($config, $this->get_path());
     }
-
     /**
      * Returns the "path" of the request script so that it can be used
      * in routing to the appropriate controller/method.
@@ -93,46 +82,41 @@ class CLIRequest extends Request
      *      // Routes to /users/21/profile (index is removed for routing sake)
      *      // with the option foo = bar.
      */
-    public function getPath(): string
+    public function get_path(): string
     {
         return implode('/', $this->segments);
     }
-
     /**
      * Returns an associative array of all CLI options found, with
      * their values.
      */
-    public function getOptions(): array
+    public function get_options(): array
     {
         return $this->options;
     }
-
     /**
      * Returns an array of all CLI arguments (segments and options).
      */
-    public function getArgs(): array
+    public function get_args(): array
     {
         return $this->args;
     }
-
     /**
      * Returns the path segments.
      */
-    public function getSegments(): array
+    public function get_segments(): array
     {
         return $this->segments;
     }
-
     /**
      * Returns the value for a single CLI option that was passed in.
      *
      * @return string|null
      */
-    public function getOption(string $key)
+    public function get_option(string $key)
     {
         return $this->options[$key] ?? null;
     }
-
     /**
      * Returns the options as a string, suitable for passing along on
      * the CLI to other commands.
@@ -145,35 +129,29 @@ class CLIRequest extends Request
      *
      *      getOptionString() = '-foo bar -baz "queue some stuff"'
      */
-    public function getOptionString(bool $useLongOpts = false): string
+    public function get_option_string(bool $use_long_opts = false): string
     {
         if ($this->options === []) {
             return '';
         }
-
         $out = '';
-
         foreach ($this->options as $name => $value) {
-            if ($useLongOpts && mb_strlen($name) > 1) {
+            if ($use_long_opts && mb_strlen($name) > 1) {
                 $out .= "--{$name} ";
             } else {
                 $out .= "-{$name} ";
             }
-
             if ($value === null) {
                 continue;
             }
-
             if (mb_strpos($value, ' ') !== false) {
                 $out .= '"' . $value . '" ';
             } else {
                 $out .= "{$value} ";
             }
         }
-
         return trim($out);
     }
-
     /**
      * Parses the command line it was called from and collects all options
      * and valid segments.
@@ -183,46 +161,39 @@ class CLIRequest extends Request
      *
      * @return void
      */
-    protected function parseCommand()
+    protected function parse_command()
     {
-        $args = $this->getServer('argv');
-        array_shift($args); // Scrap index.php
-
-        $optionValue = false;
-
+        $args = $this->get_server('argv');
+        array_shift($args);
+        // Scrap index.php
+        $option_value = false;
         foreach ($args as $i => $arg) {
             if (mb_strpos($arg, '-') !== 0) {
-                if ($optionValue) {
-                    $optionValue = false;
+                if ($option_value) {
+                    $option_value = false;
                 } else {
                     $this->segments[] = $arg;
-                    $this->args[]     = $arg;
+                    $this->args[] = $arg;
                 }
-
                 continue;
             }
-
-            $arg   = ltrim($arg, '-');
+            $arg = ltrim($arg, '-');
             $value = null;
-
             if (isset($args[$i + 1]) && mb_strpos($args[$i + 1], '-') !== 0) {
-                $value       = $args[$i + 1];
-                $optionValue = true;
+                $value = $args[$i + 1];
+                $option_value = true;
             }
-
             $this->options[$arg] = $value;
-            $this->args[$arg]    = $value;
+            $this->args[$arg] = $value;
         }
     }
-
     /**
      * Determines if this request was made from the command line (CLI).
      */
-    public function isCLI(): bool
+    public function is_cli(): bool
     {
         return true;
     }
-
     /**
      * Fetch an item from GET data.
      *
@@ -232,11 +203,10 @@ class CLIRequest extends Request
      *
      * @return array|null
      */
-    public function getGet($index = null, $filter = null, $flags = null)
+    public function get_get($index = null, $filter = null, $flags = null)
     {
-        return $this->returnNullOrEmptyArray($index);
+        return $this->return_null_or_empty_array($index);
     }
-
     /**
      * Fetch an item from POST.
      *
@@ -246,11 +216,10 @@ class CLIRequest extends Request
      *
      * @return array|null
      */
-    public function getPost($index = null, $filter = null, $flags = null)
+    public function get_post($index = null, $filter = null, $flags = null)
     {
-        return $this->returnNullOrEmptyArray($index);
+        return $this->return_null_or_empty_array($index);
     }
-
     /**
      * Fetch an item from POST data with fallback to GET.
      *
@@ -260,11 +229,10 @@ class CLIRequest extends Request
      *
      * @return array|null
      */
-    public function getPostGet($index = null, $filter = null, $flags = null)
+    public function get_post_get($index = null, $filter = null, $flags = null)
     {
-        return $this->returnNullOrEmptyArray($index);
+        return $this->return_null_or_empty_array($index);
     }
-
     /**
      * Fetch an item from GET data with fallback to POST.
      *
@@ -274,11 +242,10 @@ class CLIRequest extends Request
      *
      * @return array|null
      */
-    public function getGetPost($index = null, $filter = null, $flags = null)
+    public function get_get_post($index = null, $filter = null, $flags = null)
     {
-        return $this->returnNullOrEmptyArray($index);
+        return $this->return_null_or_empty_array($index);
     }
-
     /**
      * This is a place holder for calls from cookie_helper get_cookie().
      *
@@ -288,30 +255,27 @@ class CLIRequest extends Request
      *
      * @return array|null
      */
-    public function getCookie($index = null, $filter = null, $flags = null)
+    public function get_cookie($index = null, $filter = null, $flags = null)
     {
-        return $this->returnNullOrEmptyArray($index);
+        return $this->return_null_or_empty_array($index);
     }
-
     /**
      * @param array|string|null $index
      *
      * @return array|null
      */
-    private function returnNullOrEmptyArray($index)
+    private function return_null_or_empty_array($index)
     {
-        return ($index === null || is_array($index)) ? [] : null;
+        return $index === null || is_array($index) ? [] : null;
     }
-
     /**
      * Gets the current locale, with a fallback to the default
      * locale if none is set.
      */
-    public function getLocale(): string
+    public function get_locale(): string
     {
-        return Locale::getDefault();
+        return Locale::get_default();
     }
-
     /**
      * Checks this request type.
      */

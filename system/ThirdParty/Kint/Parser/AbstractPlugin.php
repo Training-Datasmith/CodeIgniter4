@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,24 +23,20 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-abstract class AbstractPlugin implements ConstructablePluginInterface
+abstract class Abstract_Plugin implements Constructable_Plugin_Interface
 {
     private Parser $parser;
-
     public function __construct(Parser $parser)
     {
         $this->parser = $parser;
     }
-
-    public function setParser(Parser $p): void
+    public function set_parser(Parser $p): void
     {
         $this->parser = $p;
     }
-
-    protected function getParser(): Parser
+    protected function get_parser(): Parser
     {
         return $this->parser;
     }

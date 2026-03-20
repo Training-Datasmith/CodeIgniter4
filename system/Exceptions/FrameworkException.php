@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Exceptions;
+namespace Code_Igniter\Exceptions;
 
 /**
  * Class FrameworkException
@@ -19,75 +17,64 @@ namespace CodeIgniter\Exceptions;
  * A collection of exceptions thrown by the framework
  * that can only be determined at run time.
  */
-class FrameworkException extends RuntimeException
+class Framework_Exception extends RuntimeException
 {
-    use DebugTraceableTrait;
-
+    use Debug_Traceable_Trait;
     /**
      * @return static
      */
-    public static function forEnabledZlibOutputCompression()
+    public static function for_enabled_zlib_output_compression()
     {
         return new static(lang('Core.enabledZlibOutputCompression'));
     }
-
     /**
      * @return static
      */
-    public static function forInvalidFile(string $path)
+    public static function for_invalid_file(string $path)
     {
         return new static(lang('Core.invalidFile', [$path]));
     }
-
     /**
      * @return static
      */
-    public static function forInvalidDirectory(string $path)
+    public static function for_invalid_directory(string $path)
     {
         return new static(lang('Core.invalidDirectory', [$path]));
     }
-
     /**
      * @return static
      */
-    public static function forCopyError(string $path)
+    public static function for_copy_error(string $path)
     {
         return new static(lang('Core.copyError', [$path]));
     }
-
     /**
      * @return static
      *
      * @deprecated 4.5.0 No longer used.
      */
-    public static function forMissingExtension(string $extension)
+    public static function for_missing_extension(string $extension)
     {
         if (str_contains($extension, 'intl')) {
             // @codeCoverageIgnoreStart
-            $message = sprintf(
-                'The framework needs the following extension(s) installed and loaded: %s.',
-                $extension,
-            );
+            $message = sprintf('The framework needs the following extension(s) installed and loaded: %s.', $extension);
             // @codeCoverageIgnoreEnd
         } else {
             $message = lang('Core.missingExtension', [$extension]);
         }
-
         return new static($message);
     }
-
     /**
      * @return static
      */
-    public static function forNoHandlers(string $class)
+    public static function for_no_handlers(string $class)
     {
         return new static(lang('Core.noHandlers', [$class]));
     }
-
     /**
      * @return static
      */
-    public static function forFabricatorCreateFailed(string $table, string $reason)
+    public static function for_fabricator_create_failed(string $table, string $reason)
     {
         return new static(lang('Fabricator.createFailed', [$table, $reason]));
     }

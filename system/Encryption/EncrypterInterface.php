@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,16 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Encryption;
 
-namespace CodeIgniter\Encryption;
-
-use CodeIgniter\Encryption\Exceptions\EncryptionException;
-use SensitiveParameter;
-
+use Code_Igniter\Encryption\Exceptions\Encryption_Exception;
+use Sensitive_Parameter;
 /**
  * CodeIgniter Encryption Handler
  *
  * Provides two-way keyed encryption
  */
-interface EncrypterInterface
+interface Encrypter_Interface
 {
     /**
      * Encrypt - convert plaintext into ciphertext
@@ -33,8 +30,12 @@ interface EncrypterInterface
      *
      * @throws EncryptionException
      */
-    public function encrypt(#[SensitiveParameter] $data, #[SensitiveParameter] $params = null);
-
+    public function encrypt(
+        #[Sensitive_Parameter]
+        $data,
+        #[Sensitive_Parameter]
+        $params = null
+    );
     /**
      * Decrypt - convert ciphertext into plaintext
      *
@@ -45,5 +46,9 @@ interface EncrypterInterface
      *
      * @throws EncryptionException
      */
-    public function decrypt($data, #[SensitiveParameter] $params = null);
+    public function decrypt(
+        $data,
+        #[Sensitive_Parameter]
+        $params = null
+    );
 }

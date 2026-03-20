@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,13 +23,11 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\RepresentationInterface;
-
-interface TabPluginInterface extends PluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Representation_Interface;
+interface Tab_Plugin_Interface extends Plugin_Interface
 {
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string;
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string;
 }

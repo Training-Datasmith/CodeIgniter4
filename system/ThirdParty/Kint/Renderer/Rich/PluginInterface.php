@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,12 +23,10 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Renderer\RichRenderer;
-
-interface PluginInterface
+use Kint\Renderer\Rich_Renderer;
+interface Plugin_Interface
 {
-    public function __construct(RichRenderer $r);
+    public function __construct(Rich_Renderer $r);
 }

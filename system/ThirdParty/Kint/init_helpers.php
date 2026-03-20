@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,10 +23,8 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 use Kint\Kint;
-use Kint\Renderer\CliRenderer;
-
+use Kint\Renderer\Cli_Renderer;
 if (!\function_exists('d')) {
     /**
      * Alias of Kint::dump().
@@ -40,10 +37,8 @@ if (!\function_exists('d')) {
     {
         return Kint::dump(...$args);
     }
-
     Kint::$aliases[] = 'd';
 }
-
 if (!\function_exists('s')) {
     /**
      * Alias of Kint::dump(), however the output is in plain text.
@@ -62,27 +57,19 @@ if (!\function_exists('s')) {
         if (false === Kint::$enabled_mode) {
             return 0;
         }
-
         $kstash = Kint::$enabled_mode;
-        $cstash = CliRenderer::$cli_colors;
-
+        $cstash = Cli_Renderer::$cli_colors;
         if (Kint::MODE_TEXT !== Kint::$enabled_mode) {
             Kint::$enabled_mode = Kint::MODE_PLAIN;
-
             if (PHP_SAPI === 'cli' && true === Kint::$cli_detection) {
                 Kint::$enabled_mode = Kint::$mode_default_cli;
             }
         }
-
-        CliRenderer::$cli_colors = false;
-
+        Cli_Renderer::$cli_colors = false;
         $out = Kint::dump(...$args);
-
         Kint::$enabled_mode = $kstash;
-        CliRenderer::$cli_colors = $cstash;
-
+        Cli_Renderer::$cli_colors = $cstash;
         return $out;
     }
-
     Kint::$aliases[] = 's';
 }

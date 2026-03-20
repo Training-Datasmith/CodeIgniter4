@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,45 +23,34 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
 use ArrayObject;
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ContextInterface;
-
-class ArrayObjectPlugin extends AbstractPlugin implements PluginBeginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Context_Interface;
+class Array_Object_Plugin extends Abstract_Plugin implements Plugin_Begin_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_BEGIN;
     }
-
-    public function parseBegin(&$var, ContextInterface $c): ?AbstractValue
+    public function parse_begin(&$var, Context_Interface $c): ?Abstract_Value
     {
         if (!$var instanceof ArrayObject) {
             return null;
         }
-
-        $flags = $var->getFlags();
-
+        $flags = $var->get_flags();
         if (ArrayObject::STD_PROP_LIST === $flags) {
             return null;
         }
-
-        $parser = $this->getParser();
-
-        $var->setFlags(ArrayObject::STD_PROP_LIST);
-
+        $parser = $this->get_parser();
+        $var->set_flags(ArrayObject::STD_PROP_LIST);
         $v = $parser->parse($var, $c);
-
-        $var->setFlags($flags);
-
+        $var->set_flags($flags);
         return $v;
     }
 }

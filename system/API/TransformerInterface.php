@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\API;
+namespace Code_Igniter\API;
 
 /**
  * Interface for transforming resources into arrays.
@@ -19,7 +17,7 @@ namespace CodeIgniter\API;
  * This interface can be implemented by classes that need to transform
  * data into a standardized array format, such as for API responses.
  */
-interface TransformerInterface
+interface Transformer_Interface
 {
     /**
      * Converts the resource to an array representation.
@@ -29,8 +27,7 @@ interface TransformerInterface
      *
      * @return array<string, mixed>
      */
-    public function toArray(mixed $resource): array;
-
+    public function to_array(mixed $resource): array;
     /**
      * Transforms the given resource into an array.
      *
@@ -39,7 +36,6 @@ interface TransformerInterface
      * @return array<string, mixed>
      */
     public function transform(array|object|null $resource): array;
-
     /**
      * Transforms a collection of resources using $this->transform() on each item.
      *
@@ -47,5 +43,5 @@ interface TransformerInterface
      *
      * @return array<int, array<string, mixed>>
      */
-    public function transformMany(array $resources): array;
+    public function transform_many(array $resources): array;
 }

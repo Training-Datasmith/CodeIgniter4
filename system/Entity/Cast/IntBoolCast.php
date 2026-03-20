@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Entity\Cast;
+namespace Code_Igniter\Entity\Cast;
 
 /**
  * DB column: int (0/1) <--> Class property: bool
  */
-final class IntBoolCast extends BaseCast
+final class Int_Bool_Cast extends Base_Cast
 {
     /**
      * @param int $value
@@ -25,7 +23,6 @@ final class IntBoolCast extends BaseCast
     {
         return (bool) $value;
     }
-
     /**
      * @param bool|int|string $value
      */

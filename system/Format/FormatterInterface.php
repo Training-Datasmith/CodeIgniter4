@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Format;
+namespace Code_Igniter\Format;
 
 /**
  * Formatter interface
  */
-interface FormatterInterface
+interface Formatter_Interface
 {
     /**
      * Takes the given data and formats it.

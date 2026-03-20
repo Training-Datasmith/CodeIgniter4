@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,15 +23,13 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint;
 
-use Kint\Value\StringValue;
-use Kint\Value\TraceFrameValue;
+use Kint\Value\String_Value;
+use Kint\Value\Trace_Frame_Value;
 use ReflectionNamedType;
-use ReflectionType;
+use Reflection_Type;
 use UnexpectedValueException;
-
 /**
  * A collection of utility methods. Should all be static methods with no dependencies.
  *
@@ -41,18 +38,8 @@ use UnexpectedValueException;
  */
 final class Utils
 {
-    public const BT_STRUCTURE = [
-        'function' => 'string',
-        'line' => 'integer',
-        'file' => 'string',
-        'class' => 'string',
-        'object' => 'object',
-        'type' => 'string',
-        'args' => 'array',
-    ];
-
+    public const BT_STRUCTURE = ['function' => 'string', 'line' => 'integer', 'file' => 'string', 'class' => 'string', 'object' => 'object', 'type' => 'string', 'args' => 'array'];
     public const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
-
     /**
      * @var array Character encodings to detect
      *
@@ -77,11 +64,7 @@ final class Utils
      *
      * This depends on the mbstring extension
      */
-    public static array $char_encodings = [
-        'ASCII',
-        'UTF-8',
-    ];
-
+    public static array $char_encodings = ['ASCII', 'UTF-8'];
     /**
      * @var array Legacy character encodings to detect
      *
@@ -104,7 +87,6 @@ final class Utils
      * This depends on the iconv extension
      */
     public static array $legacy_encodings = [];
-
     /**
      * @var array Path aliases that will be displayed instead of the full path.
      *
@@ -123,7 +105,6 @@ final class Utils
      * @psalm-var array<non-empty-string, string>
      */
     public static array $path_aliases = [];
-
     /**
      * @codeCoverageIgnore
      *
@@ -132,7 +113,6 @@ final class Utils
     private function __construct()
     {
     }
-
     /**
      * Turns a byte value into a human-readable representation.
      *
@@ -144,122 +124,98 @@ final class Utils
      *
      * @psalm-pure
      */
-    public static function getHumanReadableBytes(int $value): array
+    public static function get_human_readable_bytes(int $value): array
     {
         $negative = $value < 0;
         $value = \abs($value);
-
         if ($value < 1024) {
             $i = 0;
             $value = \floor($value);
-        } elseif ($value < 0xFFFCCCCCCCCCCCC >> 40) {
+        } elseif ($value < 0xfffcccccccccccc >> 40) {
             $i = 1;
-        } elseif ($value < 0xFFFCCCCCCCCCCCC >> 30) {
+        } elseif ($value < 0xfffcccccccccccc >> 30) {
             $i = 2;
-        } elseif ($value < 0xFFFCCCCCCCCCCCC >> 20) {
+        } elseif ($value < 0xfffcccccccccccc >> 20) {
             $i = 3;
         } else {
             $i = 4;
         }
-
         if ($i) {
             $value = $value / \pow(1024, $i);
         }
-
         if ($negative) {
             $value *= -1;
         }
-
-        return [
-            'value' => \round($value, 1),
-            'unit' => self::BYTE_UNITS[$i],
-        ];
+        return ['value' => \round($value, 1), 'unit' => self::BYTE_UNITS[$i]];
     }
-
     /** @psalm-pure */
-    public static function isSequential(array $array): bool
+    public static function is_sequential(array $array): bool
     {
         return \array_keys($array) === \range(0, \count($array) - 1);
     }
-
     /** @psalm-pure */
-    public static function isAssoc(array $array): bool
+    public static function is_assoc(array $array): bool
     {
         return (bool) \count(\array_filter(\array_keys($array), 'is_string'));
     }
-
     /**
      * @psalm-assert-if-true list<TraceFrame> $trace
      */
-    public static function isTrace(array $trace): bool
+    public static function is_trace(array $trace): bool
     {
-        if (!self::isSequential($trace)) {
+        if (!self::is_sequential($trace)) {
             return false;
         }
-
         $file_found = false;
-
         foreach ($trace as $frame) {
             if (!\is_array($frame) || !isset($frame['function'])) {
                 return false;
             }
-
             if (isset($frame['class']) && !\class_exists($frame['class'], false)) {
                 return false;
             }
-
             foreach ($frame as $key => $val) {
                 if (!isset(self::BT_STRUCTURE[$key])) {
                     return false;
                 }
-
                 if (\gettype($val) !== self::BT_STRUCTURE[$key]) {
                     return false;
                 }
-
                 if ('file' === $key) {
                     $file_found = true;
                 }
             }
         }
-
         return $file_found;
     }
-
     /**
      * @psalm-param TraceFrame $frame
      *
      * @psalm-pure
      */
-    public static function traceFrameIsListed(array $frame, array $matches): bool
+    public static function trace_frame_is_listed(array $frame, array $matches): bool
     {
         if (isset($frame['class'])) {
             $called = [\strtolower($frame['class']), \strtolower($frame['function'])];
         } else {
             $called = \strtolower($frame['function']);
         }
-
         return \in_array($called, $matches, true);
     }
-
     /** @psalm-pure */
-    public static function normalizeAliases(array $aliases): array
+    public static function normalize_aliases(array $aliases): array
     {
         foreach ($aliases as $index => $alias) {
             if (\is_array($alias) && 2 === \count($alias)) {
                 $alias = \array_values(\array_filter($alias, 'is_string'));
-
-                if (2 === \count($alias) && self::isValidPhpName($alias[1]) && self::isValidPhpNamespace($alias[0])) {
-                    $aliases[$index] = [
-                        \strtolower(\ltrim($alias[0], '\\')),
-                        \strtolower($alias[1]),
-                    ];
+                if (2 === \count($alias) && self::is_valid_php_name($alias[1]) && self::is_valid_php_namespace($alias[0])) {
+                    $aliases[$index] = [\strtolower(\ltrim($alias[0], '\\')), \strtolower($alias[1])];
                 } else {
                     unset($aliases[$index]);
                     continue;
                 }
             } elseif (\is_string($alias)) {
-                if (self::isValidPhpNamespace($alias)) {
+                if (self::is_valid_php_namespace($alias)) {
                     $alias = \explode('\\', \strtolower($alias));
                     $aliases[$index] = \end($alias);
                 } else {
@@ -270,54 +226,46 @@ final class Utils
                 unset($aliases[$index]);
             }
         }
-
         return \array_values($aliases);
     }
-
     /** @psalm-pure */
-    public static function isValidPhpName(string $name): bool
+    public static function is_valid_php_name(string $name): bool
     {
-        return (bool) \preg_match('/^[a-zA-Z_\\x80-\\xff][a-zA-Z0-9_\\x80-\\xff]*$/', $name);
+        return (bool) \preg_match('/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/', $name);
     }
-
     /** @psalm-pure */
-    public static function isValidPhpNamespace(string $ns): bool
+    public static function is_valid_php_namespace(string $ns): bool
     {
         $parts = \explode('\\', $ns);
         if ('' === \reset($parts)) {
             \array_shift($parts);
         }
-
         if (!\count($parts)) {
             return false;
         }
-
         foreach ($parts as $part) {
-            if (!self::isValidPhpName($part)) {
+            if (!self::is_valid_php_name($part)) {
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * trigger_error before PHP 8.1 truncates the error message at nul
      * so we have to sanitize variable strings before using them.
      *
      * @psalm-pure
      */
-    public static function errorSanitizeString(string $input): string
+    public static function error_sanitize_string(string $input): string
     {
         if (KINT_PHP82 || '' === $input) {
             return $input;
         }
-
-        return (string) \strtok($input, "\0"); // @codeCoverageIgnore
+        return (string) \strtok($input, "\x00");
+        // @codeCoverageIgnore
     }
-
     /** @psalm-pure */
-    public static function getTypeString(ReflectionType $type): string
+    public static function get_type_string(Reflection_Type $type): string
     {
         // @codeCoverageIgnoreStart
         // ReflectionType::__toString was deprecated in 7.4 and undeprecated in 8
@@ -326,42 +274,34 @@ final class Utils
             if (!$type instanceof ReflectionNamedType) {
                 throw new UnexpectedValueException('ReflectionType on PHP 7 must be ReflectionNamedType');
             }
-
-            $name = $type->getName();
-            if ($type->allowsNull() && 'mixed' !== $name && false === \strpos($name, '|')) {
-                $name = '?'.$name;
+            $name = $type->get_name();
+            if ($type->allows_null() && 'mixed' !== $name && false === \strpos($name, '|')) {
+                $name = '?' . $name;
             }
-
             return $name;
         }
         // @codeCoverageIgnoreEnd
-
         return (string) $type;
     }
-
     /**
      * @psalm-param Encoding $encoding
      */
-    public static function truncateString(string $input, int $length = PHP_INT_MAX, string $end = '...', $encoding = false): string
+    public static function truncate_string(string $input, int $length = PHP_INT_MAX, string $end = '...', $encoding = false): string
     {
         $endlength = self::strlen($end);
-
         if ($endlength >= $length) {
             $endlength = 0;
             $end = '';
         }
-
         if (self::strlen($input, $encoding) > $length) {
-            return self::substr($input, 0, $length - $endlength, $encoding).$end;
+            return self::substr($input, 0, $length - $endlength, $encoding) . $end;
         }
-
         return $input;
     }
-
     /**
      * @psalm-return Encoding
      */
-    public static function detectEncoding(string $string)
+    public static function detect_encoding(string $string)
     {
         if (\function_exists('mb_detect_encoding')) {
             $ret = \mb_detect_encoding($string, self::$char_encodings, true);
@@ -369,14 +309,12 @@ final class Utils
                 return $ret;
             }
         }
-
         // Pretty much every character encoding uses first 32 bytes as control
         // characters. If it's not a multi-byte format it's safe to say matching
         // any control character besides tab, nl, and cr means it's binary.
-        if (\preg_match('/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]/', $string)) {
+        if (\preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', $string)) {
             return false;
         }
-
         if (\function_exists('iconv')) {
             foreach (self::$legacy_encodings as $encoding) {
                 // Iconv detection works by triggering
@@ -387,16 +325,16 @@ final class Utils
                     return $encoding;
                 }
             }
-        } elseif (!\function_exists('mb_detect_encoding')) { // @codeCoverageIgnore
+        } elseif (!\function_exists('mb_detect_encoding')) {
+            // @codeCoverageIgnore
             // If a user has neither mb_detect_encoding, nor iconv, nor the
             // polyfills, there's not much we can do about it...
             // Pretend it's ASCII and pray the browser renders it properly.
-            return 'ASCII'; // @codeCoverageIgnore
+            return 'ASCII';
+            // @codeCoverageIgnore
         }
-
         return false;
     }
-
     /**
      * @psalm-param Encoding $encoding
      */
@@ -404,17 +342,14 @@ final class Utils
     {
         if (\function_exists('mb_strlen')) {
             if (false === $encoding) {
-                $encoding = self::detectEncoding($string);
+                $encoding = self::detect_encoding($string);
             }
-
             if (false !== $encoding && 'ASCII' !== $encoding) {
                 return \mb_strlen($string, $encoding);
             }
         }
-
         return \strlen($string);
     }
-
     /**
      * @psalm-param Encoding $encoding
      */
@@ -422,102 +357,77 @@ final class Utils
     {
         if (\function_exists('mb_substr')) {
             if (false === $encoding) {
-                $encoding = self::detectEncoding($string);
+                $encoding = self::detect_encoding($string);
             }
-
             if (false !== $encoding && 'ASCII' !== $encoding) {
                 return \mb_substr($string, $start, $length, $encoding);
             }
         }
-
         // Special case for substr/mb_substr discrepancy
         if ('' === $string) {
             return '';
         }
-
         return (string) \substr($string, $start, $length ?? PHP_INT_MAX);
     }
-
-    public static function shortenPath(string $file): string
+    public static function shorten_path(string $file): string
     {
         $split = \explode('/', \str_replace('\\', '/', $file));
-
         $longest_match = 0;
         $match = '';
-
         foreach (self::$path_aliases as $path => $alias) {
             $path = \explode('/', \str_replace('\\', '/', $path));
-
             if (\count($path) < 2) {
                 continue;
             }
-
             if (\array_slice($split, 0, \count($path)) === $path && \count($path) > $longest_match) {
                 $longest_match = \count($path);
                 $match = $alias;
             }
         }
-
         if ($longest_match) {
             $suffix = \implode('/', \array_slice($split, $longest_match));
-
             if (\preg_match('%^/*$%', $suffix)) {
                 return $match;
             }
-
-            return $match.'/'.$suffix;
+            return $match . '/' . $suffix;
         }
-
         // fallback to find common path with Kint dir
         $kint = \explode('/', \str_replace('\\', '/', KINT_DIR));
         $had_real_path_part = false;
-
         foreach ($split as $i => $part) {
             if (!isset($kint[$i]) || $kint[$i] !== $part) {
                 if (!$had_real_path_part) {
                     break;
                 }
-
                 $suffix = \implode('/', \array_slice($split, $i));
-
                 if (\preg_match('%^/*$%', $suffix)) {
                     break;
                 }
-
                 $prefix = $i > 1 ? '.../' : '/';
-
-                return $prefix.$suffix;
+                return $prefix . $suffix;
             }
-
             if ($i > 0 && \strlen($kint[$i])) {
                 $had_real_path_part = true;
             }
         }
-
         return $file;
     }
-
-    public static function composerGetExtras(string $key = 'kint'): array
+    public static function composer_get_extras(string $key = 'kint'): array
     {
         if (0 === \strpos(KINT_DIR, 'phar://')) {
             // Only run inside phar file, so skip for code coverage
-            return []; // @codeCoverageIgnore
+            return [];
+            // @codeCoverageIgnore
         }
-
         $extras = [];
-
-        $folder = KINT_DIR.'/vendor';
-
+        $folder = KINT_DIR . '/vendor';
         for ($i = 0; $i < 4; ++$i) {
-            $installed = $folder.'/composer/installed.json';
-
+            $installed = $folder . '/composer/installed.json';
             if (\file_exists($installed) && \is_readable($installed)) {
                 $packages = \json_decode((string) \file_get_contents($installed), true);
-
                 if (!\is_array($packages)) {
                     continue;
                 }
-
                 // Composer 2.0 Compatibility: packages are now wrapped into a "packages" top level key instead of the whole file being the package array
                 // @see https://getcomposer.org/upgrade/UPGRADE-2.0.md
                 foreach ($packages['packages'] ?? $packages as $package) {
@@ -525,41 +435,31 @@ final class Utils
                         $extras = \array_replace($extras, $package['extra'][$key]);
                     }
                 }
-
                 $folder = \dirname($folder);
-
-                if (\file_exists($folder.'/composer.json') && \is_readable($folder.'/composer.json')) {
-                    $composer = \json_decode((string) \file_get_contents($folder.'/composer.json'), true);
-
+                if (\file_exists($folder . '/composer.json') && \is_readable($folder . '/composer.json')) {
+                    $composer = \json_decode((string) \file_get_contents($folder . '/composer.json'), true);
                     if (\is_array($composer['extra'][$key] ?? null)) {
                         $extras = \array_replace($extras, $composer['extra'][$key]);
                     }
                 }
-
                 break;
             }
-
             $folder = \dirname($folder);
         }
-
         return $extras;
     }
-
     /**
      * @codeCoverageIgnore
      */
-    public static function composerSkipFlags(): void
+    public static function composer_skip_flags(): void
     {
         if (\defined('KINT_SKIP_FACADE') && \defined('KINT_SKIP_HELPERS')) {
             return;
         }
-
-        $extras = self::composerGetExtras();
-
+        $extras = self::composer_get_extras();
         if (!empty($extras['disable-facade']) && !\defined('KINT_SKIP_FACADE')) {
             \define('KINT_SKIP_FACADE', true);
         }
-
         if (!empty($extras['disable-helpers']) && !\defined('KINT_SKIP_HELPERS')) {
             \define('KINT_SKIP_HELPERS', true);
         }

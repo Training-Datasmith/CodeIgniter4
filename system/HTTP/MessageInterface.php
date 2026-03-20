@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,13 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\HTTP\Exceptions\HTTPException;
-
+use Code_Igniter\HTTP\Exceptions\Http_Exception;
 /**
  * Expected behavior of an HTTP message
  */
-interface MessageInterface
+interface Message_Interface
 {
     /**
      * Retrieves the HTTP protocol version as a string.
@@ -27,8 +24,7 @@ interface MessageInterface
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion(): string;
-
+    public function get_protocol_version(): string;
     /**
      * Sets the body of the current message.
      *
@@ -36,8 +32,7 @@ interface MessageInterface
      *
      * @return $this
      */
-    public function setBody($data);
-
+    public function set_body($data);
     /**
      * Gets the body of the message.
      *
@@ -45,8 +40,7 @@ interface MessageInterface
      *
      * @TODO Incompatible return type with PSR-7
      */
-    public function getBody();
-
+    public function get_body();
     /**
      * Appends data to the body of the current message.
      *
@@ -54,20 +48,17 @@ interface MessageInterface
      *
      * @return $this
      */
-    public function appendBody($data);
-
+    public function append_body($data);
     /**
      * Populates the $headers array with any headers the server knows about.
      */
-    public function populateHeaders(): void;
-
+    public function populate_headers(): void;
     /**
      * Returns an array containing all Headers.
      *
      * @return array<string, Header|list<Header>> An array of the Header objects
      */
     public function headers(): array;
-
     /**
      * Checks if a header exists by the given case-insensitive name.
      *
@@ -77,8 +68,7 @@ interface MessageInterface
      *              name using a case-insensitive string comparison. Returns false if
      *              no matching header name is found in the message.
      */
-    public function hasHeader(string $name): bool;
-
+    public function has_header(string $name): bool;
     /**
      * Returns a single Header object. If multiple headers with the same
      * name exist, then will return an array of header objects.
@@ -88,7 +78,6 @@ interface MessageInterface
      * @return Header|list<Header>|null
      */
     public function header($name);
-
     /**
      * Retrieves a comma-separated string of the values for a single header.
      *
@@ -100,8 +89,7 @@ interface MessageInterface
      * comma concatenation. For such headers, use getHeader() instead
      * and supply your own delimiter when concatenating.
      */
-    public function getHeaderLine(string $name): string;
-
+    public function get_header_line(string $name): string;
     /**
      * Sets a header and it's value.
      *
@@ -109,31 +97,27 @@ interface MessageInterface
      *
      * @return $this
      */
-    public function setHeader(string $name, $value);
-
+    public function set_header(string $name, $value);
     /**
      * Removes a header from the list of headers we track.
      *
      * @return $this
      */
-    public function removeHeader(string $name);
-
+    public function remove_header(string $name);
     /**
      * Adds an additional header value to any headers that accept
      * multiple values (i.e. are an array or implement ArrayAccess)
      *
      * @return $this
      */
-    public function appendHeader(string $name, ?string $value);
-
+    public function append_header(string $name, ?string $value);
     /**
      * Adds an additional header value to any headers that accept
      * multiple values (i.e. are an array or implement ArrayAccess)
      *
      * @return $this
      */
-    public function prependHeader(string $name, string $value);
-
+    public function prepend_header(string $name, string $value);
     /**
      * Sets the HTTP protocol version.
      *
@@ -141,5 +125,5 @@ interface MessageInterface
      *
      * @throws HTTPException For invalid protocols
      */
-    public function setProtocolVersion(string $version);
+    public function set_protocol_version(string $version);
 }

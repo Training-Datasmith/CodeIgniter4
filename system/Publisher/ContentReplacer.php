@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,17 +9,15 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Publisher;
 
-namespace CodeIgniter\Publisher;
-
-use CodeIgniter\Exceptions\RuntimeException;
-
+use Code_Igniter\Exceptions\RuntimeException;
 /**
  * Replace Text Content
  *
  * @see \CodeIgniter\Publisher\ContentReplacerTest
  */
-class ContentReplacer
+class Content_Replacer
 {
     /**
      * Replace content
@@ -31,7 +28,6 @@ class ContentReplacer
     {
         return strtr($content, $replaces);
     }
-
     /**
      * Add text
      *
@@ -44,27 +40,21 @@ class ContentReplacer
     private function add(string $content, string $text, string $pattern, string $replace): ?string
     {
         $return = preg_match('/' . preg_quote($text, '/') . '/u', $content);
-
         if ($return === false) {
             // Regexp error.
             throw new RuntimeException('Regex error. PCRE error code: ' . preg_last_error());
         }
-
         if ($return === 1) {
             // It has already been updated.
             return null;
         }
-
         $return = preg_replace($pattern, $replace, $content);
-
         if ($return === null) {
             // Regexp error.
             throw new RuntimeException('Regex error. PCRE error code: ' . preg_last_error());
         }
-
         return $return;
     }
-
     /**
      * Add line after the line with the string
      *
@@ -74,14 +64,12 @@ class ContentReplacer
      *
      * @return string|null Updated content, or null if not updated.
      */
-    public function addAfter(string $content, string $line, string $after): ?string
+    public function add_after(string $content, string $line, string $after): ?string
     {
         $pattern = '/(.*)(\n[^\n]*?' . preg_quote($after, '/') . '[^\n]*?\n)/su';
         $replace = '$1$2' . $line . "\n";
-
         return $this->add($content, $line, $pattern, $replace);
     }
-
     /**
      * Add line before the line with the string
      *
@@ -91,11 +79,10 @@ class ContentReplacer
      *
      * @return string|null Updated content, or null if not updated.
      */
-    public function addBefore(string $content, string $line, string $before): ?string
+    public function add_before(string $content, string $line, string $before): ?string
     {
         $pattern = '/(\n)([^\n]*?' . preg_quote($before, '/') . ')(.*)/su';
         $replace = '$1' . $line . "\n" . '$2$3';
-
         return $this->add($content, $line, $pattern, $replace);
     }
 }

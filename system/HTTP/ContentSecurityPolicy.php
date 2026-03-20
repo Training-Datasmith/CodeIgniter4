@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,13 +9,11 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\HTTP;
 
-namespace CodeIgniter\HTTP;
-
-use CodeIgniter\Exceptions\InvalidArgumentException;
+use Code_Igniter\Exceptions\InvalidArgumentException;
 use Config\App;
-use Config\ContentSecurityPolicy as ContentSecurityPolicyConfig;
-
+use Config\Content_Security_Policy as ContentSecurityPolicyConfig;
 /**
  * Provides tools for working with the Content-Security-Policy header
  * to help defeat XSS attacks.
@@ -27,86 +24,52 @@ use Config\ContentSecurityPolicy as ContentSecurityPolicyConfig;
  * @see https://www.owasp.org/index.php/Content_Security_Policy
  * @see \CodeIgniter\HTTP\ContentSecurityPolicyTest
  */
-class ContentSecurityPolicy
+class Content_Security_Policy
 {
-    private const DIRECTIVES_ALLOWING_SOURCE_LISTS = [
-        'base-uri'        => 'baseURI',
-        'child-src'       => 'childSrc',
-        'connect-src'     => 'connectSrc',
-        'default-src'     => 'defaultSrc',
-        'font-src'        => 'fontSrc',
-        'form-action'     => 'formAction',
-        'frame-ancestors' => 'frameAncestors',
-        'frame-src'       => 'frameSrc',
-        'img-src'         => 'imageSrc',
-        'media-src'       => 'mediaSrc',
-        'object-src'      => 'objectSrc',
-        'plugin-types'    => 'pluginTypes',
-        'script-src'      => 'scriptSrc',
-        'style-src'       => 'styleSrc',
-        'sandbox'         => 'sandbox',
-        'manifest-src'    => 'manifestSrc',
-        'script-src-elem' => 'scriptSrcElem',
-        'script-src-attr' => 'scriptSrcAttr',
-        'style-src-elem'  => 'styleSrcElem',
-        'style-src-attr'  => 'styleSrcAttr',
-        'worker-src'      => 'workerSrc',
-    ];
-
+    private const DIRECTIVES_ALLOWING_SOURCE_LISTS = ['base-uri' => 'baseURI', 'child-src' => 'childSrc', 'connect-src' => 'connectSrc', 'default-src' => 'defaultSrc', 'font-src' => 'fontSrc', 'form-action' => 'formAction', 'frame-ancestors' => 'frameAncestors', 'frame-src' => 'frameSrc', 'img-src' => 'imageSrc', 'media-src' => 'mediaSrc', 'object-src' => 'objectSrc', 'plugin-types' => 'pluginTypes', 'script-src' => 'scriptSrc', 'style-src' => 'styleSrc', 'sandbox' => 'sandbox', 'manifest-src' => 'manifestSrc', 'script-src-elem' => 'scriptSrcElem', 'script-src-attr' => 'scriptSrcAttr', 'style-src-elem' => 'styleSrcElem', 'style-src-attr' => 'styleSrcAttr', 'worker-src' => 'workerSrc'];
     /**
      * Map of CSP directives to this class's properties.
      *
      * @var array<string, string>
      */
-    protected array $directives = [
-        ...self::DIRECTIVES_ALLOWING_SOURCE_LISTS,
-        'report-uri' => 'reportURI',
-        'report-to'  => 'reportTo',
-    ];
-
+    protected array $directives = [...self::DIRECTIVES_ALLOWING_SOURCE_LISTS, 'report-uri' => 'reportURI', 'report-to' => 'reportTo'];
     /**
      * The `base-uri` directive restricts the URLs that can be used to specify the document base URL.
      *
      * @var array<string, bool>|string|null
      */
-    protected $baseURI = [];
-
+    protected $base_uri = [];
     /**
      * The `child-src` directive governs the creation of nested browsing contexts as well
      * as Worker execution contexts.
      *
      * @var array<string, bool>|string
      */
-    protected $childSrc = [];
-
+    protected $child_src = [];
     /**
      * The `connect-src` directive restricts which URLs the protected resource can load using script interfaces.
      *
      * @var array<string, bool>|string
      */
-    protected $connectSrc = [];
-
+    protected $connect_src = [];
     /**
      * The `default-src` directive sets a default source list for a number of directives.
      *
      * @var array<string, bool>|string|null
      */
-    protected $defaultSrc = [];
-
+    protected $default_src = [];
     /**
      * The `font-src` directive restricts from where the protected resource can load fonts.
      *
      * @var array<string, bool>|string
      */
-    protected $fontSrc = [];
-
+    protected $font_src = [];
     /**
      * The `form-action` directive restricts which URLs can be used as the action of HTML form elements.
      *
      * @var array<string, bool>|string
      */
-    protected $formAction = [];
-
+    protected $form_action = [];
     /**
      * The `frame-ancestors` directive indicates whether the user agent should allow embedding
      * the resource using a `frame`, `iframe`, `object`, `embed` or `applet` element,
@@ -114,142 +77,122 @@ class ContentSecurityPolicy
      *
      * @var array<string, bool>|string
      */
-    protected $frameAncestors = [];
-
+    protected $frame_ancestors = [];
     /**
      * The `frame-src` directive restricts the URLs which may be loaded into child navigables.
      *
      * @var array<string, bool>|string
      */
-    protected $frameSrc = [];
-
+    protected $frame_src = [];
     /**
      * The `img-src` directive restricts from where the protected resource can load images.
      *
      * @var array<string, bool>|string
      */
-    protected $imageSrc = [];
-
+    protected $image_src = [];
     /**
      * The `media-src` directive restricts from where the protected resource can load video,
      * audio, and associated text tracks.
      *
      * @var array<string, bool>|string
      */
-    protected $mediaSrc = [];
-
+    protected $media_src = [];
     /**
      * The `object-src` directive restricts from where the protected resource can load plugins.
      *
      * @var array<string, bool>|string
      */
-    protected $objectSrc = [];
-
+    protected $object_src = [];
     /**
      * The `plugin-types` directive restricts the set of plugins that can be invoked by the
      * protected resource by limiting the types of resources that can be embedded.
      *
      * @var array<string, bool>|string
      */
-    protected $pluginTypes = [];
-
+    protected $plugin_types = [];
     /**
      * The `script-src` directive restricts which scripts the protected resource can execute.
      *
      * @var array<string, bool>|string
      */
-    protected $scriptSrc = [];
-
+    protected $script_src = [];
     /**
      * The `style-src` directive restricts which styles the user may applies to the protected resource.
      *
      * @var array<string, bool>|string
      */
-    protected $styleSrc = [];
-
+    protected $style_src = [];
     /**
      * The `sandbox` directive specifies an HTML sandbox policy that the user agent applies to the protected resource.
      *
      * @var array<string, bool>|string
      */
     protected $sandbox = [];
-
     /**
      * The `report-uri` directive specifies a URL to which the user agent sends reports about policy violation.
      *
      * @var string|null
      */
-    protected $reportURI;
-
+    protected $report_uri;
     /**
      * The `report-to` directive specifies a named group in a Reporting API
      * endpoint to which the user agent sends reports about policy violation.
      */
-    protected ?string $reportTo = null;
-
+    protected ?string $report_to = null;
     // --------------------------------------------------------------
     // CSP Level 3 Directives
     // --------------------------------------------------------------
-
     /**
      * The `manifest-src` directive restricts the URLs from which application manifests may be loaded.
      *
      * @var array<string, bool>|string
      */
-    protected $manifestSrc = [];
-
+    protected $manifest_src = [];
     /**
      * The `script-src-elem` directive applies to all script requests and script blocks.
      *
      * @var array<string, bool>|string
      */
-    protected array|string $scriptSrcElem = [];
-
+    protected array|string $script_src_elem = [];
     /**
      * The `script-src-attr` directive applies to event handlers and, if present,
      * it will override the `script-src` directive for relevant checks.
      *
      * @var array<string, bool>|string
      */
-    protected array|string $scriptSrcAttr = [];
-
+    protected array|string $script_src_attr = [];
     /**
      * The `style-src-elem` directive governs the behaviour of styles except
      * for styles defined in inline attributes.
      *
      * @var array<string, bool>|string
      */
-    protected array|string $styleSrcElem = [];
-
+    protected array|string $style_src_elem = [];
     /**
      * The `style-src-attr` directive governs the behaviour of style attributes.
      *
      * @var array<string, bool>|string
      */
-    protected array|string $styleSrcAttr = [];
-
+    protected array|string $style_src_attr = [];
     /**
      * The `worker-src` directive restricts the URLs which may be loaded as a `Worker`,
      * `SharedWorker`, or `ServiceWorker`.
      *
      * @var array<string, bool>|string
      */
-    protected array|string $workerSrc = [];
-
+    protected array|string $worker_src = [];
     /**
      * Instructs user agents to rewrite URL schemes by changing HTTP to HTTPS.
      *
      * @var bool
      */
-    protected $upgradeInsecureRequests = false;
-
+    protected $upgrade_insecure_requests = false;
     /**
      * Set to `true` to make all directives report-only instead of enforced.
      *
      * @var bool
      */
-    protected $reportOnly = false;
-
+    protected $report_only = false;
     /**
      * Set of valid keyword-sources.
      *
@@ -257,7 +200,7 @@ class ContentSecurityPolicy
      *
      * @var list<string>
      */
-    protected $validSources = [
+    protected $valid_sources = [
         // CSP2 keywords
         'self',
         'none',
@@ -274,7 +217,6 @@ class ContentSecurityPolicy
         'report-sha384',
         'report-sha512',
     ];
-
     /**
      * Set of nonces generated.
      *
@@ -283,149 +225,121 @@ class ContentSecurityPolicy
      * @deprecated 4.7.0 Never used.
      */
     protected $nonces = [];
-
     /**
      * Nonce for style tags.
      *
      * @var string|null
      */
-    protected $styleNonce;
-
+    protected $style_nonce;
     /**
      * Nonce for script tags.
      *
      * @var string|null
      */
-    protected $scriptNonce;
-
+    protected $script_nonce;
     /**
      * Nonce placeholder for style tags.
      *
      * @var string
      */
-    protected $styleNonceTag = '{csp-style-nonce}';
-
+    protected $style_nonce_tag = '{csp-style-nonce}';
     /**
      * Nonce placeholder for script tags.
      *
      * @var string
      */
-    protected $scriptNonceTag = '{csp-script-nonce}';
-
+    protected $script_nonce_tag = '{csp-script-nonce}';
     /**
      * Replace nonce tags automatically?
      *
      * @var bool
      */
-    protected $autoNonce = true;
-
+    protected $auto_nonce = true;
     /**
      * An array of header info since we have to build
      * ourselves before passing to a Response object.
      *
      * @var array<string, string>
      */
-    protected $tempHeaders = [];
-
+    protected $temp_headers = [];
     /**
      * An array of header info to build that should only be reported.
      *
      * @var array<string, string>
      */
-    protected $reportOnlyHeaders = [];
-
+    protected $report_only_headers = [];
     /**
      * Whether Content Security Policy is being enforced.
      *
      * @var bool
      */
-    protected $CSPEnabled = false;
-
+    protected $csp_enabled = false;
     /**
      * Map of reporting endpoints to their URLs.
      *
      * @var array<string, string>
      */
-    private array $reportingEndpoints = [];
-
+    private array $reporting_endpoints = [];
     /**
      * Stores our default values from the Config file.
      */
-    public function __construct(ContentSecurityPolicyConfig $config)
+    public function __construct(Content_Security_Policy_Config $config)
     {
-        $this->CSPEnabled = config(App::class)->CSPEnabled;
-
+        $this->csp_enabled = config(App::class)->csp_enabled;
         foreach (get_object_vars($config) as $setting => $value) {
-            if (! property_exists($this, $setting)) {
+            if (!property_exists($this, $setting)) {
                 continue;
             }
-
-            if (
-                in_array($setting, self::DIRECTIVES_ALLOWING_SOURCE_LISTS, true)
-                && is_array($value)
-                && array_is_list($value)
-            ) {
+            if (in_array($setting, self::DIRECTIVES_ALLOWING_SOURCE_LISTS, true) && is_array($value) && array_is_list($value)) {
                 // Config sets these directives as `list<string>|string`
                 // but we need them as `array<string, bool>` internally.
-                $this->{$setting} = array_combine($value, array_fill(0, count($value), $this->reportOnly));
-
+                $this->{$setting} = array_combine($value, array_fill(0, count($value), $this->report_only));
                 continue;
             }
-
             $this->{$setting} = $value;
         }
-
-        if (! is_array($this->styleSrc)) {
-            $this->styleSrc = [$this->styleSrc => $this->reportOnly];
+        if (!is_array($this->style_src)) {
+            $this->style_src = [$this->style_src => $this->report_only];
         }
-
-        if (! is_array($this->scriptSrc)) {
-            $this->scriptSrc = [$this->scriptSrc => $this->reportOnly];
+        if (!is_array($this->script_src)) {
+            $this->script_src = [$this->script_src => $this->report_only];
         }
     }
-
     /**
      * Whether Content Security Policy is being enforced.
      */
     public function enabled(): bool
     {
-        return $this->CSPEnabled;
+        return $this->csp_enabled;
     }
-
     /**
      * Get the nonce for the style tag.
      */
-    public function getStyleNonce(): string
+    public function get_style_nonce(): string
     {
-        if ($this->styleNonce === null) {
-            $this->styleNonce = base64_encode(random_bytes(12));
-            $this->addStyleSrc('nonce-' . $this->styleNonce);
-
-            if ($this->styleSrcElem !== []) {
-                $this->addStyleSrcElem('nonce-' . $this->styleNonce);
+        if ($this->style_nonce === null) {
+            $this->style_nonce = base64_encode(random_bytes(12));
+            $this->add_style_src('nonce-' . $this->style_nonce);
+            if ($this->style_src_elem !== []) {
+                $this->add_style_src_elem('nonce-' . $this->style_nonce);
             }
         }
-
-        return $this->styleNonce;
+        return $this->style_nonce;
     }
-
     /**
      * Get the nonce for the script tag.
      */
-    public function getScriptNonce(): string
+    public function get_script_nonce(): string
     {
-        if ($this->scriptNonce === null) {
-            $this->scriptNonce = base64_encode(random_bytes(12));
-            $this->addScriptSrc('nonce-' . $this->scriptNonce);
-
-            if ($this->scriptSrcElem !== []) {
-                $this->addScriptSrcElem('nonce-' . $this->scriptNonce);
+        if ($this->script_nonce === null) {
+            $this->script_nonce = base64_encode(random_bytes(12));
+            $this->add_script_src('nonce-' . $this->script_nonce);
+            if ($this->script_src_elem !== []) {
+                $this->add_script_src_elem('nonce-' . $this->script_nonce);
             }
         }
-
-        return $this->scriptNonce;
+        return $this->script_nonce;
     }
-
     /**
      * Compiles and sets the appropriate headers in the request.
      *
@@ -433,13 +347,11 @@ class ContentSecurityPolicy
      *
      * @return void
      */
-    public function finalize(ResponseInterface $response)
+    public function finalize(Response_Interface $response)
     {
-        $this->generateNonces($response);
-
-        $this->buildHeaders($response);
+        $this->generate_nonces($response);
+        $this->build_headers($response);
     }
-
     /**
      * If TRUE, nothing will be restricted. Instead all violations will
      * be reported to the reportURI for monitoring. This is useful when
@@ -449,13 +361,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function reportOnly(bool $value = true)
+    public function report_only(bool $value = true)
     {
-        $this->reportOnly = $value;
-
+        $this->report_only = $value;
         return $this;
     }
-
     /**
      * Adds a new value to the `base-uri` directive.
      *
@@ -467,13 +377,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addBaseURI($uri, ?bool $explicitReporting = null)
+    public function add_base_uri($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'baseURI', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'baseURI', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `child-src` directive.
      *
@@ -487,13 +395,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addChildSrc($uri, ?bool $explicitReporting = null)
+    public function add_child_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'childSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'childSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `connect-src` directive.
      *
@@ -506,13 +412,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addConnectSrc($uri, ?bool $explicitReporting = null)
+    public function add_connect_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'connectSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'connectSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `default-src` directive.
      *
@@ -525,13 +429,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function setDefaultSrc($uri, ?bool $explicitReporting = null)
+    public function set_default_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->defaultSrc = [(string) $uri => $explicitReporting ?? $this->reportOnly];
-
+        $this->default_src = [(string) $uri => $explicit_reporting ?? $this->report_only];
         return $this;
     }
-
     /**
      * Adds a new value to the `font-src` directive.
      *
@@ -543,13 +445,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addFontSrc($uri, ?bool $explicitReporting = null)
+    public function add_font_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'fontSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'fontSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `form-action` directive.
      *
@@ -559,13 +459,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addFormAction($uri, ?bool $explicitReporting = null)
+    public function add_form_action($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'formAction', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'formAction', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `frame-ancestors` directive.
      *
@@ -575,13 +473,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addFrameAncestor($uri, ?bool $explicitReporting = null)
+    public function add_frame_ancestor($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'frameAncestors', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'frameAncestors', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `frame-src` directive.
      *
@@ -591,13 +487,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addFrameSrc($uri, ?bool $explicitReporting = null)
+    public function add_frame_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'frameSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'frameSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `img-src` directive.
      *
@@ -607,13 +501,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addImageSrc($uri, ?bool $explicitReporting = null)
+    public function add_image_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'imageSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'imageSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `media-src` directive.
      *
@@ -623,13 +515,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addMediaSrc($uri, ?bool $explicitReporting = null)
+    public function add_media_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'mediaSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'mediaSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `manifest-src` directive.
      *
@@ -639,13 +529,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addManifestSrc($uri, ?bool $explicitReporting = null)
+    public function add_manifest_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'manifestSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'manifestSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `object-src` directive.
      *
@@ -655,13 +543,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addObjectSrc($uri, ?bool $explicitReporting = null)
+    public function add_object_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'objectSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'objectSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `plugin-types` directive.
      *
@@ -671,13 +557,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addPluginType($mime, ?bool $explicitReporting = null)
+    public function add_plugin_type($mime, ?bool $explicit_reporting = null)
     {
-        $this->addOption($mime, 'pluginTypes', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($mime, 'pluginTypes', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `sandbox` directive.
      *
@@ -687,13 +571,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addSandbox($flags, ?bool $explicitReporting = null)
+    public function add_sandbox($flags, ?bool $explicit_reporting = null)
     {
-        $this->addOption($flags, 'sandbox', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($flags, 'sandbox', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `script-src` directive.
      *
@@ -703,13 +585,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addScriptSrc($uri, ?bool $explicitReporting = null)
+    public function add_script_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'scriptSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'scriptSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `script-src-elem` directive.
      *
@@ -717,13 +597,11 @@ class ContentSecurityPolicy
      *
      * @param list<string>|string $uri
      */
-    public function addScriptSrcElem(array|string $uri, ?bool $explicitReporting = null): static
+    public function add_script_src_elem(array|string $uri, ?bool $explicit_reporting = null): static
     {
-        $this->addOption($uri, 'scriptSrcElem', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'scriptSrcElem', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `script-src-attr` directive.
      *
@@ -731,13 +609,11 @@ class ContentSecurityPolicy
      *
      * @param list<string>|string $uri
      */
-    public function addScriptSrcAttr(array|string $uri, ?bool $explicitReporting = null): static
+    public function add_script_src_attr(array|string $uri, ?bool $explicit_reporting = null): static
     {
-        $this->addOption($uri, 'scriptSrcAttr', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'scriptSrcAttr', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `style-src` directive.
      *
@@ -747,13 +623,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function addStyleSrc($uri, ?bool $explicitReporting = null)
+    public function add_style_src($uri, ?bool $explicit_reporting = null)
     {
-        $this->addOption($uri, 'styleSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'styleSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `style-src-elem` directive.
      *
@@ -761,13 +635,11 @@ class ContentSecurityPolicy
      *
      * @param list<string>|string $uri
      */
-    public function addStyleSrcElem(array|string $uri, ?bool $explicitReporting = null): static
+    public function add_style_src_elem(array|string $uri, ?bool $explicit_reporting = null): static
     {
-        $this->addOption($uri, 'styleSrcElem', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'styleSrcElem', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `style-src-attr` directive.
      *
@@ -775,13 +647,11 @@ class ContentSecurityPolicy
      *
      * @param list<string>|string $uri
      */
-    public function addStyleSrcAttr(array|string $uri, ?bool $explicitReporting = null): static
+    public function add_style_src_attr(array|string $uri, ?bool $explicit_reporting = null): static
     {
-        $this->addOption($uri, 'styleSrcAttr', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'styleSrcAttr', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Adds a new value to the `worker-src` directive.
      *
@@ -789,25 +659,21 @@ class ContentSecurityPolicy
      *
      * @param list<string>|string $uri
      */
-    public function addWorkerSrc($uri, ?bool $explicitReporting = null): static
+    public function add_worker_src($uri, ?bool $explicit_reporting = null): static
     {
-        $this->addOption($uri, 'workerSrc', $explicitReporting ?? $this->reportOnly);
-
+        $this->add_option($uri, 'workerSrc', $explicit_reporting ?? $this->report_only);
         return $this;
     }
-
     /**
      * Sets whether the user agents should rewrite URL schemes, changing HTTP to HTTPS.
      *
      * @return $this
      */
-    public function upgradeInsecureRequests(bool $value = true)
+    public function upgrade_insecure_requests(bool $value = true)
     {
-        $this->upgradeInsecureRequests = $value;
-
+        $this->upgrade_insecure_requests = $value;
         return $this;
     }
-
     /**
      * Specifies a URL where a browser will send reports when a content
      * security policy is violated.
@@ -819,13 +685,11 @@ class ContentSecurityPolicy
      *
      * @return $this
      */
-    public function setReportURI(string $uri)
+    public function set_report_uri(string $uri)
     {
-        $this->reportURI = $uri;
-
+        $this->report_uri = $uri;
         return $this;
     }
-
     /**
      * Specifies a named group in a Reporting API endpoint to which the user
      * agent sends reports about policy violation.
@@ -835,39 +699,33 @@ class ContentSecurityPolicy
      * @param string $endpoint The name of the reporting endpoint. Set `''` if you
      *                         want to remove this directive at runtime.
      */
-    public function setReportToEndpoint(string $endpoint): static
+    public function set_report_to_endpoint(string $endpoint): static
     {
         if ($endpoint === '') {
-            $this->reportURI = null;
-            $this->reportTo  = null;
-
+            $this->report_uri = null;
+            $this->report_to = null;
             return $this;
         }
-
-        if (! array_key_exists($endpoint, $this->reportingEndpoints)) {
+        if (!array_key_exists($endpoint, $this->reporting_endpoints)) {
             throw new InvalidArgumentException(sprintf('The reporting endpoint "%s" has not been defined.', $endpoint));
         }
-
-        $this->reportURI = $this->reportingEndpoints[$endpoint]; // for BC with browsers that do not support `report-to`
-        $this->reportTo  = $endpoint;
-
+        $this->report_uri = $this->reporting_endpoints[$endpoint];
+        // for BC with browsers that do not support `report-to`
+        $this->report_to = $endpoint;
         return $this;
     }
-
     /**
      * Adds reporting endpoints to the `Reporting-Endpoints` header.
      *
      * @param array<string, string> $endpoint
      */
-    public function addReportingEndpoints(array $endpoint): static
+    public function add_reporting_endpoints(array $endpoint): static
     {
         foreach ($endpoint as $name => $url) {
-            $this->reportingEndpoints[$name] = $url;
+            $this->reporting_endpoints[$name] = $url;
         }
-
         return $this;
     }
-
     /**
      * DRY method to add an string or array to a class property.
      *
@@ -875,20 +733,17 @@ class ContentSecurityPolicy
      *
      * @return void
      */
-    protected function addOption($options, string $target, ?bool $explicitReporting = null)
+    protected function add_option($options, string $target, ?bool $explicit_reporting = null)
     {
         // Ensure we have an array to work with...
         if (is_string($this->{$target})) {
-            $this->{$target} = [$this->{$target} => $this->reportOnly];
+            $this->{$target} = [$this->{$target} => $this->report_only];
         }
-
         $options = is_array($options) ? $options : [$options];
-
         foreach ($options as $option) {
-            $this->{$target}[$option] = $explicitReporting ?? $this->reportOnly;
+            $this->{$target}[$option] = $explicit_reporting ?? $this->report_only;
         }
     }
-
     /**
      * Scans the body of the request message and replaces any nonce
      * placeholders with actual nonces, that we'll then add to our
@@ -896,38 +751,29 @@ class ContentSecurityPolicy
      *
      * @return void
      */
-    protected function generateNonces(ResponseInterface $response)
+    protected function generate_nonces(Response_Interface $response)
     {
-        if ($this->enabled() && ! $this->autoNonce) {
+        if ($this->enabled() && !$this->auto_nonce) {
             return;
         }
-
-        $body = (string) $response->getBody();
-
+        $body = (string) $response->get_body();
         if ($body === '') {
             return;
         }
-
         // Escape quotes for JSON responses to prevent corrupting the JSON body
-        $jsonEscape = str_contains($response->getHeaderLine('Content-Type'), 'json');
-
+        $json_escape = str_contains($response->get_header_line('Content-Type'), 'json');
         // Replace style and script placeholders with nonces
-        $pattern = sprintf('/(%s|%s)/', preg_quote($this->styleNonceTag, '/'), preg_quote($this->scriptNonceTag, '/'));
-
-        $body = preg_replace_callback($pattern, function ($match) use ($jsonEscape): string {
-            if (! $this->enabled()) {
+        $pattern = sprintf('/(%s|%s)/', preg_quote($this->style_nonce_tag, '/'), preg_quote($this->script_nonce_tag, '/'));
+        $body = preg_replace_callback($pattern, function ($match) use ($json_escape): string {
+            if (!$this->enabled()) {
                 return '';
             }
-
-            $nonce = $match[0] === $this->styleNonceTag ? $this->getStyleNonce() : $this->getScriptNonce();
-            $attr  = 'nonce="' . $nonce . '"';
-
-            return $jsonEscape ? str_replace('"', '\\"', $attr) : $attr;
+            $nonce = $match[0] === $this->style_nonce_tag ? $this->get_style_nonce() : $this->get_script_nonce();
+            $attr = 'nonce="' . $nonce . '"';
+            return $json_escape ? str_replace('"', '\"', $attr) : $attr;
         }, $body);
-
-        $response->setBody($body);
+        $response->set_body($body);
     }
-
     /**
      * Based on the current state of the elements, will add the appropriate
      * Content-Security-Policy and Content-Security-Policy-Report-Only headers
@@ -935,79 +781,62 @@ class ContentSecurityPolicy
      *
      * @return void
      */
-    protected function buildHeaders(ResponseInterface $response)
+    protected function build_headers(Response_Interface $response)
     {
-        if (! $this->enabled()) {
+        if (!$this->enabled()) {
             return;
         }
-
-        $response->setHeader('Content-Security-Policy', []);
-        $response->setHeader('Content-Security-Policy-Report-Only', []);
-        $response->setHeader('Reporting-Endpoints', []);
-
-        if (in_array($this->baseURI, ['', null, []], true)) {
-            $this->baseURI = 'self';
+        $response->set_header('Content-Security-Policy', []);
+        $response->set_header('Content-Security-Policy-Report-Only', []);
+        $response->set_header('Reporting-Endpoints', []);
+        if (in_array($this->base_uri, ['', null, []], true)) {
+            $this->base_uri = 'self';
         }
-
-        if (in_array($this->defaultSrc, ['', null, []], true)) {
-            $this->defaultSrc = 'self';
+        if (in_array($this->default_src, ['', null, []], true)) {
+            $this->default_src = 'self';
         }
-
         foreach ($this->directives as $name => $property) {
-            if ($name === 'report-uri' && (string) $this->reportURI === '') {
+            if ($name === 'report-uri' && (string) $this->report_uri === '') {
                 continue;
             }
-
-            if ($name === 'report-to' && (string) $this->reportTo === '') {
+            if ($name === 'report-to' && (string) $this->report_to === '') {
                 continue;
             }
-
             if ($this->{$property} !== null) {
-                $this->addToHeader($name, $this->{$property});
+                $this->add_to_header($name, $this->{$property});
             }
         }
-
         // Compile our own header strings here since if we just
         // append it to the response, it will be joined with
         // commas, not semi-colons as we need.
-        if ($this->reportingEndpoints !== []) {
+        if ($this->reporting_endpoints !== []) {
             $endpoints = [];
-
-            foreach ($this->reportingEndpoints as $name => $url) {
+            foreach ($this->reporting_endpoints as $name => $url) {
                 $endpoints[] = trim("{$name}=\"{$url}\"");
             }
-
-            $response->appendHeader('Reporting-Endpoints', implode(', ', $endpoints));
-            $this->reportingEndpoints = [];
+            $response->append_header('Reporting-Endpoints', implode(', ', $endpoints));
+            $this->reporting_endpoints = [];
         }
-
-        if ($this->tempHeaders !== []) {
+        if ($this->temp_headers !== []) {
             $header = [];
-
-            foreach ($this->tempHeaders as $name => $value) {
+            foreach ($this->temp_headers as $name => $value) {
                 $header[] = trim("{$name} {$value}");
             }
-
-            if ($this->upgradeInsecureRequests) {
+            if ($this->upgrade_insecure_requests) {
                 $header[] = 'upgrade-insecure-requests';
             }
-
-            $response->appendHeader('Content-Security-Policy', implode('; ', $header));
-            $this->tempHeaders = [];
+            $response->append_header('Content-Security-Policy', implode('; ', $header));
+            $this->temp_headers = [];
         }
-
-        if ($this->reportOnlyHeaders !== []) {
+        if ($this->report_only_headers !== []) {
             $header = [];
-
-            foreach ($this->reportOnlyHeaders as $name => $value) {
+            foreach ($this->report_only_headers as $name => $value) {
                 $header[] = trim("{$name} {$value}");
             }
-
-            $response->appendHeader('Content-Security-Policy-Report-Only', implode('; ', $header));
-            $this->reportOnlyHeaders = [];
+            $response->append_header('Content-Security-Policy-Report-Only', implode('; ', $header));
+            $this->report_only_headers = [];
         }
     }
-
     /**
      * Adds a directive and its options to the appropriate header. The $values
      * array might have options that are geared toward either the regular or the
@@ -1017,61 +846,44 @@ class ContentSecurityPolicy
      *
      * @return void
      */
-    protected function addToHeader(string $name, $values = null)
+    protected function add_to_header(string $name, $values = null)
     {
         if (is_string($values)) {
-            $values = [$values => $this->reportOnly];
+            $values = [$values => $this->report_only];
         }
-
-        $sources       = [];
-        $reportSources = [];
-
-        foreach ($values as $value => $reportOnly) {
-            if (
-                in_array($value, $this->validSources, true)
-                || str_starts_with($value, 'nonce-')
-                || str_starts_with($value, 'sha256-')
-                || str_starts_with($value, 'sha384-')
-                || str_starts_with($value, 'sha512-')
-            ) {
+        $sources = [];
+        $report_sources = [];
+        foreach ($values as $value => $report_only) {
+            if (in_array($value, $this->valid_sources, true) || str_starts_with($value, 'nonce-') || str_starts_with($value, 'sha256-') || str_starts_with($value, 'sha384-') || str_starts_with($value, 'sha512-')) {
                 $value = "'{$value}'";
             }
-
-            if ($reportOnly) {
-                $reportSources[] = $value;
+            if ($report_only) {
+                $report_sources[] = $value;
             } else {
                 $sources[] = $value;
             }
         }
-
         if ($sources !== []) {
-            $this->tempHeaders[$name] = implode(' ', $sources);
+            $this->temp_headers[$name] = implode(' ', $sources);
         }
-
-        if ($reportSources !== []) {
-            $this->reportOnlyHeaders[$name] = implode(' ', $reportSources);
+        if ($report_sources !== []) {
+            $this->report_only_headers[$name] = implode(' ', $report_sources);
         }
     }
-
-    public function clearDirective(string $directive): void
+    public function clear_directive(string $directive): void
     {
-        if (! array_key_exists($directive, $this->directives)) {
+        if (!array_key_exists($directive, $this->directives)) {
             return;
         }
-
         if ($directive === 'report-uri') {
-            $this->reportURI = null;
-
+            $this->report_uri = null;
             return;
         }
-
         if ($directive === 'report-to') {
-            $this->reportURI = null;
-            $this->reportTo  = null;
-
+            $this->report_uri = null;
+            $this->report_to = null;
             return;
         }
-
         $this->{$this->directives[$directive]} = [];
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,8 +9,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Exceptions;
+namespace Code_Igniter\Exceptions;
 
 /**
  * Provides a domain-level interface for broad capture
@@ -19,6 +17,6 @@ namespace CodeIgniter\Exceptions;
  *
  * catch (\CodeIgniter\Exceptions\ExceptionInterface) { ... }
  */
-interface ExceptionInterface
+interface Exception_Interface
 {
 }

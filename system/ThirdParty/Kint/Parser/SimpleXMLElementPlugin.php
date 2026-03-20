@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,154 +23,120 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
 use Kint\Utils;
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\ArrayContext;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\Context\ClassOwnedContext;
-use Kint\Value\Context\ContextInterface;
-use Kint\Value\Representation\ContainerRepresentation;
-use Kint\Value\Representation\ValueRepresentation;
-use Kint\Value\SimpleXMLElementValue;
-use SimpleXMLElement;
-
-class SimpleXMLElementPlugin extends AbstractPlugin implements PluginBeginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Array_Context;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Context\Class_Owned_Context;
+use Kint\Value\Context\Context_Interface;
+use Kint\Value\Representation\Container_Representation;
+use Kint\Value\Representation\Value_Representation;
+use Kint\Value\Simple_Xml_Element_Value;
+use Simple_Xml_Element;
+class Simple_Xml_Element_Plugin extends Abstract_Plugin implements Plugin_Begin_Interface
 {
     /**
      * Show all properties and methods.
      */
     public static bool $verbose = false;
-
-    protected ClassMethodsPlugin $methods_plugin;
-
+    protected Class_Methods_Plugin $methods_plugin;
     public function __construct(Parser $parser)
     {
         parent::__construct($parser);
-
-        $this->methods_plugin = new ClassMethodsPlugin($parser);
+        $this->methods_plugin = new Class_Methods_Plugin($parser);
     }
-
-    public function setParser(Parser $p): void
+    public function set_parser(Parser $p): void
     {
-        parent::setParser($p);
-
-        $this->methods_plugin->setParser($p);
+        parent::set_parser($p);
+        $this->methods_plugin->set_parser($p);
     }
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         // SimpleXMLElement is a weirdo. No recursion (Or rather everything is
         // recursion) and depth limit will have to be handled manually anyway.
         return Parser::TRIGGER_BEGIN;
     }
-
-    public function parseBegin(&$var, ContextInterface $c): ?AbstractValue
+    public function parse_begin(&$var, Context_Interface $c): ?Abstract_Value
     {
-        if (!$var instanceof SimpleXMLElement) {
+        if (!$var instanceof Simple_Xml_Element) {
             return null;
         }
-
-        return $this->parseElement($var, $c);
+        return $this->parse_element($var, $c);
     }
-
-    protected function parseElement(SimpleXMLElement &$var, ContextInterface $c): SimpleXMLElementValue
+    protected function parse_element(Simple_Xml_Element &$var, Context_Interface $c): Simple_Xml_Element_Value
     {
-        $parser = $this->getParser();
-        $pdepth = $parser->getDepthLimit();
-        $cdepth = $c->getDepth();
-
+        $parser = $this->get_parser();
+        $pdepth = $parser->get_depth_limit();
+        $cdepth = $c->get_depth();
         $depthlimit = $pdepth && $cdepth >= $pdepth;
-        $has_children = self::hasChildElements($var);
-
+        $has_children = self::has_child_elements($var);
         if ($depthlimit && $has_children) {
-            $x = new SimpleXMLElementValue($c, $var, [], null);
-            $x->flags |= AbstractValue::FLAG_DEPTH_LIMIT;
-
+            $x = new Simple_Xml_Element_Value($c, $var, [], null);
+            $x->flags |= Abstract_Value::FLAG_DEPTH_LIMIT;
             return $x;
         }
-
-        $children = $this->getChildren($c, $var);
-        $attributes = $this->getAttributes($c, $var);
-        $toString = (string) $var;
-        $string_body = !$has_children && \strlen($toString);
-
-        $x = new SimpleXMLElementValue($c, $var, $children, \strlen($toString) ? $toString : null);
-
+        $children = $this->get_children($c, $var);
+        $attributes = $this->get_attributes($c, $var);
+        $to_string = (string) $var;
+        $string_body = !$has_children && \strlen($to_string);
+        $x = new Simple_Xml_Element_Value($c, $var, $children, \strlen($to_string) ? $to_string : null);
         if (self::$verbose) {
-            $x = $this->methods_plugin->parseComplete($var, $x, Parser::TRIGGER_SUCCESS);
+            $x = $this->methods_plugin->parse_complete($var, $x, Parser::TRIGGER_SUCCESS);
         }
-
         if ($attributes) {
-            $x->addRepresentation(new ContainerRepresentation('Attributes', $attributes), 0);
+            $x->add_representation(new Container_Representation('Attributes', $attributes), 0);
         }
-
         if ($string_body) {
-            $base = new BaseContext('(string) '.$c->getName());
+            $base = new Base_Context('(string) ' . $c->get_name());
             $base->depth = $cdepth + 1;
-            if (null !== ($ap = $c->getAccessPath())) {
-                $base->access_path = '(string) '.$ap;
+            if (null !== $ap = $c->get_access_path()) {
+                $base->access_path = '(string) ' . $ap;
             }
-
-            $toString = $parser->parse($toString, $base);
-
-            $x->addRepresentation(new ValueRepresentation('toString', $toString, null, true), 0);
+            $to_string = $parser->parse($to_string, $base);
+            $x->add_representation(new Value_Representation('toString', $to_string, null, true), 0);
         }
-
         if ($children) {
-            $x->addRepresentation(new ContainerRepresentation('Children', $children), 0);
+            $x->add_representation(new Container_Representation('Children', $children), 0);
         }
-
         return $x;
     }
-
     /** @psalm-return list<AbstractValue> */
-    protected function getAttributes(ContextInterface $c, SimpleXMLElement $var): array
+    protected function get_attributes(Context_Interface $c, Simple_Xml_Element $var): array
     {
-        $parser = $this->getParser();
-        $namespaces = \array_merge(['' => null], $var->getDocNamespaces());
-
-        $cdepth = $c->getDepth();
-        $ap = $c->getAccessPath();
-
+        $parser = $this->get_parser();
+        $namespaces = \array_merge(['' => null], $var->get_doc_namespaces());
+        $cdepth = $c->get_depth();
+        $ap = $c->get_access_path();
         $contents = [];
-
-        foreach ($namespaces as $nsAlias => $_) {
-            if ((bool) $nsAttribs = $var->attributes($nsAlias, true)) {
-                foreach ($nsAttribs as $name => $attrib) {
-                    $obj = new ArrayContext($name);
+        foreach ($namespaces as $ns_alias => $_) {
+            if ((bool) $ns_attribs = $var->attributes($ns_alias, true)) {
+                foreach ($ns_attribs as $name => $attrib) {
+                    $obj = new Array_Context($name);
                     $obj->depth = $cdepth + 1;
-
                     if (null !== $ap) {
-                        $obj->access_path = '(string) '.$ap;
-                        if ('' !== $nsAlias) {
-                            $obj->access_path .= '->attributes('.\var_export($nsAlias, true).', true)';
+                        $obj->access_path = '(string) ' . $ap;
+                        if ('' !== $ns_alias) {
+                            $obj->access_path .= '->attributes(' . \var_export($ns_alias, true) . ', true)';
                         }
-                        $obj->access_path .= '['.\var_export($name, true).']';
+                        $obj->access_path .= '[' . \var_export($name, true) . ']';
                     }
-
-                    if ('' !== $nsAlias) {
-                        $obj->name = $nsAlias.':'.$obj->name;
+                    if ('' !== $ns_alias) {
+                        $obj->name = $ns_alias . ':' . $obj->name;
                     }
-
                     $string = (string) $attrib;
                     $attribute = $parser->parse($string, $obj);
-
                     $contents[] = $attribute;
                 }
             }
         }
-
         return $contents;
     }
-
     /**
      * Alright kids, let's learn about SimpleXMLElement::children!
      * children can take a namespace url or alias and provide a list of
@@ -198,61 +163,49 @@ class SimpleXMLElementPlugin extends AbstractPlugin implements PluginBeginInterf
      *
      * @psalm-return list<SimpleXMLElementValue>
      */
-    protected function getChildren(ContextInterface $c, SimpleXMLElement $var): array
+    protected function get_children(Context_Interface $c, Simple_Xml_Element $var): array
     {
-        $namespaces = \array_merge(['' => null], $var->getDocNamespaces());
-
-        $cdepth = $c->getDepth();
-        $ap = $c->getAccessPath();
-
+        $namespaces = \array_merge(['' => null], $var->get_doc_namespaces());
+        $cdepth = $c->get_depth();
+        $ap = $c->get_access_path();
         $contents = [];
-
-        foreach ($namespaces as $nsAlias => $_) {
-            $nsChildren = $var->children($nsAlias, true);
-            if (!(bool) $nsChildren) {
+        foreach ($namespaces as $ns_alias => $_) {
+            $ns_children = $var->children($ns_alias, true);
+            if (!(bool) $ns_children) {
                 continue;
             }
-
             $nsap = [];
-
-            foreach ($nsChildren as $name => $child) {
-                $base = new ClassOwnedContext((string) $name, SimpleXMLElement::class);
+            foreach ($ns_children as $name => $child) {
+                $base = new Class_Owned_Context((string) $name, Simple_Xml_Element::class);
                 $base->depth = $cdepth + 1;
-
-                if ('' !== $nsAlias) {
-                    $base->name = $nsAlias.':'.$name;
+                if ('' !== $ns_alias) {
+                    $base->name = $ns_alias . ':' . $name;
                 }
-
                 if (null !== $ap) {
-                    if ('' === $nsAlias) {
-                        $base->access_path = $ap.'->';
+                    if ('' === $ns_alias) {
+                        $base->access_path = $ap . '->';
                     } else {
-                        $base->access_path = $ap.'->children('.\var_export($nsAlias, true).', true)->';
+                        $base->access_path = $ap . '->children(' . \var_export($ns_alias, true) . ', true)->';
                     }
-
-                    if (Utils::isValidPhpName((string) $name)) {
+                    if (Utils::is_valid_php_name((string) $name)) {
                         $base->access_path .= (string) $name;
                     } else {
-                        $base->access_path .= '{'.\var_export((string) $name, true).'}';
+                        $base->access_path .= '{' . \var_export((string) $name, true) . '}';
                     }
-
                     if (isset($nsap[$base->access_path])) {
                         ++$nsap[$base->access_path];
-                        $base->access_path .= '['.$nsap[$base->access_path].']';
+                        $base->access_path .= '[' . $nsap[$base->access_path] . ']';
                     } else {
                         $nsap[$base->access_path] = 0;
                     }
                 }
-
-                $v = $this->parseElement($child, $base);
-                $v->flags |= AbstractValue::FLAG_GENERATED;
+                $v = $this->parse_element($child, $base);
+                $v->flags |= Abstract_Value::FLAG_GENERATED;
                 $contents[] = $v;
             }
         }
-
         return $contents;
     }
-
     /**
      * More SimpleXMLElement bullshit.
      *
@@ -284,16 +237,14 @@ class SimpleXMLElementPlugin extends AbstractPlugin implements PluginBeginInterf
      * Long story short the function below is the only way to reliably check if
      * a SimpleXMLElement has children
      */
-    protected static function hasChildElements(SimpleXMLElement $var): bool
+    protected static function has_child_elements(Simple_Xml_Element $var): bool
     {
-        $namespaces = \array_merge(['' => null], $var->getDocNamespaces());
-
-        foreach ($namespaces as $nsAlias => $_) {
-            if ((array) $var->children($nsAlias, true)) {
+        $namespaces = \array_merge(['' => null], $var->get_doc_namespaces());
+        foreach ($namespaces as $ns_alias => $_) {
+            if ((array) $var->children($ns_alias, true)) {
                 return true;
             }
         }
-
         return false;
     }
 }

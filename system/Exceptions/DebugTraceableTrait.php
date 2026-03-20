@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,16 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Exceptions;
+namespace Code_Igniter\Exceptions;
 
 use Throwable;
-
 /**
  * This trait provides framework exceptions the ability to pinpoint
  * accurately where the exception was raised rather than instantiated.
  *
  * This is used primarily for factory-instantiated exceptions.
  */
-trait DebugTraceableTrait
+trait Debug_Traceable_Trait
 {
     /**
      * Tweaks the exception's constructor to assign the file/line to where
@@ -30,14 +27,9 @@ trait DebugTraceableTrait
     final public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-
-        $trace = $this->getTrace()[0];
-
+        $trace = $this->get_trace()[0];
         if (isset($trace['class']) && $trace['class'] === static::class) {
-            [
-                'line' => $this->line,
-                'file' => $this->file,
-            ] = $trace;
+            ['line' => $this->line, 'file' => $this->file] = $trace;
         }
     }
 }

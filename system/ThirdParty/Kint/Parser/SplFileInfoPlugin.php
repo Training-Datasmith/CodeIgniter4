@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,45 +23,38 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\InstanceValue;
-use Kint\Value\Representation\SplFileInfoRepresentation;
-use Kint\Value\SplFileInfoValue;
-use SplFileInfo;
-use SplFileObject;
-
-class SplFileInfoPlugin extends AbstractPlugin implements PluginCompleteInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Instance_Value;
+use Kint\Value\Representation\Spl_File_Info_Representation;
+use Kint\Value\Spl_File_Info_Value;
+use Spl_File_Info;
+use Spl_File_Object;
+class Spl_File_Info_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['object'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
         // SplFileObject throws exceptions in normal use in places SplFileInfo doesn't
-        if (!$var instanceof SplFileInfo || $var instanceof SplFileObject) {
+        if (!$var instanceof Spl_File_Info || $var instanceof Spl_File_Object) {
             return $v;
         }
-
-        if (!$v instanceof InstanceValue) {
+        if (!$v instanceof Instance_Value) {
             return $v;
         }
-
-        $out = new SplFileInfoValue($v->getContext(), $var);
-        $out->setChildren($v->getChildren());
+        $out = new Spl_File_Info_Value($v->get_context(), $var);
+        $out->set_children($v->get_children());
         $out->flags = $v->flags;
-        $out->addRepresentation(new SplFileInfoRepresentation(clone $var));
-        $out->appendRepresentations($v->getRepresentations());
-
+        $out->add_representation(new Spl_File_Info_Representation(clone $var));
+        $out->append_representations($v->get_representations());
         return $out;
     }
 }

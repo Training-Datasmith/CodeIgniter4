@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,37 +23,28 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Text;
 
-use Kint\Renderer\TextRenderer;
-use Kint\Value\AbstractValue;
-
-abstract class AbstractPlugin implements PluginInterface
+use Kint\Renderer\Text_Renderer;
+use Kint\Value\Abstract_Value;
+abstract class Abstract_Plugin implements Plugin_Interface
 {
-    protected TextRenderer $renderer;
-
-    public function __construct(TextRenderer $r)
+    protected Text_Renderer $renderer;
+    public function __construct(Text_Renderer $r)
     {
         $this->renderer = $r;
     }
-
-    public function renderLockedHeader(AbstractValue $v, ?string $content = null): string
+    public function render_locked_header(Abstract_Value $v, ?string $content = null): string
     {
         $out = '';
-
-        if (0 === $v->getContext()->getDepth()) {
-            $out .= $this->renderer->colorTitle($this->renderer->renderTitle($v)).PHP_EOL;
+        if (0 === $v->get_context()->get_depth()) {
+            $out .= $this->renderer->color_title($this->renderer->render_title($v)) . PHP_EOL;
         }
-
-        $out .= $this->renderer->renderHeader($v);
-
+        $out .= $this->renderer->render_header($v);
         if (null !== $content) {
-            $out .= ' '.$this->renderer->colorValue($content);
+            $out .= ' ' . $this->renderer->color_value($content);
         }
-
         $out .= PHP_EOL;
-
         return $out;
     }
 }

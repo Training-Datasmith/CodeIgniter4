@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,65 +9,52 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Commands\Utilities\Routes;
 
-namespace CodeIgniter\Commands\Utilities\Routes;
-
-use CodeIgniter\Autoloader\FileLocatorInterface;
-
+use Code_Igniter\Autoloader\File_Locator_Interface;
 /**
  * Finds all controllers in a namespace for auto route listing.
  *
  * @see \CodeIgniter\Commands\Utilities\Routes\ControllerFinderTest
  */
-final readonly class ControllerFinder
+final readonly class Controller_Finder
 {
-    private FileLocatorInterface $locator;
-
+    private File_Locator_Interface $locator;
     /**
      * @param string $namespace namespace to search
      */
-    public function __construct(
-        private string $namespace,
-    ) {
+    public function __construct(private string $namespace)
+    {
         $this->locator = service('locator');
     }
-
     /**
      * @return list<class-string>
      */
     public function find(): array
     {
-        $nsArray = explode('\\', trim($this->namespace, '\\'));
-        $count   = count($nsArray);
-        $ns      = '';
-        $files   = [];
-
+        $ns_array = explode('\\', trim($this->namespace, '\\'));
+        $count = count($ns_array);
+        $ns = '';
+        $files = [];
         for ($i = 0; $i < $count; $i++) {
-            $ns .= '\\' . array_shift($nsArray);
-            $path = implode('\\', $nsArray);
-
-            $files = $this->locator->listNamespaceFiles($ns, $path);
-
+            $ns .= '\\' . array_shift($ns_array);
+            $path = implode('\\', $ns_array);
+            $files = $this->locator->list_namespace_files($ns, $path);
             if ($files !== []) {
                 break;
             }
         }
-
         $classes = [];
-
         foreach ($files as $file) {
             if (\is_file($file)) {
-                $classnameOrEmpty = $this->locator->getClassname($file);
-
-                if ($classnameOrEmpty !== '') {
+                $classname_or_empty = $this->locator->get_classname($file);
+                if ($classname_or_empty !== '') {
                     /** @var class-string $classname */
-                    $classname = $classnameOrEmpty;
-
+                    $classname = $classname_or_empty;
                     $classes[] = $classname;
                 }
             }
         }
-
         return $classes;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Encryption;
 
-namespace CodeIgniter\Encryption;
-
-use CodeIgniter\Encryption\Exceptions\EncryptionException;
-use SensitiveParameter;
-
+use Code_Igniter\Encryption\Exceptions\Encryption_Exception;
+use Sensitive_Parameter;
 /**
  * Key Rotation Decorator
  *
@@ -23,28 +20,29 @@ use SensitiveParameter;
  * fallback to previous encryption keys during decryption. This enables
  * seamless key rotation without requiring re-encryption of existing data.
  */
-class KeyRotationDecorator implements EncrypterInterface
+class Key_Rotation_Decorator implements Encrypter_Interface
 {
     /**
      * @param EncrypterInterface $innerHandler The wrapped encryption handler
      * @param list<string>       $previousKeys Array of previous encryption keys
      */
-    public function __construct(
-        private readonly EncrypterInterface $innerHandler,
-        private readonly array $previousKeys,
-    ) {
+    public function __construct(private readonly Encrypter_Interface $inner_handler, private readonly array $previous_keys)
+    {
     }
-
     /**
      * {@inheritDoc}
      *
      * Encryption always uses the inner handler's current key.
      */
-    public function encrypt(#[SensitiveParameter] $data, #[SensitiveParameter] $params = null)
+    public function encrypt(
+        #[Sensitive_Parameter]
+        $data,
+        #[Sensitive_Parameter]
+        $params = null
+    )
     {
-        return $this->innerHandler->encrypt($data, $params);
+        return $this->inner_handler->encrypt($data, $params);
     }
-
     /**
      * {@inheritDoc}
      *
@@ -53,36 +51,33 @@ class KeyRotationDecorator implements EncrypterInterface
      *
      * @throws EncryptionException
      */
-    public function decrypt($data, #[SensitiveParameter] $params = null)
+    public function decrypt(
+        $data,
+        #[Sensitive_Parameter]
+        $params = null
+    )
     {
         try {
-            return $this->innerHandler->decrypt($data, $params);
-        } catch (EncryptionException $e) {
+            return $this->inner_handler->decrypt($data, $params);
+        } catch (Encryption_Exception $e) {
             // Don't try previous keys if an explicit key was provided
-            if (is_string($params) || (is_array($params) && isset($params['key']))) {
+            if (is_string($params) || is_array($params) && isset($params['key'])) {
                 throw $e;
             }
-
-            if ($this->previousKeys === []) {
+            if ($this->previous_keys === []) {
                 throw $e;
             }
-
-            foreach ($this->previousKeys as $previousKey) {
+            foreach ($this->previous_keys as $previous_key) {
                 try {
-                    $previousParams = is_array($params)
-                        ? array_merge($params, ['key' => $previousKey])
-                        : $previousKey;
-
-                    return $this->innerHandler->decrypt($data, $previousParams);
-                } catch (EncryptionException) {
+                    $previous_params = is_array($params) ? array_merge($params, ['key' => $previous_key]) : $previous_key;
+                    return $this->inner_handler->decrypt($data, $previous_params);
+                } catch (Encryption_Exception) {
                     continue;
                 }
             }
-
             throw $e;
         }
     }
-
     /**
      * Delegate property access to the inner handler.
      *
@@ -90,22 +85,19 @@ class KeyRotationDecorator implements EncrypterInterface
      */
     public function __get(string $key)
     {
-        if (method_exists($this->innerHandler, '__get')) {
-            return $this->innerHandler->__get($key);
+        if (method_exists($this->inner_handler, '__get')) {
+            return $this->inner_handler->__get($key);
         }
-
         return null;
     }
-
     /**
      * Delegate property existence check to inner handler.
      */
     public function __isset(string $key): bool
     {
-        if (method_exists($this->innerHandler, '__isset')) {
-            return $this->innerHandler->__isset($key);
+        if (method_exists($this->inner_handler, '__isset')) {
+            return $this->inner_handler->__isset($key);
         }
-
         return false;
     }
 }

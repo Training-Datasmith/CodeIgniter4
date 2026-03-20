@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,79 +23,61 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Context\BaseContext;
-use Kint\Value\InstanceValue;
+use Kint\Value\Abstract_Value;
+use Kint\Value\Context\Base_Context;
+use Kint\Value\Instance_Value;
 use ReflectionClass;
-
-class ClassStringsPlugin extends AbstractPlugin implements PluginCompleteInterface
+class Class_Strings_Plugin extends Abstract_Plugin implements Plugin_Complete_Interface
 {
     public static array $blacklist = [];
-
-    protected ClassMethodsPlugin $methods_plugin;
-    protected ClassStaticsPlugin $statics_plugin;
-
+    protected Class_Methods_Plugin $methods_plugin;
+    protected Class_Statics_Plugin $statics_plugin;
     public function __construct(Parser $parser)
     {
         parent::__construct($parser);
-
-        $this->methods_plugin = new ClassMethodsPlugin($parser);
-        $this->statics_plugin = new ClassStaticsPlugin($parser);
+        $this->methods_plugin = new Class_Methods_Plugin($parser);
+        $this->statics_plugin = new Class_Statics_Plugin($parser);
     }
-
-    public function setParser(Parser $p): void
+    public function set_parser(Parser $p): void
     {
-        parent::setParser($p);
-
-        $this->methods_plugin->setParser($p);
-        $this->statics_plugin->setParser($p);
+        parent::set_parser($p);
+        $this->methods_plugin->set_parser($p);
+        $this->statics_plugin->set_parser($p);
     }
-
-    public function getTypes(): array
+    public function get_types(): array
     {
         return ['string'];
     }
-
-    public function getTriggers(): int
+    public function get_triggers(): int
     {
         return Parser::TRIGGER_SUCCESS;
     }
-
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value
     {
-        $c = $v->getContext();
-
-        if ($c->getDepth() > 0) {
+        $c = $v->get_context();
+        if ($c->get_depth() > 0) {
             return $v;
         }
-
         if (!\class_exists($var, true)) {
             return $v;
         }
-
         if (\in_array($var, self::$blacklist, true)) {
             return $v;
         }
-
         $r = new ReflectionClass($var);
-
-        $fakeC = new BaseContext($c->getName());
-        $fakeC->access_path = null;
-        $fakeV = new InstanceValue($fakeC, $r->getName(), 'badhash', -1);
-        $fakeVar = null;
-
-        $fakeV = $this->methods_plugin->parseComplete($fakeVar, $fakeV, Parser::TRIGGER_SUCCESS);
-        $fakeV = $this->statics_plugin->parseComplete($fakeVar, $fakeV, Parser::TRIGGER_SUCCESS);
-
+        $fake_c = new Base_Context($c->get_name());
+        $fake_c->access_path = null;
+        $fake_v = new Instance_Value($fake_c, $r->get_name(), 'badhash', -1);
+        $fake_var = null;
+        $fake_v = $this->methods_plugin->parse_complete($fake_var, $fake_v, Parser::TRIGGER_SUCCESS);
+        $fake_v = $this->statics_plugin->parse_complete($fake_var, $fake_v, Parser::TRIGGER_SUCCESS);
         foreach (['methods', 'static_methods', 'statics', 'constants'] as $rep) {
-            if ($rep = $fakeV->getRepresentation($rep)) {
-                $v->addRepresentation($rep);
+            if ($rep = $fake_v->get_representation($rep)) {
+                $v->add_representation($rep);
             }
         }
-
         return $v;
     }
 }

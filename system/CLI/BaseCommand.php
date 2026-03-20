@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,14 +9,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\CLI;
+namespace Code_Igniter\CLI;
 
 use Config\Exceptions;
-use Psr\Log\LoggerInterface;
-use ReflectionException;
+use Psr\Log\Logger_Interface;
+use Reflection_Exception;
 use Throwable;
-
 /**
  * BaseCommand is the base class used in creating CLI commands.
  *
@@ -30,7 +27,7 @@ use Throwable;
  * @property array<string, string> $options
  * @property string                $usage
  */
-abstract class BaseCommand
+abstract class Base_Command
 {
     /**
      * The group the command is lumped under
@@ -39,49 +36,42 @@ abstract class BaseCommand
      * @var string
      */
     protected $group;
-
     /**
      * The Command's name
      *
      * @var string
      */
     protected $name;
-
     /**
      * the Command's usage description
      *
      * @var string
      */
     protected $usage;
-
     /**
      * the Command's short description
      *
      * @var string
      */
     protected $description;
-
     /**
      * the Command's options description
      *
      * @var array<string, string>
      */
     protected $options = [];
-
     /**
      * the Command's Arguments description
      *
      * @var array<string, string>
      */
     protected $arguments = [];
-
     /**
      * The Logger to use for a command
      *
      * @var LoggerInterface
      */
     protected $logger;
-
     /**
      * Instance of Commands so
      * commands can call other commands.
@@ -89,13 +79,11 @@ abstract class BaseCommand
      * @var Commands
      */
     protected $commands;
-
-    public function __construct(LoggerInterface $logger, Commands $commands)
+    public function __construct(Logger_Interface $logger, Commands $commands)
     {
-        $this->logger   = $logger;
+        $this->logger = $logger;
         $this->commands = $commands;
     }
-
     /**
      * Actually execute a command.
      *
@@ -104,7 +92,6 @@ abstract class BaseCommand
      * @return int|void
      */
     abstract public function run(array $params);
-
     /**
      * Can be used by a command to run other commands.
      *
@@ -118,81 +105,67 @@ abstract class BaseCommand
     {
         return $this->commands->run($command, $params);
     }
-
     /**
      * A simple method to display an error with line/file, in child commands.
      *
      * @return void
      */
-    protected function showError(Throwable $e)
+    protected function show_error(Throwable $e)
     {
         $exception = $e;
-        $message   = $e->getMessage();
-        $config    = config(Exceptions::class);
-
-        require $config->errorViewPath . '/cli/error_exception.php';
+        $message = $e->get_message();
+        $config = config(Exceptions::class);
+        require $config->error_view_path . '/cli/error_exception.php';
     }
-
     /**
      * Show Help includes (Usage, Arguments, Description, Options).
      *
      * @return void
      */
-    public function showHelp()
+    public function show_help()
     {
         CLI::write(lang('CLI.helpUsage'), 'yellow');
-
         if ($this->usage !== null) {
             $usage = $this->usage;
         } else {
             $usage = $this->name;
-
             if ($this->arguments !== []) {
                 $usage .= ' [arguments]';
             }
         }
-
-        CLI::write($this->setPad($usage, 0, 0, 2));
-
+        CLI::write($this->set_pad($usage, 0, 0, 2));
         if ($this->description !== null) {
-            CLI::newLine();
+            CLI::new_line();
             CLI::write(lang('CLI.helpDescription'), 'yellow');
-            CLI::write($this->setPad($this->description, 0, 0, 2));
+            CLI::write($this->set_pad($this->description, 0, 0, 2));
         }
-
         if ($this->arguments !== []) {
-            CLI::newLine();
+            CLI::new_line();
             CLI::write(lang('CLI.helpArguments'), 'yellow');
             $length = max(array_map(strlen(...), array_keys($this->arguments)));
-
             foreach ($this->arguments as $argument => $description) {
-                CLI::write(CLI::color($this->setPad($argument, $length, 2, 2), 'green') . $description);
+                CLI::write(CLI::color($this->set_pad($argument, $length, 2, 2), 'green') . $description);
             }
         }
-
         if ($this->options !== []) {
-            CLI::newLine();
+            CLI::new_line();
             CLI::write(lang('CLI.helpOptions'), 'yellow');
             $length = max(array_map(strlen(...), array_keys($this->options)));
-
             foreach ($this->options as $option => $description) {
-                CLI::write(CLI::color($this->setPad($option, $length, 2, 2), 'green') . $description);
+                CLI::write(CLI::color($this->set_pad($option, $length, 2, 2), 'green') . $description);
             }
         }
     }
-
     /**
      * Pads our string out so that all titles are the same length to nicely line up descriptions.
      *
      * @param int $extra How many extra spaces to add at the end
      */
-    public function setPad(string $item, int $max, int $extra = 2, int $indent = 0): string
+    public function set_pad(string $item, int $max, int $extra = 2, int $indent = 0): string
     {
         $max += $extra + $indent;
-
         return str_pad(str_repeat(' ', $indent) . $item, $max);
     }
-
     /**
      * Get pad for $key => $value array output
      *
@@ -202,17 +175,14 @@ abstract class BaseCommand
      *
      * @codeCoverageIgnore
      */
-    public function getPad(array $array, int $pad): int
+    public function get_pad(array $array, int $pad): int
     {
         $max = 0;
-
         foreach (array_keys($array) as $key) {
             $max = max($max, strlen($key));
         }
-
         return $max + $pad;
     }
-
     /**
      * Makes it simple to access our protected properties.
      *
@@ -222,7 +192,6 @@ abstract class BaseCommand
     {
         return $this->{$key} ?? null;
     }
-
     /**
      * Makes it simple to check our protected properties.
      */

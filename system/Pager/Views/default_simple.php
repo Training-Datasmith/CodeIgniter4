@@ -1,22 +1,37 @@
 <?php
 
-use CodeIgniter\Pager\PagerRenderer;
-
+use Code_Igniter\Pager\Pager_Renderer;
 /**
  * @var PagerRenderer $pager
  */
-$pager->setSurroundCount(0);
+$pager->set_surround_count(0);
 ?>
 <nav>
 	<ul class="pager">
-		<li <?= $pager->hasPrevious() ? '' : 'class="disabled"' ?>>
-			<a href="<?= $pager->getPrevious() ?? '#' ?>" aria-label="<?= lang('Pager.previous') ?>">
-				<span aria-hidden="true"><?= lang('Pager.newer') ?></span>
+		<li <?php 
+echo $pager->has_previous() ? '' : 'class="disabled"';
+?>>
+			<a href="<?php 
+echo $pager->get_previous() ?? '#';
+?>" aria-label="<?php 
+echo lang('Pager.previous');
+?>">
+				<span aria-hidden="true"><?php 
+echo lang('Pager.newer');
+?></span>
 			</a>
 		</li>
-		<li <?= $pager->hasNext() ? '' : 'class="disabled"' ?>>
-			<a href="<?= $pager->getNext() ?? '#' ?>" aria-label="<?= lang('Pager.next') ?>">
-				<span aria-hidden="true"><?= lang('Pager.older') ?></span>
+		<li <?php 
+echo $pager->has_next() ? '' : 'class="disabled"';
+?>>
+			<a href="<?php 
+echo $pager->get_next() ?? '#';
+?>" aria-label="<?php 
+echo lang('Pager.next');
+?>">
+				<span aria-hidden="true"><?php 
+echo lang('Pager.older');
+?></span>
 			</a>
 		</li>
 	</ul>

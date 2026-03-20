@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,21 +9,17 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Entity\Cast;
 
-namespace CodeIgniter\Entity\Cast;
-
-use CodeIgniter\Entity\Exceptions\CastException;
-
-class TimestampCast extends BaseCast
+use Code_Igniter\Entity\Exceptions\Cast_Exception;
+class Timestamp_Cast extends Base_Cast
 {
     public static function get($value, array $params = [])
     {
         $value = strtotime($value);
-
         if ($value === false) {
-            throw CastException::forInvalidTimestamp();
+            throw Cast_Exception::for_invalid_timestamp();
         }
-
         return $value;
     }
 }

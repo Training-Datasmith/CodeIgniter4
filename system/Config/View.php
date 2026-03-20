@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,18 +9,16 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Config;
 
-namespace CodeIgniter\Config;
-
-use CodeIgniter\View\ViewDecoratorInterface;
-
+use Code_Igniter\View\View_Decorator_Interface;
 /**
  * View configuration
  *
  * @phpstan-type parser_callable (callable(mixed): mixed)
  * @phpstan-type parser_callable_string (callable(mixed): mixed)&string
  */
-class View extends BaseConfig
+class View extends Base_Config
 {
     /**
      * When false, the view method will clear the data between each
@@ -29,8 +26,7 @@ class View extends BaseConfig
      *
      * @var bool
      */
-    public $saveData = true;
-
+    public $save_data = true;
     /**
      * Parser Filters map a filter name with any PHP callable. When the
      * Parser prepares a variable for display, it will chain it
@@ -45,7 +41,6 @@ class View extends BaseConfig
      * @phpstan-var array<string, parser_callable_string>
      */
     public $filters = [];
-
     /**
      * Parser Plugins provide a way to extend the functionality provided
      * by the core Parser by creating aliases that will be replaced with
@@ -57,7 +52,6 @@ class View extends BaseConfig
      * @phpstan-var array<string, list<parser_callable_string>|parser_callable_string|parser_callable>
      */
     public $plugins = [];
-
     /**
      * Built-in View filters.
      *
@@ -66,30 +60,7 @@ class View extends BaseConfig
      * @var         array<string, string>
      * @phpstan-var array<string, parser_callable_string>
      */
-    protected $coreFilters = [
-        'abs'            => '\abs',
-        'capitalize'     => '\CodeIgniter\View\Filters::capitalize',
-        'date'           => '\CodeIgniter\View\Filters::date',
-        'date_modify'    => '\CodeIgniter\View\Filters::date_modify',
-        'default'        => '\CodeIgniter\View\Filters::default',
-        'esc'            => '\CodeIgniter\View\Filters::esc',
-        'excerpt'        => '\CodeIgniter\View\Filters::excerpt',
-        'highlight'      => '\CodeIgniter\View\Filters::highlight',
-        'highlight_code' => '\CodeIgniter\View\Filters::highlight_code',
-        'limit_words'    => '\CodeIgniter\View\Filters::limit_words',
-        'limit_chars'    => '\CodeIgniter\View\Filters::limit_chars',
-        'local_currency' => '\CodeIgniter\View\Filters::local_currency',
-        'local_number'   => '\CodeIgniter\View\Filters::local_number',
-        'lower'          => '\strtolower',
-        'nl2br'          => '\CodeIgniter\View\Filters::nl2br',
-        'number_format'  => '\number_format',
-        'prose'          => '\CodeIgniter\View\Filters::prose',
-        'round'          => '\CodeIgniter\View\Filters::round',
-        'strip_tags'     => '\strip_tags',
-        'title'          => '\CodeIgniter\View\Filters::title',
-        'upper'          => '\strtoupper',
-    ];
-
+    protected $core_filters = ['abs' => '\abs', 'capitalize' => '\CodeIgniter\View\Filters::capitalize', 'date' => '\CodeIgniter\View\Filters::date', 'date_modify' => '\CodeIgniter\View\Filters::date_modify', 'default' => '\CodeIgniter\View\Filters::default', 'esc' => '\CodeIgniter\View\Filters::esc', 'excerpt' => '\CodeIgniter\View\Filters::excerpt', 'highlight' => '\CodeIgniter\View\Filters::highlight', 'highlight_code' => '\CodeIgniter\View\Filters::highlight_code', 'limit_words' => '\CodeIgniter\View\Filters::limit_words', 'limit_chars' => '\CodeIgniter\View\Filters::limit_chars', 'local_currency' => '\CodeIgniter\View\Filters::local_currency', 'local_number' => '\CodeIgniter\View\Filters::local_number', 'lower' => '\strtolower', 'nl2br' => '\CodeIgniter\View\Filters::nl2br', 'number_format' => '\number_format', 'prose' => '\CodeIgniter\View\Filters::prose', 'round' => '\CodeIgniter\View\Filters::round', 'strip_tags' => '\strip_tags', 'title' => '\CodeIgniter\View\Filters::title', 'upper' => '\strtoupper'];
     /**
      * Built-in View plugins.
      *
@@ -98,19 +69,7 @@ class View extends BaseConfig
      * @var         array<string, callable|list<string>|string>
      * @phpstan-var array<string, array<parser_callable_string>|parser_callable_string|parser_callable>
      */
-    protected $corePlugins = [
-        'csp_script_nonce'  => '\CodeIgniter\View\Plugins::cspScriptNonce',
-        'csp_style_nonce'   => '\CodeIgniter\View\Plugins::cspStyleNonce',
-        'current_url'       => '\CodeIgniter\View\Plugins::currentURL',
-        'previous_url'      => '\CodeIgniter\View\Plugins::previousURL',
-        'mailto'            => '\CodeIgniter\View\Plugins::mailto',
-        'safe_mailto'       => '\CodeIgniter\View\Plugins::safeMailto',
-        'lang'              => '\CodeIgniter\View\Plugins::lang',
-        'validation_errors' => '\CodeIgniter\View\Plugins::validationErrors',
-        'route'             => '\CodeIgniter\View\Plugins::route',
-        'siteURL'           => '\CodeIgniter\View\Plugins::siteURL',
-    ];
-
+    protected $core_plugins = ['csp_script_nonce' => '\CodeIgniter\View\Plugins::cspScriptNonce', 'csp_style_nonce' => '\CodeIgniter\View\Plugins::cspStyleNonce', 'current_url' => '\CodeIgniter\View\Plugins::currentURL', 'previous_url' => '\CodeIgniter\View\Plugins::previousURL', 'mailto' => '\CodeIgniter\View\Plugins::mailto', 'safe_mailto' => '\CodeIgniter\View\Plugins::safeMailto', 'lang' => '\CodeIgniter\View\Plugins::lang', 'validation_errors' => '\CodeIgniter\View\Plugins::validationErrors', 'route' => '\CodeIgniter\View\Plugins::route', 'siteURL' => '\CodeIgniter\View\Plugins::siteURL'];
     /**
      * View Decorators are class methods that will be run in sequence to
      * have a chance to alter the generated output just prior to caching
@@ -121,16 +80,14 @@ class View extends BaseConfig
      * @var list<class-string<ViewDecoratorInterface>>
      */
     public array $decorators = [];
-
     /**
      * Merge the built-in and developer-configured filters and plugins,
      * with preference to the developer ones.
      */
     public function __construct()
     {
-        $this->filters = array_merge($this->coreFilters, $this->filters);
-        $this->plugins = array_merge($this->corePlugins, $this->plugins);
-
+        $this->filters = array_merge($this->core_filters, $this->filters);
+        $this->plugins = array_merge($this->core_plugins, $this->plugins);
         parent::__construct();
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,19 +23,17 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Parser;
 
-use Kint\Value\AbstractValue;
-
+use Kint\Value\Abstract_Value;
 /**
  * @psalm-import-type ParserTrigger from Parser
  */
-interface PluginCompleteInterface extends PluginInterface
+interface Plugin_Complete_Interface extends Plugin_Interface
 {
     /**
      * @psalm-param mixed &$var
      * @psalm-param ParserTrigger $trigger
      */
-    public function parseComplete(&$var, AbstractValue $v, int $trigger): AbstractValue;
+    public function parse_complete(&$var, Abstract_Value $v, int $trigger): Abstract_Value;
 }

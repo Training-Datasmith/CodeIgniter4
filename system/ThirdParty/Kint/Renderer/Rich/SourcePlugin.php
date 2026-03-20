@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,59 +23,47 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-use Kint\Value\Representation\RepresentationInterface;
-use Kint\Value\Representation\SourceRepresentation;
-
-class SourcePlugin extends AbstractPlugin implements TabPluginInterface
+use Kint\Value\Abstract_Value;
+use Kint\Value\Representation\Representation_Interface;
+use Kint\Value\Representation\Source_Representation;
+class Source_Plugin extends Abstract_Plugin implements Tab_Plugin_Interface
 {
-    public function renderTab(RepresentationInterface $r, AbstractValue $v): ?string
+    public function render_tab(Representation_Interface $r, Abstract_Value $v): ?string
     {
-        if (!$r instanceof SourceRepresentation) {
+        if (!$r instanceof Source_Representation) {
             return null;
         }
-
-        $source = $r->getSourceLines();
-
+        $source = $r->get_source_lines();
         // Trim empty lines from the start and end of the source
         foreach ($source as $linenum => $line) {
-            if (\strlen(\trim($line)) || $linenum === $r->getLine()) {
+            if (\strlen(\trim($line)) || $linenum === $r->get_line()) {
                 break;
             }
-
             unset($source[$linenum]);
         }
-
         foreach (\array_reverse($source, true) as $linenum => $line) {
-            if (\strlen(\trim($line)) || $linenum === $r->getLine()) {
+            if (\strlen(\trim($line)) || $linenum === $r->get_line()) {
                 break;
             }
-
             unset($source[$linenum]);
         }
-
         $output = '';
-
         foreach ($source as $linenum => $line) {
-            if ($linenum === $r->getLine()) {
-                $output .= '<div class="kint-highlight">'.$this->renderer->escape($line)."\n".'</div>';
+            if ($linenum === $r->get_line()) {
+                $output .= '<div class="kint-highlight">' . $this->renderer->escape($line) . "\n" . '</div>';
             } else {
-                $output .= '<div>'.$this->renderer->escape($line)."\n".'</div>';
+                $output .= '<div>' . $this->renderer->escape($line) . "\n" . '</div>';
             }
         }
-
         if ($output) {
             $data = '';
-            if ($r->showFileName()) {
-                $data = ' data-kint-filename="'.$this->renderer->escape($r->getFileName()).'"';
+            if ($r->show_file_name()) {
+                $data = ' data-kint-filename="' . $this->renderer->escape($r->get_file_name()) . '"';
             }
-
-            return '<div><pre class="kint-source"'.$data.' style="counter-reset: kint-l '.((int) \array_key_first($source) - 1).';">'.$output.'</pre></div><div></div>';
+            return '<div><pre class="kint-source"' . $data . ' style="counter-reset: kint-l ' . ((int) \array_key_first($source) - 1) . ';">' . $output . '</pre></div><div></div>';
         }
-
         return null;
     }
 }

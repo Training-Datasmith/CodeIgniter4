@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,89 +9,72 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Database\SQLite3;
+namespace Code_Igniter\Database\Sq_Lite3;
 
 use Closure;
-use CodeIgniter\Database\BaseResult;
-use CodeIgniter\Database\Exceptions\DatabaseException;
-use CodeIgniter\Entity\Entity;
-use SQLite3;
-use SQLite3Result;
+use Code_Igniter\Database\Base_Result;
+use Code_Igniter\Database\Exceptions\Database_Exception;
+use Code_Igniter\Entity\Entity;
+use Sq_Lite3;
+use Sq_Lite3result;
 use stdClass;
-
 /**
  * Result for SQLite3
  *
  * @extends BaseResult<SQLite3, SQLite3Result>
  */
-class Result extends BaseResult
+class Result extends Base_Result
 {
     /**
      * Gets the number of fields in the result set.
      */
-    public function getFieldCount(): int
+    public function get_field_count(): int
     {
-        return $this->resultID->numColumns();
+        return $this->result_id->num_columns();
     }
-
     /**
      * Generates an array of column names in the result set.
      */
-    public function getFieldNames(): array
+    public function get_field_names(): array
     {
-        $fieldNames = [];
-
-        for ($i = 0, $c = $this->getFieldCount(); $i < $c; $i++) {
-            $fieldNames[] = $this->resultID->columnName($i);
+        $field_names = [];
+        for ($i = 0, $c = $this->get_field_count(); $i < $c; $i++) {
+            $field_names[] = $this->result_id->column_name($i);
         }
-
-        return $fieldNames;
+        return $field_names;
     }
-
     /**
      * Generates an array of objects representing field meta-data.
      */
-    public function getFieldData(): array
+    public function get_field_data(): array
     {
-        static $dataTypes = [
-            SQLITE3_INTEGER => 'integer',
-            SQLITE3_FLOAT   => 'float',
-            SQLITE3_TEXT    => 'text',
-            SQLITE3_BLOB    => 'blob',
-            SQLITE3_NULL    => 'null',
-        ];
-
-        $retVal = [];
-        $this->resultID->fetchArray(SQLITE3_NUM);
-
-        for ($i = 0, $c = $this->getFieldCount(); $i < $c; $i++) {
-            $retVal[$i]             = new stdClass();
-            $retVal[$i]->name       = $this->resultID->columnName($i);
-            $type                   = $this->resultID->columnType($i);
-            $retVal[$i]->type       = $type;
-            $retVal[$i]->type_name  = $dataTypes[$type] ?? null;
-            $retVal[$i]->max_length = null;
-            $retVal[$i]->length     = null;
+        static $data_types = [SQLITE3_INTEGER => 'integer', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
+        $ret_val = [];
+        $this->result_id->fetch_array(SQLITE3_NUM);
+        for ($i = 0, $c = $this->get_field_count(); $i < $c; $i++) {
+            $ret_val[$i] = new stdClass();
+            $ret_val[$i]->name = $this->result_id->column_name($i);
+            $type = $this->result_id->column_type($i);
+            $ret_val[$i]->type = $type;
+            $ret_val[$i]->type_name = $data_types[$type] ?? null;
+            $ret_val[$i]->max_length = null;
+            $ret_val[$i]->length = null;
         }
-        $this->resultID->reset();
-
-        return $retVal;
+        $this->result_id->reset();
+        return $ret_val;
     }
-
     /**
      * Frees the current result.
      *
      * @return void
      */
-    public function freeResult()
+    public function free_result()
     {
-        if (is_object($this->resultID)) {
-            $this->resultID->finalize();
-            $this->resultID = false;
+        if (is_object($this->result_id)) {
+            $this->result_id->finalize();
+            $this->result_id = false;
         }
     }
-
     /**
      * Moves the internal pointer to the desired offset. This is called
      * internally before fetching results to make sure the result set
@@ -102,15 +84,13 @@ class Result extends BaseResult
      *
      * @throws DatabaseException
      */
-    public function dataSeek(int $n = 0)
+    public function data_seek(int $n = 0)
     {
         if ($n !== 0) {
-            throw new DatabaseException('SQLite3 doesn\'t support seeking to other offset.');
+            throw new Database_Exception('SQLite3 doesn\'t support seeking to other offset.');
         }
-
-        return $this->resultID->reset();
+        return $this->result_id->reset();
     }
-
     /**
      * Returns the result set as an array.
      *
@@ -118,11 +98,10 @@ class Result extends BaseResult
      *
      * @return array|false
      */
-    protected function fetchAssoc()
+    protected function fetch_assoc()
     {
-        return $this->resultID->fetchArray(SQLITE3_ASSOC);
+        return $this->result_id->fetch_array(SQLITE3_ASSOC);
     }
-
     /**
      * Returns the result set as an object.
      *
@@ -130,31 +109,25 @@ class Result extends BaseResult
      *
      * @return Entity|false|object|stdClass
      */
-    protected function fetchObject(string $className = 'stdClass')
+    protected function fetch_object(string $class_name = 'stdClass')
     {
         // No native support for fetching rows as objects
-        if (($row = $this->fetchAssoc()) === false) {
+        if (($row = $this->fetch_assoc()) === false) {
             return false;
         }
-
-        if ($className === 'stdClass') {
+        if ($class_name === 'stdClass') {
             return (object) $row;
         }
-
-        $classObj = new $className();
-
-        if (is_subclass_of($className, Entity::class)) {
-            return $classObj->injectRawData($row);
+        $class_obj = new $class_name();
+        if (is_subclass_of($class_name, Entity::class)) {
+            return $class_obj->inject_raw_data($row);
         }
-
-        $classSet = Closure::bind(function ($key, $value): void {
+        $class_set = Closure::bind(function ($key, $value): void {
             $this->{$key} = $value;
-        }, $classObj, $className);
-
+        }, $class_obj, $class_name);
         foreach (array_keys($row) as $key) {
-            $classSet($key, $row[$key]);
+            $class_set($key, $row[$key]);
         }
-
-        return $classObj;
+        return $class_obj;
     }
 }

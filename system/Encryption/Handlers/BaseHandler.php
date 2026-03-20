@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,16 +9,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Encryption\Handlers;
 
-namespace CodeIgniter\Encryption\Handlers;
-
-use CodeIgniter\Encryption\EncrypterInterface;
+use Code_Igniter\Encryption\Encrypter_Interface;
 use Config\Encryption;
-
 /**
  * Base class for encryption handling
  */
-abstract class BaseHandler implements EncrypterInterface
+abstract class Base_Handler implements Encrypter_Interface
 {
     /**
      * Constructor
@@ -27,7 +24,6 @@ abstract class BaseHandler implements EncrypterInterface
     public function __construct(?Encryption $config = null)
     {
         $config ??= config(Encryption::class);
-
         // make the parameters conveniently accessible
         foreach (get_object_vars($config) as $key => $value) {
             if (property_exists($this, $key)) {
@@ -35,7 +31,6 @@ abstract class BaseHandler implements EncrypterInterface
             }
         }
     }
-
     /**
      * Byte-safe substr()
      *
@@ -49,7 +44,6 @@ abstract class BaseHandler implements EncrypterInterface
     {
         return mb_substr($str, $start, $length, '8bit');
     }
-
     /**
      * __get() magic, providing readonly access to some of our properties
      *
@@ -62,10 +56,8 @@ abstract class BaseHandler implements EncrypterInterface
         if ($this->__isset($key)) {
             return $this->{$key};
         }
-
         return null;
     }
-
     /**
      * __isset() magic, providing checking for some of our properties
      *

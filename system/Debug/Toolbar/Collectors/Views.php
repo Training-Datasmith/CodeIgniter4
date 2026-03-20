@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,15 +9,13 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
+namespace Code_Igniter\Debug\Toolbar\Collectors;
 
-namespace CodeIgniter\Debug\Toolbar\Collectors;
-
-use CodeIgniter\View\RendererInterface;
-
+use Code_Igniter\View\Renderer_Interface;
 /**
  * Views collector
  */
-class Views extends BaseCollector
+class Views extends Base_Collector
 {
     /**
      * Whether this collector has data that can
@@ -26,32 +23,28 @@ class Views extends BaseCollector
      *
      * @var bool
      */
-    protected $hasTimeline = true;
-
+    protected $has_timeline = true;
     /**
      * Whether this collector needs to display
      * content in a tab or not.
      *
      * @var bool
      */
-    protected $hasTabContent = false;
-
+    protected $has_tab_content = false;
     /**
      * Whether this collector needs to display
      * a label or not.
      *
      * @var bool
      */
-    protected $hasLabel = true;
-
+    protected $has_label = true;
     /**
      * Whether this collector has data that
      * should be shown in the Vars tab.
      *
      * @var bool
      */
-    protected $hasVarData = true;
-
+    protected $has_var_data = true;
     /**
      * The 'title' of this Collector.
      * Used to name things in the toolbar HTML.
@@ -59,50 +52,36 @@ class Views extends BaseCollector
      * @var string
      */
     protected $title = 'Views';
-
     /**
      * Instance of the shared Renderer service
      *
      * @var RendererInterface|null
      */
     protected $viewer;
-
     /**
      * Views counter
      *
      * @var array
      */
     protected $views = [];
-
-    private function initViewer(): void
+    private function init_viewer(): void
     {
         $this->viewer ??= service('renderer');
     }
-
     /**
      * Child classes should implement this to return the timeline data
      * formatted for correct usage.
      */
-    protected function formatTimelineData(): array
+    protected function format_timeline_data(): array
     {
-        $this->initViewer();
-
+        $this->init_viewer();
         $data = [];
-
-        $rows = $this->viewer->getPerformanceData();
-
+        $rows = $this->viewer->get_performance_data();
         foreach ($rows as $info) {
-            $data[] = [
-                'name'      => 'View: ' . $info['view'],
-                'component' => 'Views',
-                'start'     => $info['start'],
-                'duration'  => $info['end'] - $info['start'],
-            ];
+            $data[] = ['name' => 'View: ' . $info['view'], 'component' => 'Views', 'start' => $info['start'], 'duration' => $info['end'] - $info['start']];
         }
-
         return $data;
     }
-
     /**
      * Gets a collection of data that should be shown in the 'Vars' tab.
      * The format is an array of sections, each with their own array
@@ -119,25 +98,19 @@ class Views extends BaseCollector
      *      ],
      *  ];
      */
-    public function getVarData(): array
+    public function get_var_data(): array
     {
-        $this->initViewer();
-
-        return [
-            'View Data' => $this->viewer->getData(),
-        ];
+        $this->init_viewer();
+        return ['View Data' => $this->viewer->get_data()];
     }
-
     /**
      * Returns a count of all views.
      */
-    public function getBadgeValue(): int
+    public function get_badge_value(): int
     {
-        $this->initViewer();
-
-        return count($this->viewer->getPerformanceData());
+        $this->init_viewer();
+        return count($this->viewer->get_performance_data());
     }
-
     /**
      * Display the icon.
      *

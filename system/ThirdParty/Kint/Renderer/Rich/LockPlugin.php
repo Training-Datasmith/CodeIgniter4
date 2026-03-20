@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /*
  * The MIT License (MIT)
  *
@@ -24,26 +23,23 @@ declare(strict_types=1);
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 namespace Kint\Renderer\Rich;
 
-use Kint\Value\AbstractValue;
-
-class LockPlugin extends AbstractPlugin implements ValuePluginInterface
+use Kint\Value\Abstract_Value;
+class Lock_Plugin extends Abstract_Plugin implements Value_Plugin_Interface
 {
-    public function renderValue(AbstractValue $v): ?string
+    public function render_value(Abstract_Value $v): ?string
     {
-        switch ($v->getHint()) {
+        switch ($v->get_hint()) {
             case 'blacklist':
-                return '<dl>'.$this->renderLockedHeader($v, '<var>Blacklisted</var>').'</dl>';
+                return '<dl>' . $this->render_locked_header($v, '<var>Blacklisted</var>') . '</dl>';
             case 'recursion':
-                return '<dl>'.$this->renderLockedHeader($v, '<var>Recursion</var>').'</dl>';
+                return '<dl>' . $this->render_locked_header($v, '<var>Recursion</var>') . '</dl>';
             case 'depth_limit':
-                return '<dl>'.$this->renderLockedHeader($v, '<var>Depth Limit</var>').'</dl>';
+                return '<dl>' . $this->render_locked_header($v, '<var>Depth Limit</var>') . '</dl>';
             case 'array_limit':
-                return '<dl>'.$this->renderLockedHeader($v, '<var>Array Limit</var>').'</dl>';
+                return '<dl>' . $this->render_locked_header($v, '<var>Array Limit</var>') . '</dl>';
         }
-
         return null;
     }
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,36 +9,30 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\Commands\Utilities\Routes\AutoRouterImproved;
+namespace Code_Igniter\Commands\Utilities\Routes\Auto_Router_Improved;
 
 use Config\Routing;
 use ReflectionClass;
 use ReflectionMethod;
-
 /**
  * Reads a controller and returns a list of auto route listing.
  *
  * @see \CodeIgniter\Commands\Utilities\Routes\AutoRouterImproved\ControllerMethodReaderTest
  */
-final readonly class ControllerMethodReader
+final readonly class Controller_Method_Reader
 {
-    private bool $translateURIDashes;
-    private bool $translateUriToCamelCase;
-
+    private bool $translate_uri_dashes;
+    private bool $translate_uri_to_camel_case;
     /**
      * @param string       $namespace   the default namespace
      * @param list<string> $httpMethods
      */
-    public function __construct(
-        private string $namespace,
-        private array $httpMethods,
-    ) {
-        $config                        = config(Routing::class);
-        $this->translateURIDashes      = $config->translateURIDashes;
-        $this->translateUriToCamelCase = $config->translateUriToCamelCase;
+    public function __construct(private string $namespace, private array $http_methods)
+    {
+        $config = config(Routing::class);
+        $this->translate_uri_dashes = $config->translate_uri_dashes;
+        $this->translate_uri_to_camel_case = $config->translate_uri_to_camel_case;
     }
-
     /**
      * Returns found route info in the controller.
      *
@@ -47,197 +40,126 @@ final readonly class ControllerMethodReader
      *
      * @return list<array<string, array|string>>
      */
-    public function read(string $class, string $defaultController = 'Home', string $defaultMethod = 'index'): array
+    public function read(string $class, string $default_controller = 'Home', string $default_method = 'index'): array
     {
         $reflection = new ReflectionClass($class);
-
-        if ($reflection->isAbstract()) {
+        if ($reflection->is_abstract()) {
             return [];
         }
-
-        $classname      = $reflection->getName();
-        $classShortname = $reflection->getShortName();
-
-        $output     = [];
-        $classInUri = $this->convertClassNameToUri($classname);
-
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            $methodName = $method->getName();
-
-            foreach ($this->httpMethods as $httpVerb) {
-                if (str_starts_with($methodName, strtolower($httpVerb))) {
+        $classname = $reflection->get_name();
+        $class_shortname = $reflection->get_short_name();
+        $output = [];
+        $class_in_uri = $this->convert_class_name_to_uri($classname);
+        foreach ($reflection->get_methods(ReflectionMethod::IS_PUBLIC) as $method) {
+            $method_name = $method->get_name();
+            foreach ($this->http_methods as $http_verb) {
+                if (str_starts_with($method_name, strtolower($http_verb))) {
                     // Remove HTTP verb prefix.
-                    $methodInUri = $this->convertMethodNameToUri($httpVerb, $methodName);
-
+                    $method_in_uri = $this->convert_method_name_to_uri($http_verb, $method_name);
                     // Check if it is the default method.
-                    if ($methodInUri === $defaultMethod) {
-                        $routeForDefaultController = $this->getRouteForDefaultController(
-                            $classShortname,
-                            $defaultController,
-                            $classInUri,
-                            $classname,
-                            $methodName,
-                            $httpVerb,
-                            $method,
-                        );
-
-                        if ($routeForDefaultController !== []) {
+                    if ($method_in_uri === $default_method) {
+                        $route_for_default_controller = $this->get_route_for_default_controller($class_shortname, $default_controller, $class_in_uri, $classname, $method_name, $http_verb, $method);
+                        if ($route_for_default_controller !== []) {
                             // The controller is the default controller. It only
                             // has a route for the default method. Other methods
                             // will not be routed even if they exist.
-                            $output = [...$output, ...$routeForDefaultController];
-
+                            $output = [...$output, ...$route_for_default_controller];
                             continue;
                         }
-
-                        [$params, $routeParams] = $this->getParameters($method);
-
+                        [$params, $route_params] = $this->get_parameters($method);
                         // Route for the default method.
-                        $output[] = [
-                            'method'       => $httpVerb,
-                            'route'        => $classInUri,
-                            'route_params' => $routeParams,
-                            'handler'      => '\\' . $classname . '::' . $methodName,
-                            'params'       => $params,
-                        ];
-
+                        $output[] = ['method' => $http_verb, 'route' => $class_in_uri, 'route_params' => $route_params, 'handler' => '\\' . $classname . '::' . $method_name, 'params' => $params];
                         continue;
                     }
-
-                    $route = $classInUri . '/' . $methodInUri;
-
-                    [$params, $routeParams] = $this->getParameters($method);
-
+                    $route = $class_in_uri . '/' . $method_in_uri;
+                    [$params, $route_params] = $this->get_parameters($method);
                     // If it is the default controller, the method will not be
                     // routed.
-                    if ($classShortname === $defaultController) {
+                    if ($class_shortname === $default_controller) {
                         $route = 'x ' . $route;
                     }
-
-                    $output[] = [
-                        'method'       => $httpVerb,
-                        'route'        => $route,
-                        'route_params' => $routeParams,
-                        'handler'      => '\\' . $classname . '::' . $methodName,
-                        'params'       => $params,
-                    ];
+                    $output[] = ['method' => $http_verb, 'route' => $route, 'route_params' => $route_params, 'handler' => '\\' . $classname . '::' . $method_name, 'params' => $params];
                 }
             }
         }
-
         return $output;
     }
-
-    private function getParameters(ReflectionMethod $method): array
+    private function get_parameters(ReflectionMethod $method): array
     {
-        $params      = [];
-        $routeParams = '';
-        $refParams   = $method->getParameters();
-
-        foreach ($refParams as $param) {
+        $params = [];
+        $route_params = '';
+        $ref_params = $method->get_parameters();
+        foreach ($ref_params as $param) {
             $required = true;
-            if ($param->isOptional()) {
+            if ($param->is_optional()) {
                 $required = false;
-
-                $routeParams .= '[/..]';
+                $route_params .= '[/..]';
             } else {
-                $routeParams .= '/..';
+                $route_params .= '/..';
             }
-
             // [variable_name => required?]
-            $params[$param->getName()] = $required;
+            $params[$param->get_name()] = $required;
         }
-
-        return [$params, $routeParams];
+        return [$params, $route_params];
     }
-
     /**
      * @param class-string $classname
      *
      * @return string URI path part from the folder(s) and controller
      */
-    private function convertClassNameToUri(string $classname): string
+    private function convert_class_name_to_uri(string $classname): string
     {
         // remove the namespace
         $pattern = '/' . preg_quote($this->namespace, '/') . '/';
-        $class   = ltrim(preg_replace($pattern, '', $classname), '\\');
-
-        $classParts = explode('\\', $class);
-        $classPath  = '';
-
-        foreach ($classParts as $part) {
+        $class = ltrim(preg_replace($pattern, '', $classname), '\\');
+        $class_parts = explode('\\', $class);
+        $class_path = '';
+        foreach ($class_parts as $part) {
             // make the first letter lowercase, because auto routing makes
             // the URI path's first letter uppercase and search the controller
-            $classPath .= lcfirst($part) . '/';
+            $class_path .= lcfirst($part) . '/';
         }
-
-        $classUri = rtrim($classPath, '/');
-
-        return $this->translateToUri($classUri);
+        $class_uri = rtrim($class_path, '/');
+        return $this->translate_to_uri($class_uri);
     }
-
     /**
      * @return string URI path part from the method
      */
-    private function convertMethodNameToUri(string $httpVerb, string $methodName): string
+    private function convert_method_name_to_uri(string $http_verb, string $method_name): string
     {
-        $methodUri = lcfirst(substr($methodName, strlen($httpVerb)));
-
-        return $this->translateToUri($methodUri);
+        $method_uri = lcfirst(substr($method_name, strlen($http_verb)));
+        return $this->translate_to_uri($method_uri);
     }
-
     /**
      * @param string $string classname or method name
      */
-    private function translateToUri(string $string): string
+    private function translate_to_uri(string $string): string
     {
-        if ($this->translateUriToCamelCase) {
-            $string = strtolower(
-                preg_replace('/([a-z\d])([A-Z])/', '$1-$2', $string),
-            );
-        } elseif ($this->translateURIDashes) {
+        if ($this->translate_uri_to_camel_case) {
+            $string = strtolower(preg_replace('/([a-z\d])([A-Z])/', '$1-$2', $string));
+        } elseif ($this->translate_uri_dashes) {
             $string = str_replace('_', '-', $string);
         }
-
         return $string;
     }
-
     /**
      * Gets a route for the default controller.
      *
      * @return list<array>
      */
-    private function getRouteForDefaultController(
-        string $classShortname,
-        string $defaultController,
-        string $uriByClass,
-        string $classname,
-        string $methodName,
-        string $httpVerb,
-        ReflectionMethod $method,
-    ): array {
+    private function get_route_for_default_controller(string $class_shortname, string $default_controller, string $uri_by_class, string $classname, string $method_name, string $http_verb, ReflectionMethod $method): array
+    {
         $output = [];
-
-        if ($classShortname === $defaultController) {
-            $pattern                = '#' . preg_quote(lcfirst($defaultController), '#') . '\z#';
-            $routeWithoutController = rtrim(preg_replace($pattern, '', $uriByClass), '/');
-            $routeWithoutController = $routeWithoutController !== '' && $routeWithoutController !== '0' ? $routeWithoutController : '/';
-
-            [$params, $routeParams] = $this->getParameters($method);
-
-            if ($routeWithoutController === '/' && $routeParams !== '') {
-                $routeWithoutController = '';
+        if ($class_shortname === $default_controller) {
+            $pattern = '#' . preg_quote(lcfirst($default_controller), '#') . '\z#';
+            $route_without_controller = rtrim(preg_replace($pattern, '', $uri_by_class), '/');
+            $route_without_controller = $route_without_controller !== '' && $route_without_controller !== '0' ? $route_without_controller : '/';
+            [$params, $route_params] = $this->get_parameters($method);
+            if ($route_without_controller === '/' && $route_params !== '') {
+                $route_without_controller = '';
             }
-
-            $output[] = [
-                'method'       => $httpVerb,
-                'route'        => $routeWithoutController,
-                'route_params' => $routeParams,
-                'handler'      => '\\' . $classname . '::' . $methodName,
-                'params'       => $params,
-            ];
+            $output[] = ['method' => $http_verb, 'route' => $route_without_controller, 'route_params' => $route_params, 'handler' => '\\' . $classname . '::' . $method_name, 'params' => $params];
         }
-
         return $output;
     }
 }

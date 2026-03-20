@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -10,12 +9,10 @@ declare(strict_types=1);
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  */
-
-namespace CodeIgniter\I18n;
+namespace Code_Igniter\I18n;
 
 use DateTimeImmutable;
 use Stringable;
-
 /**
  * A localized date/time package inspired
  * by Nesbot/Carbon and CakePHP/Chronos.
@@ -45,5 +42,5 @@ use Stringable;
  */
 class Time extends DateTimeImmutable implements Stringable
 {
-    use TimeTrait;
+    use Time_Trait;
 }
