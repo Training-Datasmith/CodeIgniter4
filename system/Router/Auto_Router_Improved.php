@@ -212,7 +212,7 @@ final class Auto_Router_Improved implements Auto_Router_Interface
         $http_verb = strtolower($http_verb);
         // Reset Controller method params.
         $this->params = [];
-        $default_method = $http_verb . ucfirst($this->default_method);
+        $default_method = $http_verb . '_' . $this->default_method;
         $this->method = $default_method;
         $this->segments = $this->create_segments($uri);
         // Check for Module Routes.
@@ -240,7 +240,7 @@ final class Auto_Router_Improved implements Auto_Router_Interface
         $method_param = array_shift($params);
         $method = '';
         if ($method_param !== null) {
-            $method = $http_verb . $this->translate_uri($method_param);
+            $method = $http_verb . '_' . $this->translate_uri($method_param);
             $this->check_uri_for_method($method);
         }
         if ($method_param !== null && method_exists($this->controller, $method)) {
