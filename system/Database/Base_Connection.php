@@ -314,7 +314,18 @@ abstract class Base_Connection implements Connection_Interface
      */
     protected array $date_format = ['date' => 'Y-m-d', 'datetime' => 'Y-m-d H:i:s', 'datetime-ms' => 'Y-m-d H:i:s.v', 'datetime-us' => 'Y-m-d H:i:s.u', 'time' => 'H:i:s'];
     /**
-     * Saves our connection settings.
+     * Stores connection configuration and resolves the driver-specific Query class.
+     *
+     * The actual database connection is established lazily on the first call to
+     * `initialize()` or `query()`. If a failover configuration is present, the
+     * primary connection is attempted immediately so failover can occur.
+     *
+     * @param array<string, mixed> $params Driver configuration key-value pairs.
+     *   Common keys: `hostname`, `username`, `password`, `database`, `port`,
+     *   `charset`, `DBCollat`, `DBPrefix`, `DBDebug`, `pConnect`, `encrypt`,
+     *   `failover`, `dateFormat`.
+     *   Any key that matches a declared class property is set directly.
+     * @since 4.0.0
      */
     public function __construct(array $params)
     {
@@ -546,13 +557,27 @@ abstract class Base_Connection implements Connection_Interface
      * Should automatically handle different connections for read/write
      * queries if needed.
      *
-     * @param array|string|null $binds
+     * Connection is lazily initialised on the first query if not already open.
+     * In pretend mode (`$this->pretend === true`) the query is compiled but
+     * not actually sent to the database server.
      *
-     * @return BaseResult<TConnection, TResult>|bool|Query
-     *
+     * @param string $sql Raw SQL string to execute. Placeholders (`?` or named) are
+     *   replaced with the values in `$binds` after escaping.
+     * @param array<int|string, mixed>|string|null $binds Positional or named bind values.
+     *   When `null`, the SQL is executed as-is (no parameter binding).
+     * @param bool $set_escape_flags When true (default), automatically marks bound values
+     *   for escaping. Set to false only when you have already escaped the values.
+     * @param string $query_class Fully-qualified class name for the Query object. Defaults
+     *   to the driver-specific Query class derived from the connection class name.
+     * @return \CodeIgniter\Database\BaseResult<TConnection, TResult>|bool|Query
+     *   A BaseResult on SELECT-like queries, `true` on successful write queries,
+     *   `false` on failure, or a Query object in pretend mode.
+     * @throws \CodeIgniter\Database\Exceptions\DatabaseException On query failure when
+     *   `$this->db_debug` is true.
+     * @complexity O(n) where n is the number of rows returned by SELECT queries.
      * @todo BC set $queryClass default as null in 4.1
      */
-    public function query(string $sql, $binds = null, bool $set_escape_flags = true, string $query_class = '')
+    public function query(string $sql, array|string|null $binds = null, bool $set_escape_flags = true, string $query_class = '')
     {
         $query_class = $query_class !== '' && $query_class !== '0' ? $query_class : $this->query_class;
         if (empty($this->conn_id)) {

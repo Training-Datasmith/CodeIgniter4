@@ -112,12 +112,23 @@ class Incoming_Request extends Request
      */
     protected $user_agent;
     /**
-     * Constructor
+     * Initialises the incoming request, reads the raw body from php://input when appropriate,
+     * detects the URI path, and configures the active locale.
      *
-     * @param App         $config
-     * @param string|null $body
+     * Body reading is skipped for multipart form-data (handled by PHP) and when the
+     * declared Content-Length exceeds `post_max_size` (protection against OOM).
+     *
+     * @param App $config Application configuration providing locale and URI settings.
+     * @param URI|null $uri Parsed request URI. Required — an InvalidArgumentException is thrown
+     *   when omitted or not a URI instance.
+     * @param string|null $body Raw request body string, a stream wrapper path such as
+     *   `'php://input'` (default), or `null` to indicate an empty body.
+     * @param User_Agent|null $user_agent Parsed User-Agent value object. Required — an
+     *   InvalidArgumentException is thrown when omitted.
+     * @throws \CodeIgniter\Exceptions\InvalidArgumentException When `$uri` or `$user_agent`
+     *   are not provided.
      */
-    public function __construct($config, ?URI $uri = null, $body = 'php://input', ?User_Agent $user_agent = null)
+    public function __construct(App $config, ?URI $uri = null, string|null $body = 'php://input', ?User_Agent $user_agent = null)
     {
         if (!$uri instanceof URI || !$user_agent instanceof User_Agent) {
             throw new InvalidArgumentException('You must supply the parameters: uri, userAgent.');
@@ -157,11 +168,16 @@ class Incoming_Request extends Request
      * Handles setting up the locale, perhaps auto-detecting through
      * content negotiation.
      *
-     * @param App $config
+     * When `$config->negotiate_locale` is true, the Accept-Language header is
+     * parsed and the best supported locale is selected via `Negotiate::language()`.
+     * Otherwise the application default locale from config is used as-is.
      *
+     * @param App $config Application config object carrying `default_locale`,
+     *   `negotiate_locale` (bool), and `supported_locales` (string[]).
      * @return void
+     * @see \CodeIgniter\HTTP\Negotiate::language() For the Accept-Language negotiation logic.
      */
-    public function detect_locale($config)
+    public function detect_locale(App $config): void
     {
         $this->locale = $this->default_locale = $config->default_locale;
         if (!$config->negotiate_locale) {
@@ -170,8 +186,22 @@ class Incoming_Request extends Request
         $this->set_locale($this->negotiate('language', $config->supported_locales));
     }
     /**
-     * Provides a convenient way to work with the Negotiate class
-     * for content negotiation.
+     * Performs content negotiation for the given dimension.
+     *
+     * Lazily instantiates the Negotiate service on first call. Delegates to the
+     * appropriate Negotiate method based on `$type`.
+     *
+     * @param string $type Negotiation dimension: `'media'`, `'charset'`, `'encoding'`,
+     *   or `'language'`. Case-insensitive.
+     * @param array<string> $supported List of values supported by the application, ordered
+     *   by preference (most preferred first).
+     * @param bool $strict_match When true, only exact matches are accepted; no wildcard
+     *   or quality-factor fallbacks. Applies to `'media'` only.
+     * @return string The best-matching value from `$supported`, or an empty string when no
+     *   match can be found and `$strict_match` is false.
+     * @throws \CodeIgniter\HTTP\Exceptions\HTTPException When `$type` is not a recognised
+     *   negotiation dimension.
+     * @see \CodeIgniter\HTTP\Negotiate For the full negotiation implementation.
      */
     public function negotiate(string $type, array $supported, bool $strict_match = false): string
     {
