@@ -107,9 +107,9 @@
   </file>
   <file src="tests/system/Config/FactoriesTest.php">
     <UndefinedClass>
-      <code><![CDATA['App\Models\UserModel']]></code>
-      <code><![CDATA['App\Models\UserModel']]></code>
-      <code><![CDATA['Config\TestRegistrar']]></code>
+      <code><![CDATA['App\Models\User_Model']]></code>
+      <code><![CDATA['App\Models\User_Model']]></code>
+      <code><![CDATA['Config\Test_Registrar']]></code>
     </UndefinedClass>
   </file>
   <file src="tests/system/Database/Live/OCI8/CallStoredProcedureTest.php">

@@ -7,7 +7,7 @@
 #   - Debug
 #   - Exception
 #   - Service
-#   - Validation\FormatRules
+#   - Validation\Format_Rules
 deptrac:
   paths:
     - ./app
@@ -247,39 +247,39 @@ deptrac:
       - Cache
   skip_violations:
     # Individual class exemptions
-    CodeIgniter\Cache\ResponseCache:
-      - CodeIgniter\HTTP\CLIRequest
-      - CodeIgniter\HTTP\Header
-      - CodeIgniter\HTTP\IncomingRequest
-      - CodeIgniter\HTTP\ResponseInterface
-    CodeIgniter\DataCaster\DataCaster:
-      - CodeIgniter\Entity\Cast\CastInterface
-      - CodeIgniter\Entity\Exceptions\CastException
-    CodeIgniter\DataCaster\Exceptions\CastException:
-      - CodeIgniter\Entity\Exceptions\CastException
-    CodeIgniter\DataConverter\DataConverter:
-      - CodeIgniter\Entity\Entity
-    CodeIgniter\Entity\Cast\URICast:
-      - CodeIgniter\HTTP\URI
-    CodeIgniter\Log\Handlers\ChromeLoggerHandler:
-      - CodeIgniter\HTTP\ResponseInterface
-    CodeIgniter\Security\CheckPhpIni:
-      - CodeIgniter\View\Table
-    CodeIgniter\View\Table:
-      - CodeIgniter\Database\BaseResult
-    CodeIgniter\View\Plugins:
-      - CodeIgniter\HTTP\URI
+    Code_Igniter\Cache\Response_Cache:
+      - Code_Igniter\HTTP\CLI_Request
+      - Code_Igniter\HTTP\Header
+      - Code_Igniter\HTTP\Incoming_Request
+      - Code_Igniter\HTTP\Response_Interface
+    Code_Igniter\Data_Caster\Data_Caster:
+      - Code_Igniter\Entity\Cast\Cast_Interface
+      - Code_Igniter\Entity\Exceptions\Cast_Exception
+    Code_Igniter\Data_Caster\Exceptions\Cast_Exception:
+      - Code_Igniter\Entity\Exceptions\Cast_Exception
+    Code_Igniter\Data_Converter\Data_Converter:
+      - Code_Igniter\Entity\Entity
+    Code_Igniter\Entity\Cast\URI_Cast:
+      - Code_Igniter\HTTP\URI
+    Code_Igniter\Log\Handlers\Chrome_Logger_Handler:
+      - Code_Igniter\HTTP\Response_Interface
+    Code_Igniter\Security\Check_Php_Ini:
+      - Code_Igniter\View\Table
+    Code_Igniter\View\Table:
+      - Code_Igniter\Database\Base_Result
+    Code_Igniter\View\Plugins:
+      - Code_Igniter\HTTP\URI
 
     # BC changes that should be fixed
-    CodeIgniter\HTTP\ResponseTrait:
-      - CodeIgniter\Pager\PagerInterface
-    CodeIgniter\HTTP\ResponseInterface:
-      - CodeIgniter\Pager\PagerInterface
-    CodeIgniter\HTTP\Response:
-      - CodeIgniter\Pager\PagerInterface
-    CodeIgniter\HTTP\RedirectResponse:
-      - CodeIgniter\Pager\PagerInterface
-    CodeIgniter\HTTP\DownloadResponse:
-      - CodeIgniter\Pager\PagerInterface
-    CodeIgniter\Validation\Validation:
-      - CodeIgniter\View\RendererInterface
+    Code_Igniter\HTTP\Response_Trait:
+      - Code_Igniter\Pager\Pager_Interface
+    Code_Igniter\HTTP\Response_Interface:
+      - Code_Igniter\Pager\Pager_Interface
+    Code_Igniter\HTTP\Response:
+      - Code_Igniter\Pager\Pager_Interface
+    Code_Igniter\HTTP\Redirect_Response:
+      - Code_Igniter\Pager\Pager_Interface
+    Code_Igniter\HTTP\Download_Response:
+      - Code_Igniter\Pager\Pager_Interface
+    Code_Igniter\Validation\Validation:
+      - Code_Igniter\View\Renderer_Interface
