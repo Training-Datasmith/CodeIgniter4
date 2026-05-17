@@ -1,5 +1,6 @@
 <?php
 
+/* @lint-intentional: User guide example demonstrating a property redeclaration scenario — see tools/rename-redo/lint-ignore.tsv */
 declare(strict_types=1);
 
 namespace Config;
