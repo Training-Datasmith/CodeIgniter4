@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use CodeIgniter\Cookie\Cookie;
-use DateTime;
-use DateTimeZone;
 
 $cookie = new Cookie(
     'remember_token',

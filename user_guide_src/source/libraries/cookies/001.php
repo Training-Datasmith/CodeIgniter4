@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use CodeIgniter\Cookie\Cookie;
-use DateTime;
 
 // Using the constructor
 $cookie = new Cookie(
