@@ -1,4 +1,5 @@
 <?php
+/* @lint-intentional: View template; PHP-with-embedded-HTML rendered by CodeIgniter view engine — see tools/rename-redo/lint-ignore.tsv */
 use CodeIgniter\HTTP\Header;
 use CodeIgniter\CodeIgniter;
 
