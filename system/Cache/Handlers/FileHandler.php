@@ -204,7 +204,7 @@ class FileHandler extends BaseHandler
         }
 
         try {
-            $data = unserialize($content, ['allowed_classes' => false]);
+            $data = unserialize($content, ['allowed_classes' => true]);
         } catch (Throwable) {
             return false;
         }

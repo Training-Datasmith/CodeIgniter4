@@ -67,8 +67,8 @@ final class ExceptionsTest extends CIUnitTestCase
         $this->exception->initialize();
 
         try {
-            $result = str_contains('foobar', null); // @phpstan-ignore argument.type (Needed for testing)
-            $this->assertLogContains('error', '[DEPRECATED] str_contains(): ');
+            @trigger_error('Hello! I am a deprecation!', E_USER_DEPRECATED);
+            $this->assertLogContains('error', '[DEPRECATED] Hello! I am a deprecation!');
         } catch (ErrorException) {
             $this->fail('The catch block should not be reached.');
         } finally {
