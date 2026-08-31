@@ -45,6 +45,7 @@ final class PredisHandlerTest extends AbstractHandlerTestCase
 
         $this->config  = new Cache();
         $this->handler = CacheFactory::getHandler($this->config, 'predis');
+        $this->handler->clean();
     }
 
     protected function tearDown(): void
